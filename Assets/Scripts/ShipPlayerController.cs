@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Player : MonoBehaviour {
+public class ShipPlayerController : MonoBehaviour {
 
 	private SpaceShip spaceShip;
 	private float rotationCoefficient;

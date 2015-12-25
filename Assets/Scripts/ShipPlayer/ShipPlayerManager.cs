@@ -82,6 +82,10 @@ public class ShipPlayerManager : MonoBehaviour
 
         shipParent.transform.position = Vector3.zero;
 
+		shipParent.AddComponent<ShipPlayerController> ();
+		//TODO 
+
+
         Debug.Log("Succesfully Imported Ship!");
     }
 
