@@ -85,34 +85,6 @@ NavMeshSettings:
     cellSize: .166666672
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &45199093
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 124976, guid: 22580653b7298e0478ebfd17d0d32a9a, type: 2}
-  m_PrefabInternal: {fileID: 2053538002}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 45199094}
-  - 114: {fileID: 2053538003}
-  m_Layer: 0
-  m_Name: Level Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &45199094
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 492240, guid: 22580653b7298e0478ebfd17d0d32a9a, type: 2}
-  m_PrefabInternal: {fileID: 2053538002}
-  m_GameObject: {fileID: 45199093}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
 --- !u!1 &204460879
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +317,7 @@ GameObject:
   - 124: {fileID: 706343143}
   - 81: {fileID: 706343142}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -601,7 +573,6 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3bf890392ae7cc94cb77ba3834e41a5d, type: 2}
-  m_RootGameObject: {fileID: 204460879}
   m_IsPrefabParent: 0
 --- !u!1001 &2053538002
 Prefab:
@@ -644,17 +615,10 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 22580653b7298e0478ebfd17d0d32a9a, type: 2}
-  m_RootGameObject: {fileID: 45199093}
   m_IsPrefabParent: 0
---- !u!114 &2053538003
+--- !u!114 &2053538003 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11450520, guid: 22580653b7298e0478ebfd17d0d32a9a,
     type: 2}
   m_PrefabInternal: {fileID: 2053538002}
-  m_GameObject: {fileID: 45199093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f55745fe59bdcfb45a2a3321ab976a48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
