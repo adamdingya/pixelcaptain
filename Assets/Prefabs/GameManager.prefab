@@ -40,7 +40,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameState: 0
-  cam: {fileID: 2071762, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
+  cam: {fileID: 2083200, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
   PC_MODE: 1
   gridSize: 30
   spritePixelScrap: {fileID: 21300000, guid: 7ec38836ea9db214886f67844d339d83, type: 3}
@@ -62,7 +62,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: cam
       value: 
-      objectReference: {fileID: 2071762, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
+      objectReference: {fileID: 2083200, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 178540}

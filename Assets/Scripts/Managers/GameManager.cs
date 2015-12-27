@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
 
-    public enum GameState {MainMenu, ShipBuilder, ShipTester};
+    public enum GameState {MainMenu, CaptainLog, Settings, Death, NavigationSystem, Reward, ShipBuilder, Combat, TacticalOptions};
     public GameState gameState;
     public Camera cam;
 

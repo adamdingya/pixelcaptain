@@ -16,8 +16,9 @@ public class ShipBuilderManager : MonoBehaviour
     //Toolbox Cursor
     public Texture2D selectedHighlight;
 
-	void Awake(){
+	void Start(){
 		GameManager.instance.setGameState (GameManager.GameState.ShipBuilder);
+
 		cam = GameObject.Find("Camera").GetComponent<Camera>();
 		this.init();
 	}
@@ -116,8 +117,11 @@ public class ShipBuilderManager : MonoBehaviour
 					Debug.Log ("Exported " + savedPixel.pixelType + "Pixel at position " + i + ".");
 			}
 		}
+
 		GameManager.instance.exportShip (savedPixels);
 		Debug.Log ("Succesfully exported ship to GameManager!");
+
+		GameManager.instance.loadScene("Combat");
 	}
 
 }

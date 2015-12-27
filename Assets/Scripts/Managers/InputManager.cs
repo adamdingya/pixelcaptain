@@ -83,14 +83,13 @@ public class InputManager : MonoBehaviour
                 state = State.Two;
             }
 
-
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
                 touch1Begin = true;
                 touch1Pos = cam.ScreenToWorldPoint(Input.mousePosition);
                 touch1PosPrev = touch1Pos;
-            }
-            else
+            } 
+			else
             {
                 touch1Begin = false;
                 touch1PosPrev = touch1Pos;

@@ -9,6 +9,8 @@ public class MainMenuManager : MonoBehaviour {
 	private Button settingsButton;
 	
 	void Start () {
+		GameManager.instance.setGameState (GameManager.GameState.MainMenu);
+
 		startButton = GameObject.Find ("Start").GetComponent<Button> ();
 		startButton.onClick.AddListener (() => GameManager.instance.loadScene("ShipBuilder"));
 

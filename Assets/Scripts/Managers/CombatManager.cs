@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShipPlayerManager : MonoBehaviour
+public class CombatManager : MonoBehaviour
 {
     public ShipPlayerPixel[] shipPixels; //Store all pixelsArray as an array.
     GameObject shipParent;
 
-    public void init()
-    {
+	void Start(){
+		GameManager.instance.setGameState (GameManager.GameState.Combat);
+	
 		shipPixels = new ShipPlayerPixel[GameManager.instance.gridSize * GameManager.instance.gridSize];
-    }
+		loadShip (GameManager.instance.savedPixels);
+	}
 
     public void loadShip(SavedPixel[] savedPixels)
     {
@@ -39,7 +41,7 @@ public class ShipPlayerManager : MonoBehaviour
                         turret.type = buildPixel.turretType;
                         turret.transform.position = buildPixel.transform.position;
                         turret.transform.parent = buildPixel.transform;
-						turret.Init(GameManager.instance, buildPixel);
+						turret.init(buildPixel);
                         buildPixel.turret = turret;
                     }
                 }
@@ -73,7 +75,7 @@ public class ShipPlayerManager : MonoBehaviour
 
         shipParent.transform.position = Vector3.zero;
 
-		shipParent.AddComponent<ShipPlayerController> ();
+		shipParent.AddComponent<ShipController> ();
 		//TODO 
 
 

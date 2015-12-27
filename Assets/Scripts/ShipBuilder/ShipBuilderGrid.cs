@@ -326,7 +326,6 @@ public class ShipBuilderGrid : MonoBehaviour
             }
         }
 
-
         //Set the preview pixel's sprite to depict the potentiol result...
         if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Turret)
         {

@@ -3,11 +3,10 @@ using System.Collections;
 
 public class ShipPlayerPixel : MonoBehaviour {
 	
-    ShipPlayerManager shipPlayerManager;
+    CombatManager combatManager;
     public Pixel.Type pixelType;
 
     public Turret.Type turretType;
-
     public ShipPlayerTurret turret;
 
     SpriteRenderer spriteRenderer;
@@ -24,9 +23,9 @@ public class ShipPlayerPixel : MonoBehaviour {
     public Vector2 coordinates;
     public int index;
 
-    public void init(ShipPlayerManager shipPlayerManager, Turret.Type _turretType)
+	public void init(CombatManager combatManager, Turret.Type _turretType)
     {
-        this.shipPlayerManager = shipPlayerManager;
+		this.combatManager = combatManager;
         turretType = _turretType;
 
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
@@ -76,38 +75,36 @@ public class ShipPlayerPixel : MonoBehaviour {
 
         if (offsetVector == new Vector2(-1, -1))
         {
-            adjacentPixel_below_left = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_below_left = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(0, -1))
         {
-			adjacentPixel_below = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_below = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(1, -1))
         {
-			adjacentPixel_below_right = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_below_right = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(-1, 0))
         {
-			adjacentPixel_left = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_left = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(1, 0))
         {
-			adjacentPixel_right = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_right = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(-1, 1))
         {
-			adjacentPixel_above_left = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_above_left = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(0, 1))
         {
-			adjacentPixel_above = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_above = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(1, 1))
         {
-			adjacentPixel_above_right = shipPlayerManager.shipPixels[offsetIndex];
+			adjacentPixel_above_right = combatManager.shipPixels[offsetIndex];
         }
 
     }
-
-
 }
