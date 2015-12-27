@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &178540
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 480140}
+  - 114: {fileID: 11417730}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &480140
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 178540}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14.7561159, y: 10.4535542, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+--- !u!114 &11417730
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 178540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f3cc10b16656644e8eb619e3bcab07f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameState: 0
+  cam: {fileID: 0}
+  PC_MODE: 1
+  input: {fileID: 0}
+  sound: {fileID: 0}
+  shipPlayer: {fileID: 0}
+  gridSize: 30
+  shipBuilder: {fileID: 0}
+  spritePixelScrap: {fileID: 21300000, guid: 7ec38836ea9db214886f67844d339d83, type: 3}
+  spritePixelArmour: {fileID: 21300000, guid: f21da23dcd814064d885e17d5a40c671, type: 3}
+  spritePixelEngine: {fileID: 21300000, guid: dd5c895a0e5ee5a4999802430dc25346, type: 3}
+  spritePixelPower: {fileID: 21300000, guid: 5aacb1a3caeaf35418ad2698e8ea063e, type: 3}
+  spritePixelHardpoint: {fileID: 21300000, guid: 4c30f0b82ea76474bb5a577be96c3605,
+    type: 3}
+  spritePixelEraser: {fileID: 21300000, guid: 7ef4e4bfb211dbe41ac442d19e22e7d6, type: 3}
+  spriteTurret:
+  - {fileID: 21300000, guid: 20f5623c15ebede46aef0515831592c9, type: 3}
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 178540}
+  m_IsPrefabParent: 1

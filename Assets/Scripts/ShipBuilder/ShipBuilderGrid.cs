@@ -10,9 +10,7 @@ public class ShipBuilderGrid : MonoBehaviour
     /// This class stores the pixel grid data, and manages movement and editing.
     /// </summary>
 
-    GameManager game;
-    InputManager input;
-    ShipBuilderManager shipBuilder;
+    ShipBuilderManager shipBuilderManager;
 
     //States
     public enum State { PanZoom, Placing, Inactive }; //Define local interaction types.
@@ -96,12 +94,10 @@ public class ShipBuilderGrid : MonoBehaviour
     }
     #endregion
 
-    public void Init(GameManager _game)
+    public void init(ShipBuilderManager shipBuilderManager)
     {
-        game = _game;
-        pixelsArrayLength = game.gridSize;
-        shipBuilder = game.shipBuilder; //Pass in the ship builder manager.
-        input = shipBuilder.game.input;
+        pixelsArrayLength = GameManager.instance.gridSize;
+		this.shipBuilderManager = shipBuilderManager; //Pass in the ship builder manager.
 
         //Setup the grid window area based on the temporary gameobject.
         gridWindowEditor = GameObject.Find("GridWindowEditor");
@@ -110,7 +106,7 @@ public class ShipBuilderGrid : MonoBehaviour
         gridWindowDimensions.x = gridWindowEditor.transform.localScale.x;
         gridWindowDimensions.y = gridWindowEditor.transform.localScale.y;
         gridWindowRegion = new Rect(gridWindowPosition.x, gridWindowPosition.y, gridWindowDimensions.x, gridWindowDimensions.y);
-        gridWindowEditor.transform.FindChild("GridWindowFrame").transform.parent = shipBuilder.transform;
+        gridWindowEditor.transform.FindChild("GridWindowFrame").transform.parent = shipBuilderManager.transform;
         GameObject.Destroy(gridWindowEditor);
 
         //Pixel grid array and area.
@@ -130,20 +126,20 @@ public class ShipBuilderGrid : MonoBehaviour
     public void OnUpdate()
     {
         
-        touchingGrid = (new Rect(0f, 0f, gridWindowDimensions.x, gridWindowDimensions.y).Contains(input.touch1Pos));
+        touchingGrid = (new Rect(0f, 0f, gridWindowDimensions.x, gridWindowDimensions.y).Contains(InputManager.instance.touch1Pos));
 
         //Sample the state before updating
         statePrev = state;
 
         //Enter No Touches
-        if (input.state == InputManager.State.None && input.statePrev != InputManager.State.None)
+		if (InputManager.instance.state == InputManager.State.None && InputManager.instance.statePrev != InputManager.State.None)
             state = State.Inactive;
 
         //Enter One Touch
-        if (input.state == InputManager.State.One && input.statePrev != InputManager.State.One)
+		if (InputManager.instance.state == InputManager.State.One && InputManager.instance.statePrev != InputManager.State.One)
         {
             //If going from two touches to one...
-            if (input.statePrev == InputManager.State.Two)
+			if (InputManager.instance.statePrev == InputManager.State.Two)
                 state = State.Inactive;
             else
             {
@@ -153,30 +149,30 @@ public class ShipBuilderGrid : MonoBehaviour
         }
 
         //Enter Two Touches
-        if (input.state == InputManager.State.Two && input.statePrev != InputManager.State.Two)
+		if (InputManager.instance.state == InputManager.State.Two && InputManager.instance.statePrev != InputManager.State.Two)
         {
-            if (!game.PC_MODE)
+            if (!GameManager.instance.PC_MODE)
             {
-                if ((input.statePrev == InputManager.State.Two) || (gridWindowRegion.Contains(input.touch1Pos) && (gridWindowRegion.Contains(input.touch2Pos))))
+				if ((InputManager.instance.statePrev == InputManager.State.Two) || (gridWindowRegion.Contains(InputManager.instance.touch1Pos) && (gridWindowRegion.Contains(InputManager.instance.touch2Pos))))
                     state = State.PanZoom;
             }
             else
             {
-                if ((input.statePrev == InputManager.State.Two) || (gridWindowRegion.Contains(input.touch1Pos)))
+				if ((InputManager.instance.statePrev == InputManager.State.Two) || (gridWindowRegion.Contains(InputManager.instance.touch1Pos)))
                     state = State.PanZoom;
             }
             
         }
 
         //Exit any touches...
-        if (input.state == InputManager.State.None && (input.state != input.statePrev))
+		if (InputManager.instance.state == InputManager.State.None && (InputManager.instance.state != InputManager.instance.statePrev))
         {
             state = State.Inactive;
 
             //If a pixel is selected & player releases single touch whilst in Placing mode...
-            if (input.statePrev == InputManager.State.One && statePrev == State.Placing)
+			if (InputManager.instance.statePrev == InputManager.State.One && statePrev == State.Placing)
             {
-                if (gridWindowRegion.Contains(input.touch1Pos + hoverOffset))
+				if (gridWindowRegion.Contains(InputManager.instance.touch1Pos + hoverOffset))
                     Place();
             }
         }
@@ -192,7 +188,7 @@ public class ShipBuilderGrid : MonoBehaviour
         //Pan & Zoom State
         if (state == State.PanZoom)
         {
-            if (!game.PC_MODE)
+            if (!GameManager.instance.PC_MODE)
                 PanZoom();
             else
                 PanZoomPC();
@@ -217,19 +213,19 @@ public class ShipBuilderGrid : MonoBehaviour
     //Pan and zoom the grid view.
     void PanZoom()
     {
-        Vector2 touchPosAverage = Vector2.Lerp(input.touch1Pos, input.touch2Pos, 0.5f);
-        Vector2 touchDeltaPosAverage = Vector2.Lerp(input.touch1DeltaPos, input.touch2DeltaPos, 0.5f);
+		Vector2 touchPosAverage = Vector2.Lerp(InputManager.instance.touch1Pos, InputManager.instance.touch2Pos, 0.5f);
+		Vector2 touchDeltaPosAverage = Vector2.Lerp(InputManager.instance.touch1DeltaPos, InputManager.instance.touch2DeltaPos, 0.5f);
 
         //Pan
         panVector += (RelativePosition(touchPosAverage) - RelativePosition(touchPosAverage - touchDeltaPosAverage)) * zoomFactor;
 
         //Zoom
         float zoomIncr = 0f;
-        if (input.touch12Angle > 10f)
+		if (InputManager.instance.touch12Angle > 10f)
 
         {
-            float touchDeltaMagPrev = (input.touch1PosPrev - input.touch2PosPrev).magnitude;
-            float touchDeltaMag = (input.touch1Pos - input.touch2Pos).magnitude;
+			float touchDeltaMagPrev = (InputManager.instance.touch1PosPrev - InputManager.instance.touch2PosPrev).magnitude;
+			float touchDeltaMag = (InputManager.instance.touch1Pos - InputManager.instance.touch2Pos).magnitude;
             zoomIncr = -(touchDeltaMagPrev - touchDeltaMag) * 0.5f;
         }
 
@@ -263,7 +259,7 @@ public class ShipBuilderGrid : MonoBehaviour
     void PanZoomPC()
     {
         //Pan
-        panVector += (RelativePosition(input.touch1Pos) - RelativePosition(input.touch1Pos - input.touch1DeltaPos)) * zoomFactor;
+		panVector += (RelativePosition(InputManager.instance.touch1Pos) - RelativePosition(InputManager.instance.touch1Pos - InputManager.instance.touch1DeltaPos)) * zoomFactor;
 
         //Zoom
         float zoomIncr = 0f;
@@ -282,19 +278,19 @@ public class ShipBuilderGrid : MonoBehaviour
             {
                 float zoomFactorPrev = zoomFactor;
                 zoomFactor = zoomMin;
-                panVector -= (zoomFactor - zoomFactorPrev) * RelativePosition(input.touch1Pos);
+				panVector -= (zoomFactor - zoomFactorPrev) * RelativePosition(InputManager.instance.touch1Pos);
             }
             else if (zoomFactor + zoomIncr > zoomMax)
             {
                 float zoomFactorPrev = zoomFactor;
                 zoomFactor = zoomMax;
-                panVector -= (zoomFactor - zoomFactorPrev) * RelativePosition(input.touch1Pos);
+				panVector -= (zoomFactor - zoomFactorPrev) * RelativePosition(InputManager.instance.touch1Pos);
             }
             else
             {
                 float zoomFactorPrev = zoomFactor;
                 zoomFactor += zoomIncr;
-                panVector -= (zoomFactor - zoomFactorPrev) * RelativePosition(input.touch1Pos);
+				panVector -= (zoomFactor - zoomFactorPrev) * RelativePosition(InputManager.instance.touch1Pos);
             }
         }
     }
@@ -309,7 +305,7 @@ public class ShipBuilderGrid : MonoBehaviour
             hoverOffset = new Vector2(2.0f * -zoomFactor, 2.0f * zoomFactor);
 
         //Calculate the coordinates currently selected by the user.
-        currentCoordinates = PositionToCoordinate(RelativePosition(input.touch1Pos + hoverOffset));
+		currentCoordinates = PositionToCoordinate(RelativePosition(InputManager.instance.touch1Pos + hoverOffset));
         //Calculate the pixel currently selected by the user.
         currentPixel = pixelsArray[CoordinateToIndex(currentCoordinates)];
 
@@ -317,7 +313,7 @@ public class ShipBuilderGrid : MonoBehaviour
         if (currentPixel != null)
         {
             //If the user isn't placing turrets...
-            if (shipBuilder.UI.tool != ShipBuilderUI.Tool.Turret)
+            if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Turret)
             {
                 currentPixel.UpdateVisibility(false); //Hide the pixel.
             }
@@ -332,45 +328,46 @@ public class ShipBuilderGrid : MonoBehaviour
 
 
         //Set the preview pixel's sprite to depict the potentiol result...
-        if (shipBuilder.UI.tool != ShipBuilderUI.Tool.Turret)
+        if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Turret)
         {
-            if (shipBuilder.UI.tool != ShipBuilderUI.Tool.Eraser)
-                preview.UpdateSprite(shipBuilder.PixelTypeToSprite(shipBuilder.ToolToPixelType(shipBuilder.UI.tool))); //Show selected tool type.
+			if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Eraser)
+				preview.UpdateSprite(shipBuilderManager.PixelTypeToSprite(shipBuilderManager.ToolToPixelType(shipBuilderManager.UI.tool))); //Show selected tool type.
             else
-                preview.UpdateSprite(game.spritePixelEraser);
+                preview.UpdateSprite(GameManager.instance.spritePixelEraser);
         }
         else
-            preview.UpdateSprite(game.spriteTurret[Random.Range(0, game.spriteTurret.Length - 1)]); //Show selected turret type.
+			preview.UpdateSprite(GameManager.instance.spriteTurret[Random.Range(0, GameManager.instance.spriteTurret.Length - 1)]); //Show selected turret type.
 
         // Snap the preview pixel's position to the selected pixel's position
         preview.transform.position = CoordinateToPosition(currentCoordinates);
 
-        if (gridWindowRegion.Contains(input.touch1Pos + hoverOffset))
+        if (gridWindowRegion.Contains(InputManager.instance.touch1Pos + hoverOffset))
         {
             preview.UpdateVisibility(true); //Show the preview for this frame.
            
         }
+		//preview.UpdateVisibility(true); //Show the preview for this frame.
     }
 
     //Place the pixel or turret.
     void Place()
     {
-        game.sound.PlaySFX(SoundManager.GameSFX.PlacePixel);
+        SoundManager.instance.PlaySFX(SoundManager.GameSFX.PlacePixel);
 
         //If there is a pixel in positon already...
         if (currentPixel != null)
         {
             //If the user isn't placing turrets...
-            if (shipBuilder.UI.tool != ShipBuilderUI.Tool.Turret)
+            if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Turret)
             {
                 //Delete the selected pixel.
                 currentPixel.Delete();
                 //If the user intends to replace the deleted pixel, create a new one...
-                if (shipBuilder.UI.tool != ShipBuilderUI.Tool.Eraser)
+				if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Eraser)
                 {
                     GameObject pixelObj = new GameObject();
                     ShipBuilderPixel pixel = pixelObj.AddComponent<ShipBuilderPixel>();
-                    pixel.InitPixel(shipBuilder, currentCoordinates, shipBuilder.ToolToPixelType(shipBuilder.UI.tool)); //Initialise the pixel, assigning a reference to this script, and setting its cooridantes;
+					pixel.InitPixel(shipBuilderManager, currentCoordinates, shipBuilderManager.ToolToPixelType(shipBuilderManager.UI.tool)); //Initialise the pixel, assigning a reference to this script, and setting its cooridantes;
                 }
             }
             //If the user is placing turrets...
@@ -383,7 +380,7 @@ public class ShipBuilderGrid : MonoBehaviour
                         currentPixel.DeleteTurret();
                     //Create a new one.
                     currentPixel.AddTurret();
-                    game.sound.PlaySFX(SoundManager.GameSFX.PlacePixel);
+                    SoundManager.instance.PlaySFX(SoundManager.GameSFX.PlacePixel);
                 }
             }    
         }
@@ -391,11 +388,11 @@ public class ShipBuilderGrid : MonoBehaviour
         else
         {
             //If a pixel Placing tool is active...
-            if (shipBuilder.UI.tool != ShipBuilderUI.Tool.Eraser && shipBuilder.UI.tool != ShipBuilderUI.Tool.Turret)
+			if (shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Eraser && shipBuilderManager.UI.tool != ShipBuilderUI.Tool.Turret)
             {
                 GameObject pixelObj = new GameObject();
                 ShipBuilderPixel pixel = pixelObj.AddComponent<ShipBuilderPixel>();
-                pixel.InitPixel(shipBuilder, currentCoordinates, shipBuilder.ToolToPixelType(shipBuilder.UI.tool)); //Initialise the pixel, assigning a reference to this script, and setting its cooridantes;
+				pixel.InitPixel(shipBuilderManager, currentCoordinates, shipBuilderManager.ToolToPixelType(shipBuilderManager.UI.tool)); //Initialise the pixel, assigning a reference to this script, and setting its cooridantes;
             }
         }
     }

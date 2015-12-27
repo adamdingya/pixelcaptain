@@ -3,24 +3,15 @@ using System.Collections;
 
 public class ShipPlayerManager : MonoBehaviour
 {
-
-    GameManager game;
-    InputManager input;
-    SoundManager sound;
-
     public ShipPlayerPixel[] shipPixels; //Store all pixelsArray as an array.
     GameObject shipParent;
 
-    public void Init(GameManager _game)
+    public void init()
     {
-        game = _game;
-        input = game.input;
-        sound = game.sound;
-
-        shipPixels = new ShipPlayerPixel[game.gridSize * game.gridSize];
+		shipPixels = new ShipPlayerPixel[GameManager.instance.gridSize * GameManager.instance.gridSize];
     }
 
-    public void LoadShip(SavedPixel[] savedPixels)
+    public void loadShip(SavedPixel[] savedPixels)
     {
         Vector3 averagePosition = Vector3.zero;
         int averagePositionCount = 0;
@@ -37,7 +28,7 @@ public class ShipPlayerManager : MonoBehaviour
                 buildPixel.transform.position = savedPixel.coordinates + new Vector2(0.5f, 0.5f);
                 buildPixel.coordinates = savedPixel.coordinates;
                 buildPixel.index = i;
-                buildPixel.Init(game, savedPixel.turretType);
+				buildPixel.init(this, savedPixel.turretType);
                 //Hardpoint & turret.
                 if (buildPixel.pixelType == Pixel.Type.Hardpoint)
                 {
@@ -48,7 +39,7 @@ public class ShipPlayerManager : MonoBehaviour
                         turret.type = buildPixel.turretType;
                         turret.transform.position = buildPixel.transform.position;
                         turret.transform.parent = buildPixel.transform;
-                        turret.Init(game, buildPixel);
+						turret.Init(GameManager.instance, buildPixel);
                         buildPixel.turret = turret;
                     }
                 }

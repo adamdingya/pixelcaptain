@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
-
-    GameManager gameManager;
+	public static InputManager instance = null;
 
     Camera cam;
 
@@ -36,10 +35,28 @@ public class InputManager : MonoBehaviour
 
     public Touch[] touches;
 
-    public void Init(GameManager _gameManager)
+	void Start(){
+		if (instance == null) {			
+			instance = this;	
+		} else if (instance != this) {			
+			Destroy (gameObject);    
+		}
+		DontDestroyOnLoad(gameObject);
+
+		init ();
+	}
+
+	void Update(){
+		if (!GameManager.instance.PC_MODE) {
+			getInput (); //Get the user input.
+		} else {
+			getInputPC (); //Get the user input.
+		}
+	}
+
+    private void init()
     {
-        gameManager = _gameManager;
-        cam = gameManager.cam;
+        cam = GameManager.instance.cam;
 
         touch1Pos = cam.ScreenToWorldPoint(Input.mousePosition);
         touch1PosPrev = touch1Pos;
@@ -50,9 +67,8 @@ public class InputManager : MonoBehaviour
         touch2DeltaPos = Vector2.zero;
     }
 
-    public void GetInputPC()
+    private void getInputPC()
     {
-
         //If LBM
         if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
         {
@@ -91,7 +107,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public void GetInput()
+    private void getInput()
     {
         Touch[] touches = Input.touches;
 
