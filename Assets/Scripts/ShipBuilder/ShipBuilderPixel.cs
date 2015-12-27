@@ -46,24 +46,24 @@ public class ShipBuilderPixel : MonoBehaviour
         //Get type specific data.
         if (type == Pixel.Type.Scrap)
         {
-            spriteRenderer.sprite = shipBuilder.game.spritePixelScrap;
+            spriteRenderer.sprite = GameManager.instance.spritePixelScrap;
         }
         else if (type == Pixel.Type.Armour)
         {
-            spriteRenderer.sprite = shipBuilder.game.spritePixelArmour;
+			spriteRenderer.sprite = GameManager.instance.spritePixelArmour;
         }
         else if (type == Pixel.Type.Power)
         {
-            spriteRenderer.sprite = shipBuilder.game.spritePixelPower;
+			spriteRenderer.sprite = GameManager.instance.spritePixelPower;
         }
         else if (type == Pixel.Type.Engine)
         {
-            spriteRenderer.sprite = shipBuilder.game.spritePixelEngine;
+			spriteRenderer.sprite = GameManager.instance.spritePixelEngine;
         }
         else if (type == Pixel.Type.Hardpoint)
         {
             canHaveTurret = true;
-            spriteRenderer.sprite = shipBuilder.game.spritePixelHardpoint;
+			spriteRenderer.sprite = GameManager.instance.spritePixelHardpoint;
         }
     }
 

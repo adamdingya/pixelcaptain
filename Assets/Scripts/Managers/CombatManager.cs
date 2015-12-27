@@ -1,26 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShipPlayerManager : MonoBehaviour
+public class CombatManager : MonoBehaviour
 {
-
-    GameManager game;
-    InputManager input;
-    SoundManager sound;
-
     public ShipPlayerPixel[] shipPixels; //Store all pixelsArray as an array.
     GameObject shipParent;
 
-    public void Init(GameManager _game)
-    {
-        game = _game;
-        input = game.input;
-        sound = game.sound;
+	void Start(){
+		GameManager.instance.setGameState (GameManager.GameState.Combat);
+	
+		shipPixels = new ShipPlayerPixel[GameManager.instance.gridSize * GameManager.instance.gridSize];
+		loadShip (GameManager.instance.savedPixels);
+	}
 
-        shipPixels = new ShipPlayerPixel[game.gridSize * game.gridSize];
-    }
-
-    public void LoadShip(SavedPixel[] savedPixels)
+    public void loadShip(SavedPixel[] savedPixels)
     {
         Vector3 averagePosition = Vector3.zero;
         int averagePositionCount = 0;
@@ -37,7 +30,7 @@ public class ShipPlayerManager : MonoBehaviour
                 buildPixel.transform.position = savedPixel.coordinates + new Vector2(0.5f, 0.5f);
                 buildPixel.coordinates = savedPixel.coordinates;
                 buildPixel.index = i;
-                buildPixel.Init(game, savedPixel.turretType);
+				buildPixel.init(this, savedPixel.turretType);
                 //Hardpoint & turret.
                 if (buildPixel.pixelType == Pixel.Type.Hardpoint)
                 {
@@ -48,7 +41,7 @@ public class ShipPlayerManager : MonoBehaviour
                         turret.type = buildPixel.turretType;
                         turret.transform.position = buildPixel.transform.position;
                         turret.transform.parent = buildPixel.transform;
-                        turret.Init(game, buildPixel);
+						turret.init(buildPixel);
                         buildPixel.turret = turret;
                     }
                 }
@@ -82,7 +75,7 @@ public class ShipPlayerManager : MonoBehaviour
 
         shipParent.transform.position = Vector3.zero;
 
-		shipParent.AddComponent<ShipPlayerController> ();
+		shipParent.AddComponent<ShipController> ();
 		//TODO 
 
 

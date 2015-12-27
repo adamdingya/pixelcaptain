@@ -6,17 +6,13 @@ using UnityEngine.UI;
 
 public class ShipBuilderUI : MonoBehaviour
 {
-
     /// <summary>
     /// This class defines the Ship Builder UI (Not using Unity's UI API).
     /// </summary>
-
-    GameManager game;
-    ShipBuilderManager shipBuilder; //Reference the ship builder manager.
-    InputManager input;
+	
+    ShipBuilderManager shipBuilderManager; //Reference the ship builder manager.
     Camera cam;
-
-
+	
     public GameObject scrapButton;
     public GameObject armourButton;
     public GameObject engineButton;
@@ -36,12 +32,10 @@ public class ShipBuilderUI : MonoBehaviour
 
     public float toolPixelSize = 8f;
 
-    public void Init(GameManager _game)
+    public void init(ShipBuilderManager shipBuilderManager)
     {
-        game = _game;
-        shipBuilder = game.shipBuilder;
-        input = game.input;
-        cam = game.cam;
+		this.shipBuilderManager = shipBuilderManager;
+		cam = GameManager.instance.cam;
         canvas = GetComponent<Canvas>();
 
         SelectTool_Scrap();
@@ -77,13 +71,13 @@ public class ShipBuilderUI : MonoBehaviour
     }
     public void SelectTool_TestShip()
     {
-        game.SaveShip();
+        shipBuilderManager.saveShip();
     }
 
     public void UpdateSelection(Tool _tool, Vector3 _cursorPos)
     {
         tool = _tool;
         toolCursor.transform.position = _cursorPos;
-        game.sound.PlaySFX(SoundManager.GameSFX.SelectTool);
+        SoundManager.instance.PlaySFX(SoundManager.GameSFX.SelectTool);
     }
 }
