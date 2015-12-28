@@ -4,12 +4,6 @@ using System.Collections.Generic;
 
 public class SpaceShip {
 
-	private List<Square> components = new List<Square>();
-	private List<Square> bridgeSquares = new List<Square>();
-	private List<Square> armousrSquares = new List<Square>();
-	private List<Square> engineSquares = new List<Square>();
-	private List<Square> weaponSquares = new List<Square>();
-
 	private float currentSpeed;
 	private float acceleration;
 	private float maxSpeed;
@@ -22,25 +16,6 @@ public class SpaceShip {
 		calculateMaxSpeed ();
 		calculateAcceleration ();
 		calculateRotationCoefficient ();
-	}
-	
-	public SpaceShip(List<Square> bridgeSquares, List<Square> armousrSquares, List<Square> engineSquares, List<Square> weaponSquares){
-		this.bridgeSquares = bridgeSquares;
-		this.armousrSquares = armousrSquares;
-		this.engineSquares = engineSquares;
-		this.weaponSquares = weaponSquares;
-
-		combineSquaresToComponents();
-		calculateMaxSpeed ();
-		calculateAcceleration ();
-		calculateRotationCoefficient ();
-	}
-
-	private void combineSquaresToComponents(){
-		components.AddRange (bridgeSquares);
-		components.AddRange (armousrSquares);
-		components.AddRange (engineSquares);
-		components.AddRange (weaponSquares);
 	}
 
 	private void calculateMaxSpeed(){

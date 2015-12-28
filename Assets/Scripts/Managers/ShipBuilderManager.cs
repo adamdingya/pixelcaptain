@@ -121,7 +121,7 @@ public class ShipBuilderManager : MonoBehaviour
 		GameManager.instance.exportShip (savedPixels);
 		Debug.Log ("Succesfully exported ship to GameManager!");
 
-		GameManager.instance.loadScene("Combat");
+		GameManager.instance.loadScene("NavigationSystem");
 	}
 
 }

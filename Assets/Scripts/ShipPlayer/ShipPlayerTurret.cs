@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ShipPlayerTurret : MonoBehaviour
 {
-    public Turret.Type type;
+    public Turret.Type turretType;
     public SpriteRenderer spriteRenderer;
     public ShipPlayerPixel mountPixel;
 
@@ -12,12 +12,12 @@ public class ShipPlayerTurret : MonoBehaviour
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "Turrets";
 
-        if (type == Turret.Type.Small)
+		if (turretType == Turret.Type.Small)
         {
 			spriteRenderer.sprite = GameManager.instance.spriteTurret[Random.Range(0, GameManager.instance.spriteTurret.Length)];
         }
 
-        transform.name = mountPixel.transform.name + "'s " + type + " Turret";
+		transform.name = mountPixel.transform.name + "'s " + turretType + " Turret";
     }
 	
 }
