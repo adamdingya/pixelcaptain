@@ -36,7 +36,7 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_TURRET_MASS = 150f;
 	public static float DEFAULT_TURRET_HEALTH = -1f;
 	public static float DEFAULT_TURRET_COMSUMPTION = 150f;
-	public static int DEFAULT_TURRET_BARREL = 3;
+	public static int DEFAULT_TURRET_BARREL_COUNT = 1;
 	public static float DEFAULT_TURRET_BULLET_SPEED = 20f;
 	public static float DEFAULT_TURRET_RATE_OF_FIRE = 1f;
 	public static float DEFAULT_TURRET_RANGE = 100f;
