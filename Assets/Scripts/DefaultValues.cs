@@ -53,10 +53,21 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_SHIELD_STRENGTH = 500f;
 	public static float DEFAULT_SHIELD_REGENERATION_RATE = 2f;
 
+	// Astroid atrributes
+	public static int DEFAULT_ASTEROID_COUNT = 10;
+	public static float DEFAULT_ASTEROID_HEALTH = 100f;
+	public static float DEFAULT_ASTEROID_DAMAGE = 10f;
+	public static float DEFAULT_ASTEROID_ROTATION_COEFFICIENT_MIN = 10f;
+	public static float DEFAULT_ASTEROID_ROTATION_COEFFICIENT_MAX = 25f;
+	public static float DEFAULT_ASTEROID_FORCE_X_MIN = 25f;
+	public static float DEFAULT_ASTEROID_FORCE_X_MAX = 75f;
+	public static float DEFAULT_ASTEROID_FORCE_Y_MIN = 25f;
+	public static float DEFUALT_ASTEROID_FORCE_Y_MAX = 75f;
 
 
 	public static float DEFAULT_BULLET_SELF_DESTRUCTION_TIME = 10f;
 	public static int DEFAULT_MAX_CONCURRENT_ENEMY_COUNT = 3;
 	public static Vector3 DEFAULT_PLAYER_SPAWNING_POINT = new Vector3 (-16f, -13f, -1f);
 	public static Vector3[] DEFAULT_ENEMY_SPAWNING_POINT = new Vector3[]{new Vector3(16f, 13f, -1f), new Vector3(10f, 13f, -1f), new Vector3(16f, 6f, -1f)};	
+
 }
