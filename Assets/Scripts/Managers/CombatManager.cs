@@ -4,16 +4,21 @@ using System.Collections;
 public class CombatManager : MonoBehaviour
 {
     public ShipPlayerPixel[] shipPixels; //Store all pixelsArray as an array.
-    GameObject shipParent;
+	public int asteroidCount;
 
 	void Start(){
 		GameManager.instance.setGameState (GameManager.GameState.Combat);
 	
 		shipPixels = new ShipPlayerPixel[GameManager.instance.gridSize * GameManager.instance.gridSize];
-		loadShip (GameManager.instance.savedPixels);
+		loadPlayer (GameManager.instance.savedPixels);
+
+		loadEnemies ();
+
+		asteroidCount = DefaultValues.DEFAULT_ASTEROID_COUNT;
+		loadAsteroids ();
 	}
 
-    public void loadShip(SavedPixel[] savedPixels)
+	private void loadPlayer(SavedPixel[] savedPixels)
     {
         Vector3 averagePosition = Vector3.zero;
         int averagePositionCount = 0;
@@ -58,7 +63,7 @@ public class CombatManager : MonoBehaviour
         }
 
         averagePosition /= averagePositionCount;
-        shipParent = new GameObject();
+        GameObject shipParent = new GameObject();
         shipParent.transform.position = averagePosition;
         shipParent.transform.name = "ShipParent";
 
@@ -85,7 +90,7 @@ public class CombatManager : MonoBehaviour
 			addProperties(child);
 		}
 
-        Debug.Log("Succesfully Imported Ship!");
+        Debug.Log("Succesfully Loaded Player!");
     }
 
 	private void addRigidBodyAndCollider(Transform child){
@@ -137,5 +142,23 @@ public class CombatManager : MonoBehaviour
 				break;
 			}
 		}
+	}
+
+	private void loadAsteroids(){
+		Sprite[] asteroidSprites = Resources.LoadAll<Sprite>("Sprites/Asteroids/asteroids");
+		for (int i=0; i<asteroidCount; i++) {
+			Vector3 screenPosition = Camera.main.ScreenToWorldPoint (new Vector3(Random.Range (0, Screen.width), Random.Range (0, Screen.height), -Camera.main.transform.position.z));
+			GameObject asteroid = Instantiate(Resources.Load ("Prefabs/Asteroid"), screenPosition, Quaternion.identity) as GameObject;
+			int randomAsteroidSprite = Random.Range(0, asteroidSprites.Length);
+			asteroid.GetComponent<SpriteRenderer>().sprite = asteroidSprites[randomAsteroidSprite];
+			PolygonCollider2D polygonCollider2D = asteroid.AddComponent<PolygonCollider2D>();
+			polygonCollider2D.isTrigger = false;
+		}
+		Debug.Log("Succesfully Loaded Asteroids!");
+	}
+
+	private void loadEnemies(){
+		// TODO
+		Debug.Log("Succesfully Loaded Enemies!");
 	}
 }
