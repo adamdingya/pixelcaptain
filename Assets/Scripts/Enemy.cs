@@ -19,12 +19,6 @@ public class Enemy : MonoBehaviour {
 
 		player = GameObject.FindGameObjectWithTag("Player");
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-
-	}
 
 	void OnTriggerEnter2D(Collider2D collider2D){
 		string collider2DTag = collider2D.gameObject.tag;
@@ -33,14 +27,6 @@ public class Enemy : MonoBehaviour {
 			Destroy (gameObject);
 			Debug.Log("Bullet hits enemy, destroy bullet!");
 			Destroy (collider2D.gameObject);
-		}
-	}
-
-	void OnCollisionEnter2D(Collision2D collision2D){
-		string collision2DTag = collision2D.gameObject.tag;
-		if (collision2DTag.Equals ("Player")) {
-			Debug.Log("Player crashes onto enemy, destroy enemy ship!");
-			Destroy (gameObject);	
 		}
 	}
 }

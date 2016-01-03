@@ -36,7 +36,7 @@ public class ShipBuilderTurret : MonoBehaviour {
         //Get type specific data.
         if (type == Type.Small)
         {
-            spriteRenderer.sprite = mountPixel.shipBuilder.game.spriteTurret[Random.Range(0, mountPixel.shipBuilder.game.spriteTurret.Length - 1)];
+			spriteRenderer.sprite = GameManager.instance.spriteTurret[Random.Range(0, GameManager.instance.spriteTurret.Length - 1)];
         }
     }
 

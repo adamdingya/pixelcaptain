@@ -2,13 +2,11 @@
 using System.Collections;
 
 public class ShipPlayerPixel : MonoBehaviour {
-
-    GameManager game;
-    ShipPlayerManager shipPlayer;
+	
+    CombatManager combatManager;
     public Pixel.Type pixelType;
 
     public Turret.Type turretType;
-
     public ShipPlayerTurret turret;
 
     SpriteRenderer spriteRenderer;
@@ -25,24 +23,22 @@ public class ShipPlayerPixel : MonoBehaviour {
     public Vector2 coordinates;
     public int index;
 
-    public void Init(GameManager _game, Turret.Type _turretType)
+	public void init(CombatManager combatManager, Turret.Type _turretType)
     {
-
-        game = _game;
-        shipPlayer = game.shipPlayer;
+		this.combatManager = combatManager;
         turretType = _turretType;
 
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         if(pixelType == Pixel.Type.Hardpoint)
-            spriteRenderer.sprite = game.spritePixelHardpoint;
+            spriteRenderer.sprite = GameManager.instance.spritePixelHardpoint;
         else if (pixelType == Pixel.Type.Armour)
-            spriteRenderer.sprite = game.spritePixelArmour;
+			spriteRenderer.sprite = GameManager.instance.spritePixelArmour;
         else if (pixelType == Pixel.Type.Engine)
-            spriteRenderer.sprite = game.spritePixelEngine;
+			spriteRenderer.sprite = GameManager.instance.spritePixelEngine;
         else if (pixelType == Pixel.Type.Power)
-            spriteRenderer.sprite = game.spritePixelPower;
+			spriteRenderer.sprite = GameManager.instance.spritePixelPower;
         else if (pixelType == Pixel.Type.Scrap)
-            spriteRenderer.sprite = game.spritePixelScrap;
+			spriteRenderer.sprite = GameManager.instance.spritePixelScrap;
     }
 
     public void GetSurroundingPixels()
@@ -75,42 +71,40 @@ public class ShipPlayerPixel : MonoBehaviour {
     public void GetAdjacentPixel( int _xOffset, int _yOffset)
     {
         Vector2 offsetVector = new Vector2(_xOffset, _yOffset);
-        int offsetIndex = index + (int)offsetVector.x + ((int)offsetVector.y * game.gridSize);
+        int offsetIndex = index + (int)offsetVector.x + ((int)offsetVector.y * GameManager.instance.gridSize);
 
         if (offsetVector == new Vector2(-1, -1))
         {
-            adjacentPixel_below_left = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_below_left = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(0, -1))
         {
-            adjacentPixel_below = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_below = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(1, -1))
         {
-            adjacentPixel_below_right = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_below_right = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(-1, 0))
         {
-            adjacentPixel_left = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_left = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(1, 0))
         {
-            adjacentPixel_right = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_right = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(-1, 1))
         {
-            adjacentPixel_above_left = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_above_left = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(0, 1))
         {
-            adjacentPixel_above = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_above = combatManager.shipPixels[offsetIndex];
         }
         else if (offsetVector == new Vector2(1, 1))
         {
-            adjacentPixel_above_right = shipPlayer.shipPixels[offsetIndex];
+			adjacentPixel_above_right = combatManager.shipPixels[offsetIndex];
         }
 
     }
-
-
 }
