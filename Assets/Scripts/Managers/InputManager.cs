@@ -5,212 +5,254 @@ using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
+
+    /// <summary>
+    /// Manage multi-platform inputs.
+    /// Holds data about touch positions, two-finger spreading, two-finger dragging e.t.c.
+    /// </summary>
+
+    //General references.
 	public static InputManager instance = null;
+    GameManager game;
+    CameraBehavior camera;
 
-    Camera cam;
-
+    //Define possible input states & store previous.
     public enum State { None, One, Two };
     public State state;
     public State statePrev;
 
-    public bool touch1Begin = false;
-    public bool touch2Begin = false;
+    public Vector2 inputPosition; //The selected position in world-space (Averaged for two touches).
+    public Vector2 inputPositionScreen; //The selected position in screen-space (Averaged for two touches).
 
-    public bool touch1End = false;
-    public bool touch2End = false;
+    public Vector2 inputDrag; //The amount of two-finger dragging.
+    public float inputSpread; //The amount of two-finger spreading.
 
-    public Vector2 touch1Pos;
-    public Vector2 touch1PosPrev;
-    public Vector2 touch1DeltaPos;
-    public int touch1ID;
-    public int touch1IDPrev;
+    float touchAngle; //The current angle between finger movements.
+    public float spreadAngleThreshold; //The angle between finger movements that defines spreading from dragging.
 
-    public Vector2 touch2Pos;
-    public Vector2 touch2PosPrev;
-    public Vector2 touch2DeltaPos;
-    public int touch2ID;
-    public int touch2IDPrev;
+    //Custom monitoring of touch position deltas (Overcomes an issue I found with built-in touch[0].deltaPosition).
+    int firstTouchID;
+    int firstTouchIDPrev;
+    Vector2 firstTouchPos;
+    Vector2 firstTouchPosPrev;
+    Vector2 firstTouchPosDelta;
+    int secondTouchID;
+    int secondTouchIDPrev;
+    Vector2 secondTouchPos;
+    Vector2 secondTouchPosPrev;
+    Vector2 secondTouchPosDelta;
 
-    public float touch12Angle;
-
-    public Touch[] touches;
-
-	void Start(){
-		if (instance == null) {			
-			instance = this;	
-		} else if (instance != this) {			
-			Destroy (gameObject);    
-		}
-		DontDestroyOnLoad(gameObject);
-
-		init ();
-	}
-
-	void Update(){
-		if (!GameManager.instance.PC_MODE) {
-			getInput (); //Get the user input.
-		} else {
-			getInputPC (); //Get the user input.
-		}
-	}
-
-    private void init()
+    public void Init()
     {
-        cam = GameManager.instance.cam;
 
-        touch1Pos = cam.ScreenToWorldPoint(Input.mousePosition);
-        touch1PosPrev = touch1Pos;
-        touch1DeltaPos = Vector2.zero;
+        //Singleton Pattern.
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
 
-        touch2Pos = touch1Pos;
-        touch2PosPrev = touch1Pos;
-        touch2DeltaPos = Vector2.zero;
+
+        camera = GameManager.instance.camera;
     }
 
-    private void getInputPC()
+    //Calculate the input data for this frame.
+    public void GetInput()
     {
-        //If LBM
-        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
-        {
-            if (Input.GetMouseButton(0))
-            {
-                statePrev = state;
-                state = State.One;
-            }
-            else if(Input.GetMouseButton(1))
-            {
-                statePrev = state;
-                state = State.Two;
-            }
-
-            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-            {
-                touch1Begin = true;
-                touch1Pos = cam.ScreenToWorldPoint(Input.mousePosition);
-                touch1PosPrev = touch1Pos;
-            } 
-			else
-            {
-                touch1Begin = false;
-                touch1PosPrev = touch1Pos;
-                touch1Pos = cam.ScreenToWorldPoint(Input.mousePosition);
-            }
-
-            touch1DeltaPos = touch1Pos - touch1PosPrev;
-        }
-        else
-        {
-            statePrev = state;
-            state = State.None;
-            touch1DeltaPos = Vector2.zero;
-        }
-    }
-
-    private void getInput()
-    {
+        //Store touches to an array and count relevent ones with 'touchCount'.
         Touch[] touches = Input.touches;
 
-        int fingerCount = 0;
+        int touchCount = 0;
         foreach (Touch touch in touches)
         {
             if (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled)
-                fingerCount++;
+                touchCount++;
         }
 
-        //One touch
-        if (fingerCount == 1)
-        {
-            Touch t = touches[0];
-
-            statePrev = state;
-            state = State.One;
-
-            if (t.phase == TouchPhase.Began)
-            {
-                touch1Begin = true;
-                touch1ID = t.fingerId;
-                touch1IDPrev = t.fingerId;
-                touch1Pos = cam.ScreenToWorldPoint(t.position);
-                touch1PosPrev = touch1Pos;
-            }
-            else
-            {
-                touch1Begin = false;
-                touch1IDPrev = touch1ID;
-                touch1ID = t.fingerId;
-                touch1PosPrev = touch1Pos;
-                touch1Pos = cam.ScreenToWorldPoint(t.position);
-            }
-
-            touch1DeltaPos = touch1Pos - touch1PosPrev;
-        }
-        //Two touches
-        else if (fingerCount == 2)
-        {
-            Touch t1 = touches[0];
-            Touch t2 = touches[1];
-
-            statePrev = state;
-            state = State.Two;
-
-            //Finger 1
-            if (t1.phase == TouchPhase.Began)
-            {
-                touch1Begin = true;
-                touch1ID = t1.fingerId;
-                touch1IDPrev = t1.fingerId;
-                touch1Pos = cam.ScreenToWorldPoint(t1.position);
-                touch1PosPrev = touch1Pos;
-            }
-            else
-            {
-                touch1Begin = false;
-                touch1IDPrev = touch1ID;
-                touch1ID = t1.fingerId;
-                touch1PosPrev = touch1Pos;
-                touch1Pos = cam.ScreenToWorldPoint(t1.position);
-            }
-
-            if ((touch1ID == touch1IDPrev) && (state == statePrev))
-                touch1DeltaPos = touch1Pos - touch1PosPrev;
-
-            //Finger 2
-            if (t2.phase == TouchPhase.Began)
-            {
-                touch2Begin = true;
-                touch2ID = t2.fingerId;
-                touch2IDPrev = t2.fingerId;
-                touch2Pos = cam.ScreenToWorldPoint(t2.position);
-                touch2PosPrev = touch2Pos;
-            }
-            else
-            {
-                touch2Begin = false;
-                touch2IDPrev = touch2ID;
-                touch2ID = t2.fingerId;
-                touch2PosPrev = touch2Pos;
-                touch2Pos = cam.ScreenToWorldPoint(t2.position);
-            }
-
-            if ((touch1ID == touch1IDPrev) && (touch2ID == touch2IDPrev) && (state == statePrev))
-                touch2DeltaPos = touch2Pos - touch2PosPrev;
-
-            //Calculate the angle between finger movements
-            if (touch1DeltaPos.sqrMagnitude > 0f && touch2DeltaPos.sqrMagnitude > 0f)
-                touch12Angle = Mathf.Abs(Vector2.Angle(touch1DeltaPos, touch2DeltaPos));
-            else
-                touch12Angle = 0f;
-        }
-        //No Touches
-        else
+        //If there are no touches or more than two, cancel and reset.
+        if (touchCount == 0 || touchCount > 2)
         {
             statePrev = state;
             state = State.None;
-
-            touch1DeltaPos = Vector2.zero;
-            touch2DeltaPos = Vector2.zero;
-
-            touch12Angle = 0f;
+            inputDrag = Vector2.zero;
+            inputSpread = 0f;
+            touchAngle = 0f;
         }
+
+        //If there is one touch...
+        if (touchCount == 1)
+        {
+            //If the previous amount of touches was different...
+            if (state != State.One)
+            {
+                //Sample the current frame data, ensure that the previous frame data is the same (avoids jumping in deltas calculated from 'current - previous').
+                firstTouchID = touches[0].fingerId;
+                firstTouchIDPrev = firstTouchID;
+                firstTouchPos = touches[0].position;
+                firstTouchPosPrev = firstTouchPos;
+            }
+            //Else if this is a continuation of one touch...
+            else
+            {
+                //Sample the previous frame data, then set the current.
+                firstTouchIDPrev = firstTouchID;
+                firstTouchID = touches[0].fingerId;
+                firstTouchPosPrev = firstTouchPos;
+                firstTouchPos = touches[0].position;
+            }
+
+            //Calculate the movement delta, but check that the induvidual fingers are still the same/haven't been swapped.
+            if (firstTouchID == firstTouchIDPrev && state == statePrev)
+                firstTouchPosDelta = firstTouchPos - firstTouchPosPrev;
+            else
+                firstTouchPosDelta = Vector2.zero;
+
+            //Set the state & input position.
+            statePrev = state;
+            state = State.One;
+            inputPositionScreen = firstTouchPos;
+            inputPosition = camera.ScreenToWorldPosition(inputPositionScreen);
+
+            //Reset anything from two touch states.
+            secondTouchPos = Vector2.zero;
+            secondTouchPosPrev = Vector2.zero;
+            secondTouchPosDelta = Vector2.zero;
+            inputDrag = Vector2.zero;
+            inputSpread = 0f;
+        }
+
+        //If there are two touches...
+        if (touchCount == 2)
+        {
+            //If the previous amount of unique touches was different...
+            if (touches[0].phase == TouchPhase.Began || state != State.Two)
+            {
+                //Sample the current frame data, ensure that the previous frame data is the same (avoids jumping in deltas calculated from 'current - previous').
+                firstTouchID = touches[0].fingerId;
+                firstTouchIDPrev = firstTouchID;
+                firstTouchPos = touches[0].position;
+                firstTouchPosPrev = firstTouchPos;
+            }
+            //Else if this is a continuation the same two touches...
+            else
+            {
+                //Sample the previous frame data, then set the current.
+                firstTouchIDPrev = firstTouchID;
+                firstTouchID = touches[0].fingerId;
+                firstTouchPosPrev = firstTouchPos;
+                firstTouchPos = touches[0].position;
+            }
+
+            //Calculate the movement delta, but check that the induvidual fingers are still the same/haven't been swapped.
+            if (firstTouchID == firstTouchIDPrev && state == statePrev)
+                firstTouchPosDelta = firstTouchPos - firstTouchPosPrev;
+            else
+                firstTouchPosDelta = Vector2.zero;
+
+            //If the previous amount of unique touches was different...
+            if (touches[1].phase == TouchPhase.Began || state != State.Two)
+            {
+                //Sample the current frame data, ensure that the previous frame data is the same (avoids jumping in deltas calculated from 'current - previous').
+                secondTouchID = touches[1].fingerId;
+                secondTouchIDPrev = secondTouchID;
+                secondTouchPos = touches[1].position;
+                secondTouchPosPrev = secondTouchPos;
+            }
+            //Else if this is a continuation the same two touches...
+            else
+            {
+                //Sample the previous frame data, then set the current.
+                secondTouchIDPrev = secondTouchID;
+                secondTouchID = touches[1].fingerId;
+                secondTouchPosPrev = secondTouchPos;
+                secondTouchPos = touches[1].position;
+            }
+
+            //Calculate the movement delta, but check that the induvidual fingers are still the same/haven't been swapped.
+            if (secondTouchID == secondTouchIDPrev && state == statePrev && state != State.None)
+                secondTouchPosDelta = secondTouchPos - secondTouchPosPrev;
+            else
+                secondTouchPosDelta = Vector2.zero;
+
+            //Set the state & input position.
+            statePrev = state;
+            state = State.Two;
+            inputPositionScreen = (firstTouchPos + secondTouchPos) / 2.0f;
+            inputPosition = (camera.ScreenToWorldPosition(firstTouchPos) + camera.ScreenToWorldPosition(secondTouchPos)) / 2.0f;
+
+            //Calculate the current angle between finger movements.
+            if (firstTouchPosDelta.sqrMagnitude > 0f && secondTouchPosDelta.sqrMagnitude > 0f)
+                touchAngle = Mathf.Abs(Vector2.Angle(firstTouchPosDelta, secondTouchPosDelta));
+            else
+                touchAngle = 0f;
+
+            //Switch between spread/drag based on the finger-spreading angle.
+            if (touchAngle > spreadAngleThreshold)
+            {
+                float touchSpreadDistancePrevious = ((firstTouchPos - firstTouchPosDelta) - (secondTouchPos - secondTouchPosDelta)).magnitude;
+                float touchSpreadDistance = (firstTouchPos - secondTouchPos).magnitude;
+                inputSpread = (touchSpreadDistancePrevious - touchSpreadDistance) * 0.5f * (1 / (float)Screen.height);
+                inputDrag = Vector2.zero;
+            }
+            else
+            {
+                inputDrag = firstTouchPosDelta + secondTouchPosDelta / 2.0f;
+                inputDrag = new Vector2((inputDrag.x / (float)Screen.width) * camera.aspectRatio, inputDrag.y / (float)Screen.height);
+                inputSpread = 0f;
+            }
+        }
+    }
+
+
+    //Non-mobile OS input (for testing).
+    public Vector2 mousePos;
+    public Vector2 mousePosPrev;
+    public Vector2 mousePosDelta;
+
+    public void GetInputPC()
+    {
+        if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        {
+            statePrev = state;
+            state = State.None;
+        }
+        else if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        {
+            statePrev = state;
+            state = State.One;
+        }
+        else if (!Input.GetMouseButton(0) && Input.GetMouseButton(1))
+        {
+            statePrev = state;
+            state = State.Two;
+        }
+
+        mousePosPrev = mousePos;
+        mousePos = Input.mousePosition;
+
+        if (state == statePrev && state != State.None)
+            mousePosDelta = mousePos - mousePosPrev;
+        else
+            mousePosDelta = Vector2.zero;
+
+        if (state == State.Two)
+        {
+            inputDrag = mousePosDelta;
+            inputDrag = new Vector2((inputDrag.x / (float)Screen.width) * camera.aspectRatio, inputDrag.y / (float)Screen.height) * 2f;
+            inputSpread = -Input.mouseScrollDelta.y * 0.04f;
+        }
+        else
+        {
+            inputDrag = Vector2.zero;
+            inputSpread = 0f;
+        }
+
+        inputPositionScreen = mousePos;
+        inputPosition = camera.ScreenToWorldPosition(inputPositionScreen);
+
     }
 }

@@ -9,7 +9,7 @@ public class CombatManager : MonoBehaviour
 	void Start(){
 		GameManager.instance.setGameState (GameManager.GameState.Combat);
 	
-		shipPixels = new ShipPlayerPixel[GameManager.instance.gridSize * GameManager.instance.gridSize];
+		shipPixels = new ShipPlayerPixel[GameManager.instance.shipArraySqrRootLength * GameManager.instance.shipArraySqrRootLength];
 		loadPlayer (GameManager.instance.savedPixels);
 
 		loadEnemies ();
@@ -18,16 +18,16 @@ public class CombatManager : MonoBehaviour
 		loadAsteroids ();
 	}
 
-	private void loadPlayer(SavedPixel[] savedPixels)
+	private void loadPlayer(CompressedPixelData[] savedPixels)
     {
         Vector3 averagePosition = Vector3.zero;
         int averagePositionCount = 0;
         for (int i = 0; i < savedPixels.Length - 1; i++)
         {
-            SavedPixel pixel = savedPixels[i];
+            CompressedPixelData pixel = savedPixels[i];
             if (savedPixels[i] != null)
             {
-                SavedPixel savedPixel = savedPixels[i];
+                CompressedPixelData savedPixel = savedPixels[i];
                 ShipPlayerPixel buildPixel = new GameObject().AddComponent<ShipPlayerPixel>();
                 buildPixel.transform.name = "Pixel_x" + savedPixel.coordinates.x + "y" + savedPixel.coordinates.y;
                 buildPixel.pixelType = savedPixel.pixelType;
@@ -128,17 +128,9 @@ public class CombatManager : MonoBehaviour
 		foreach(Transform childChild in child.transform){
 			ShipPlayerTurret spt = childChild.GetComponent<ShipPlayerTurret> ();
 			switch (spt.turretType) {
-			case Turret.Type.Small:
+			case Turret.Type.Normal:
 				TurretSquare smallTurretSquare = childChild.gameObject.AddComponent<TurretSquare>();
 				smallTurretSquare.init();
-				break;
-			case Turret.Type.Medium:
-				TurretSquare mediumTurretSquare = childChild.gameObject.AddComponent<TurretSquare>();
-				mediumTurretSquare.init();
-				break;
-			case Turret.Type.Large:
-				TurretSquare largeTurretSquare = childChild.gameObject.AddComponent<TurretSquare>();
-				largeTurretSquare.init();
 				break;
 			}
 		}

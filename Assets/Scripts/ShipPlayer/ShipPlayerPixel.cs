@@ -30,15 +30,15 @@ public class ShipPlayerPixel : MonoBehaviour {
 
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         if(pixelType == Pixel.Type.Hardpoint)
-            spriteRenderer.sprite = GameManager.instance.spritePixelHardpoint;
+            spriteRenderer.sprite = GameManager.instance.sprHardpoint[0];
         else if (pixelType == Pixel.Type.Armour)
-			spriteRenderer.sprite = GameManager.instance.spritePixelArmour;
+			spriteRenderer.sprite = GameManager.instance.sprArmour[0];
         else if (pixelType == Pixel.Type.Engine)
-			spriteRenderer.sprite = GameManager.instance.spritePixelEngine;
+			spriteRenderer.sprite = GameManager.instance.sprEngine[0];
         else if (pixelType == Pixel.Type.Power)
-			spriteRenderer.sprite = GameManager.instance.spritePixelPower;
+			spriteRenderer.sprite = GameManager.instance.sprPower[0];
         else if (pixelType == Pixel.Type.Scrap)
-			spriteRenderer.sprite = GameManager.instance.spritePixelScrap;
+			spriteRenderer.sprite = GameManager.instance.sprScrap[0];
     }
 
     public void GetSurroundingPixels()
@@ -71,7 +71,7 @@ public class ShipPlayerPixel : MonoBehaviour {
     public void GetAdjacentPixel( int _xOffset, int _yOffset)
     {
         Vector2 offsetVector = new Vector2(_xOffset, _yOffset);
-        int offsetIndex = index + (int)offsetVector.x + ((int)offsetVector.y * GameManager.instance.gridSize);
+        int offsetIndex = index + (int)offsetVector.x + ((int)offsetVector.y * GameManager.instance.shipArraySqrRootLength);
 
         if (offsetVector == new Vector2(-1, -1))
         {
