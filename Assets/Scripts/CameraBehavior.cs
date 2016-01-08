@@ -59,19 +59,26 @@ public class CameraBehavior : MonoBehaviour
     public void Init()
     {
         camera = GetComponent<Camera>();
+        camera.orthographic = true;
+
+        if (UICanvas == null)
+            UICanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
 
         UICanvasScaler = UICanvas.GetComponent<CanvasScaler>();
         screenDimensions = UICanvasScaler.referenceResolution;
         aspectRatio = screenDimensions.x / screenDimensions.y;
 
-        //Calculate any scene specific boundaries.
         if (GameManager.instance.state == GameManager.GameState.ShipBuilder)
         {
             sceneBounds_BL = Vector2.zero;
             sceneBounds_TR = new Vector2(GameManager.instance.shipArraySqrRootLength, GameManager.instance.shipArraySqrRootLength);
             CalculateViewBounds();
         }
+
+        zoom = 5f;
+
     }
+
 
     //Update the camera.
     public void OnUpdate()
@@ -80,13 +87,13 @@ public class CameraBehavior : MonoBehaviour
         //Choose the centre of zooming.
         if (GameManager.instance.state == GameManager.GameState.ShipBuilder)
         {
-            zoomFocus = InputManager.instance.inputPosition;
+            zoomFocus = GameManager.instance.input.inputPosition;
         }
 
         //Update zoom based on input & conditions.
         float zoomIncr;
         if (canZoomOrPan)
-            zoomIncr = InputManager.instance.inputSpread * zoom * zoomSensitivity;
+            zoomIncr = GameManager.instance.input.inputSpread * zoom * zoomSensitivity;
         else
             zoomIncr = 0f;
 
@@ -95,28 +102,31 @@ public class CameraBehavior : MonoBehaviour
         //Calculate the constraining edges of the view.
         CalculateViewBounds();
 
-        //Calculate the view dimensions as a normalised percentage.
-        Vector2 viewWindowDimensions_normalised;
-        viewWindowDimensions_normalised.x = viewBounds.rect.width * ((100 / screenDimensions.x)) * 0.01f;
-        viewWindowDimensions_normalised.y = viewBounds.rect.height * ((100 / screenDimensions.y)) * 0.01f;
+        if (viewBounds != null)
+        {
+            //Calculate the view dimensions as a normalised percentage.
+            Vector2 viewWindowDimensions_normalised;
+            viewWindowDimensions_normalised.x = viewBounds.rect.width * ((100 / screenDimensions.x)) * 0.01f;
+            viewWindowDimensions_normalised.y = viewBounds.rect.height * ((100 / screenDimensions.y)) * 0.01f;
 
-        //Calculate the view dimensions in worldspace. (as a function of zoom)
-        Vector2 viewWindowDimensions_worldSpace;
-        viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f * viewWindowDimensions_normalised.x;
-        viewWindowDimensions_worldSpace.y = zoom * 2f * viewWindowDimensions_normalised.y;
-        
-        //Calculate zoomMax.
-        if (viewWindowDimensions_worldSpace.y < viewWindowDimensions_worldSpace.x)
-            zoomMax = (sceneBounds_TR.x - sceneBounds_BL.x) / (aspectRatio * 2f * viewWindowDimensions_normalised.x);
-        else
-            zoomMax = (sceneBounds_TR.y - sceneBounds_BL.y) / (2f * viewWindowDimensions_normalised.y);
+            //Calculate the view dimensions in worldspace. (as a function of zoom)
+            Vector2 viewWindowDimensions_worldSpace;
+            viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f * viewWindowDimensions_normalised.x;
+            viewWindowDimensions_worldSpace.y = zoom * 2f * viewWindowDimensions_normalised.y;
 
-        if (zoom > zoomMax)
-            zoom = zoomMax;
+            //Calculate zoomMax.
+            if (viewWindowDimensions_worldSpace.y < viewWindowDimensions_worldSpace.x)
+                zoomMax = (sceneBounds_TR.x - sceneBounds_BL.x) / (aspectRatio * 2f * viewWindowDimensions_normalised.x);
+            else
+                zoomMax = (sceneBounds_TR.y - sceneBounds_BL.y) / (2f * viewWindowDimensions_normalised.y);
+
+            if (zoom > zoomMax)
+                zoom = zoomMax;
+        }
 
         //Update pan based on input
-        Vector2 draggedPanIncr = InputManager.instance.inputDrag * zoom * panSensitivity;
-        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (InputManager.instance.inputSpread * zoomSensitivity);
+        Vector2 draggedPanIncr = GameManager.instance.input.inputDrag * zoom * panSensitivity;
+        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (GameManager.instance.input.inputSpread * zoomSensitivity);
 
         Vector2 panIncr;
 

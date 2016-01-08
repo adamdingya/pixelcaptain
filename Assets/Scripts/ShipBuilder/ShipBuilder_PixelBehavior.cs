@@ -6,7 +6,6 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
 
     //General references.
     GameManager game;
-    ShipBuilder_Ship ship;
     InputManager input;
     ShipBuilder_Manager builder;
 
@@ -51,7 +50,6 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     public void Init(GameManager _game, int _index, Pixel.Type _type, Vector2 _coordinates, int _spriteVariantIndex)
     {
         game = _game;
-        ship = game.ship;
         builder = game.builder;
         type = _type;
         index = _index;
@@ -63,7 +61,7 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
 
         //Get the surrounding pixels.
-        GetSurroundingPixels(ship.pixels);
+        GetSurroundingPixels(builder.pixels);
 
         //Manage sprite sorting layer (core pixel overlaps).
         if (type != Pixel.Type.Core)
@@ -75,35 +73,35 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         if (_type == Pixel.Type.Armour)
         {
             sprite = game.sprArmour[_spriteVariantIndex];
-            ship.usedArmourPixelsCount++;
+            builder.usedArmourPixelsCount++;
         }
         if (_type == Pixel.Type.Engine)
         {
             sprite = game.sprEngine[_spriteVariantIndex];
-            ship.usedEnginePixelsCount++;
+            builder.usedEnginePixelsCount++;
         }
         if (_type == Pixel.Type.Hardpoint)
         {
             sprite = game.sprHardpoint[_spriteVariantIndex];
-            ship.usedHardpointPixelsCount++;
+            builder.usedHardpointPixelsCount++;
         }
         if (_type == Pixel.Type.Power)
         {
             sprite = game.sprPower[_spriteVariantIndex];
-            ship.usedPowerPixelsCount++;
+            builder.usedPowerPixelsCount++;
         }
         if (_type == Pixel.Type.Scrap)
         {
             sprite = game.sprScrap[_spriteVariantIndex];
-            ship.usedScrapPixelsCount++;
+            builder.usedScrapPixelsCount++;
         }
         else if (_type == Pixel.Type.Core)
         {
-            sprite = game.sprCore[ship.coreSpriteVariant];
+            sprite = game.sprCore[builder.coreSpriteVariant];
         }
 
         //Assign self to the pixel array.
-        ship.pixels[index] = this;
+        builder.pixels[index] = this;
 
     }
 
@@ -111,7 +109,7 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     public void Destroy()
     {
         //Remove own reference from the ship array.
-        ship.pixels[index] = null;
+        builder.pixels[index] = null;
 
         //Remove reference from surrounding links (saves recalculating them after every action).
         if (pixel_belowLeft != null)
@@ -137,15 +135,15 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
 
         //Recycle the pixel count.
         if (type == Pixel.Type.Armour)
-            ship.usedArmourPixelsCount--;
+            builder.usedArmourPixelsCount--;
         if (type == Pixel.Type.Engine)
-            ship.usedEnginePixelsCount--;
+            builder.usedEnginePixelsCount--;
         if (type == Pixel.Type.Hardpoint)
-            ship.usedHardpointPixelsCount--;
+            builder.usedHardpointPixelsCount--;
         if (type == Pixel.Type.Power)
-            ship.usedPowerPixelsCount--;
+            builder.usedPowerPixelsCount--;
         if (type == Pixel.Type.Scrap)
-            ship.usedScrapPixelsCount--;
+            builder.usedScrapPixelsCount--;
 
         //Destroy.
         GameObject.Destroy(gameObject);

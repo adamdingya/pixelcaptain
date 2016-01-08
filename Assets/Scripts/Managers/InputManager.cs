@@ -12,7 +12,6 @@ public class InputManager : MonoBehaviour
     /// </summary>
 
     //General references.
-	public static InputManager instance = null;
     GameManager game;
     CameraBehavior camera;
 
@@ -44,19 +43,6 @@ public class InputManager : MonoBehaviour
 
     public void Init()
     {
-
-        //Singleton Pattern.
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-        DontDestroyOnLoad(gameObject);
-
-
         camera = GameManager.instance.camera;
     }
 
@@ -206,7 +192,6 @@ public class InputManager : MonoBehaviour
             }
         }
     }
-
 
     //Non-mobile OS input (for testing).
     public Vector2 mousePos;

@@ -12,7 +12,7 @@ public class MainMenuManager : MonoBehaviour {
 		GameManager.instance.setGameState (GameManager.GameState.MainMenu);
 
 		startButton = GameObject.Find ("Start").GetComponent<Button> ();
-		startButton.onClick.AddListener (() => GameManager.instance.loadScene("ShipBuilder"));
+		startButton.onClick.AddListener (() => GameManager.instance.loadScene("Builder"));
 
 		startButton = GameObject.Find ("CaptainLog").GetComponent<Button> ();
 		startButton.onClick.AddListener (() => GameManager.instance.loadScene("CaptainLog"));

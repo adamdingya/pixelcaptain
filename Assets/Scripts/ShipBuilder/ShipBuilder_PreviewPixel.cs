@@ -12,7 +12,6 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
     GameManager game;
     InputManager input;
     ShipBuilder_Manager shipBuilder;
-    ShipBuilder_Ship ship;
     SpriteRenderer spriteRenderer;
 
     //Special tool sprites, not defined by a ship pixel type.
@@ -49,7 +48,6 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
         game = _game;
         input = game.input;
         shipBuilder = game.builder;
-        ship = game.ship;
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "PreviewPixel";
 

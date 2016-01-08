@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour {
     public CameraBehavior camera;
 
     //ShipBuilder state references.
-    public ShipBuilder_Ship ship;
     public ShipBuilder_Manager builder;
 
     //Current game state
@@ -42,6 +41,7 @@ public class GameManager : MonoBehaviour {
     public static int powerPixels = 999;
     public static int enginePixels = 999;
 
+
     void Awake () {	
         	
         //Singleton pattern.
@@ -57,46 +57,71 @@ public class GameManager : MonoBehaviour {
         if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.OSXPlayer)
             NON_MOBILE_PLATFORM = false;
 
-        //General Awake() methods.
-        input.Init();
-        camera.Init();
-
-        //ShipBuilder state Awake() methods.
-        if (state == GameState.ShipBuilder)
-        {
-            ship.Init();
-            builder.Init();
-        }
-
     }
-	
+
     void Update()
     {
-        //Update input specific to platform.
+        bool generateCamera = false;
+        bool generateInput = false;
+
+        if (camera == null)
+        {
+            generateCamera = true;
+            camera = new GameObject().AddComponent<CameraBehavior>();
+            camera.gameObject.AddComponent<Camera>();
+            camera.gameObject.transform.name = "Camera";
+            
+        }
+
+        if (input == null)
+        {
+            generateInput = true;
+            input = new GameObject().AddComponent<InputManager>();
+            input.gameObject.transform.name = "InputManager";
+        }
+
+        if (generateCamera)
+            camera.Init();
+        if (generateInput)
+            input.Init();
+
+        
         if (!NON_MOBILE_PLATFORM)
             input.GetInput();
         else
             input.GetInputPC();
-
-        //Update camera
         camera.OnUpdate();
 
-        //ShipBuilder specific updates.
+
         if (state == GameState.ShipBuilder)
         {
+            camera.viewBounds = GameObject.Find("GridWindow").GetComponent<RectTransform>();
+            if (builder == null)
+            {
+                builder = GameObject.Find("SHIP_BUILDER").GetComponent<ShipBuilder_Manager>();
+                builder.Init();
+            }
             builder.OnUpdate();
         }
+
+
+
+
+
     }
 
-	public void loadScene (string scene){
+	public void loadScene (string scene)
+    {
 		Application.LoadLevel (scene);
 	}
 
-	public void setGameState (GameState _state){
+	public void setGameState (GameState _state)
+    {
 		this.state = _state;
 	}
 
-	public void exportShip (CompressedPixelData[] _savedPixels){
+	public void exportShip (CompressedPixelData[] _savedPixels)
+    {
 		this.savedPixels = _savedPixels;
 	}
 }
