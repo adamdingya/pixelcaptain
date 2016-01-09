@@ -28,7 +28,6 @@ GameObject:
   - 212: {fileID: 21293770}
   - 50: {fileID: 5035762}
   - 60: {fileID: 6038854}
-  - 114: {fileID: 11494190}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -114,17 +113,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullet: {fileID: 5098826, guid: 7dd5dc8a46c1a524caaf4785c29247d9, type: 2}
---- !u!114 &11494190
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 108602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 645ff076ccb696244974a40481f2be31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &21217624
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -143,9 +131,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_MinimumChartSize: 4
   m_AutoUVMaxDistance: .5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
@@ -171,9 +157,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_MinimumChartSize: 4
   m_AutoUVMaxDistance: .5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}

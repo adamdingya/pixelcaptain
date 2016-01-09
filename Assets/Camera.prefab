@@ -1,18 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &123690
+--- !u!1 &196676
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 462586}
-  - 20: {fileID: 2094768}
-  - 92: {fileID: 9224590}
-  - 124: {fileID: 12402618}
-  - 81: {fileID: 8122784}
-  - 114: {fileID: 11468062}
+  - 4: {fileID: 498568}
+  - 20: {fileID: 2038050}
+  - 92: {fileID: 9211638}
+  - 124: {fileID: 12496648}
+  - 81: {fileID: 8196278}
+  - 114: {fileID: 11407956}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -20,28 +20,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &462586
+--- !u!4 &498568
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123690}
+  m_GameObject: {fileID: 196676}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!20 &2094768
+--- !u!20 &2038050
 Camera:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123690}
+  m_GameObject: {fileID: 196676}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: .0196078438}
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: .192156866, g: .301960796, b: .474509805, a: .0196078438}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -52,7 +52,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 1
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -66,29 +66,29 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: .0219999999
   m_StereoMirrorMode: 0
---- !u!81 &8122784
+--- !u!81 &8196278
 AudioListener:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123690}
+  m_GameObject: {fileID: 196676}
   m_Enabled: 1
---- !u!92 &9224590
+--- !u!92 &9211638
 Behaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123690}
+  m_GameObject: {fileID: 196676}
   m_Enabled: 1
---- !u!114 &11468062
+--- !u!114 &11407956
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123690}
+  m_GameObject: {fileID: 196676}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 445f37adda16b0848aa21a8de2f5e43e, type: 3}
+  m_Script: {fileID: 11500000, guid: dc09feb66b0cbf94d82bc1c66e409635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   game: {fileID: 0}
@@ -101,7 +101,6 @@ MonoBehaviour:
   viewBounds_BL_toPan: {x: 0, y: 0}
   viewBounds_TR_toPan: {x: 0, y: 0}
   viewBounds_worldSpace:
-    serializedVersion: 2
     x: 0
     y: 0
     width: 0
@@ -118,12 +117,12 @@ MonoBehaviour:
   panSensitivity: 1
   screenDimensions: {x: 0, y: 0}
   aspectRatio: 0
---- !u!124 &12402618
+--- !u!124 &12496648
 Behaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123690}
+  m_GameObject: {fileID: 196676}
   m_Enabled: 1
 --- !u!1001 &100100000
 Prefab:
@@ -131,20 +130,8 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: m_BackGroundColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_BackGroundColor.b
-      value: 0
-      objectReference: {fileID: 0}
+    m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 123690}
+  m_RootGameObject: {fileID: 196676}
   m_IsPrefabParent: 1

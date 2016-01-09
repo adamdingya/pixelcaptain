@@ -9,8 +9,8 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
     /// </summary>
 
     //Scene References
-    GameManager game;
-    InputManager input;
+    Game_Manager game;
+    Input_Manager input;
     ShipBuilder_Manager shipBuilder;
     SpriteRenderer spriteRenderer;
 
@@ -42,12 +42,12 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
     }
 
     //Initialise the preview pixel.
-    public void Init(GameManager _game)
+    public void Init()
     {
         //Get scene references.
-        game = _game;
+        game = Game_Manager.instance;
         input = game.input;
-        shipBuilder = game.builder;
+        shipBuilder = game.shipBuilderManager; 
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "PreviewPixel";
 

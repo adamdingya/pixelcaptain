@@ -10,6 +10,8 @@ public class CameraBehavior : MonoBehaviour
     /// </summary>
 
     //General references.
+    public Game_Manager game;
+    public Input_Manager input;
     public Camera camera;
 
     //UI references.
@@ -31,25 +33,30 @@ public class CameraBehavior : MonoBehaviour
     public Vector2 viewBounds_BL_toPan;
     public Vector2 viewBounds_TR_toPan;
 
+    //Variables used for camera calculations.
+    Vector2 viewWindowDimensions_normalised;
+    Vector2 viewWindowDimensions_worldSpace;
+
     public Rect viewBounds_worldSpace; //Final calculated Rect at end of update. (for accurate window positions).
 
     //Scene boundaries in world-space.
     public Vector2 sceneBounds_BL;
-    public Vector2 sceneBounds_TR;
+    public Vector2 sceneBounds_TR = new Vector2(100f, 100f);
 
     //Control zoom and pan from another script (allows for creation of two-touch areas that don't initiate camera movement.
-    public bool canZoomOrPan = false;
+    public bool canZoomOrPan = true;
 
     //Zoom parameters (zoom is equivilant to half the world space height of the camera view).
-    public float zoom;
-    public float zoomSensitivity;
+    public float zoom = 5f;
+    public float zoomSensitivity = 2f;
     public float zoomMax;
 
     public Vector2 zoomFocus; //Zoom relative to this position (used for pinch-to-zoom e.t.c).
+    public Transform zoomFocusObj; //Object transform for zoom to focus on.
 
     //Pan parameters.
     public Vector2 pan;
-    public float panSensitivity;
+    public float panSensitivity = 1f;
 
     //Desired reference dimensions (independant of device scaling)
     public Vector2 screenDimensions;
@@ -58,42 +65,34 @@ public class CameraBehavior : MonoBehaviour
     //Initialise the camera behvaior, assigning in references.
     public void Init()
     {
+        canZoomOrPan = false;
+
+        game = Game_Manager.instance;
+        input = game.input;
         camera = GetComponent<Camera>();
-        camera.orthographic = true;
 
-        if (UICanvas == null)
-            UICanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
-
+        UICanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
         UICanvasScaler = UICanvas.GetComponent<CanvasScaler>();
         screenDimensions = UICanvasScaler.referenceResolution;
         aspectRatio = screenDimensions.x / screenDimensions.y;
 
-        if (GameManager.instance.state == GameManager.GameState.ShipBuilder)
-        {
-            sceneBounds_BL = Vector2.zero;
-            sceneBounds_TR = new Vector2(GameManager.instance.shipArraySqrRootLength, GameManager.instance.shipArraySqrRootLength);
-            CalculateViewBounds();
-        }
-
-        zoom = 5f;
-
+        CalculateViewBounds();
     }
-
 
     //Update the camera.
     public void OnUpdate()
     {
 
         //Choose the centre of zooming.
-        if (GameManager.instance.state == GameManager.GameState.ShipBuilder)
-        {
-            zoomFocus = GameManager.instance.input.inputPosition;
-        }
+        if (zoomFocusObj == null)
+            zoomFocus = input.inputPosition;
+        else
+            zoomFocus = zoomFocusObj.position;
 
         //Update zoom based on input & conditions.
         float zoomIncr;
         if (canZoomOrPan)
-            zoomIncr = GameManager.instance.input.inputSpread * zoom * zoomSensitivity;
+            zoomIncr = input.inputSpread * zoom * zoomSensitivity;
         else
             zoomIncr = 0f;
 
@@ -101,32 +100,19 @@ public class CameraBehavior : MonoBehaviour
 
         //Calculate the constraining edges of the view.
         CalculateViewBounds();
+        
+        //Calculate zoomMax.
+        if (viewWindowDimensions_worldSpace.y < viewWindowDimensions_worldSpace.x)
+            zoomMax = (sceneBounds_TR.x - sceneBounds_BL.x) / (aspectRatio * 2f * viewWindowDimensions_normalised.x);
+        else
+            zoomMax = (sceneBounds_TR.y - sceneBounds_BL.y) / (2f * viewWindowDimensions_normalised.y);
 
-        if (viewBounds != null)
-        {
-            //Calculate the view dimensions as a normalised percentage.
-            Vector2 viewWindowDimensions_normalised;
-            viewWindowDimensions_normalised.x = viewBounds.rect.width * ((100 / screenDimensions.x)) * 0.01f;
-            viewWindowDimensions_normalised.y = viewBounds.rect.height * ((100 / screenDimensions.y)) * 0.01f;
-
-            //Calculate the view dimensions in worldspace. (as a function of zoom)
-            Vector2 viewWindowDimensions_worldSpace;
-            viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f * viewWindowDimensions_normalised.x;
-            viewWindowDimensions_worldSpace.y = zoom * 2f * viewWindowDimensions_normalised.y;
-
-            //Calculate zoomMax.
-            if (viewWindowDimensions_worldSpace.y < viewWindowDimensions_worldSpace.x)
-                zoomMax = (sceneBounds_TR.x - sceneBounds_BL.x) / (aspectRatio * 2f * viewWindowDimensions_normalised.x);
-            else
-                zoomMax = (sceneBounds_TR.y - sceneBounds_BL.y) / (2f * viewWindowDimensions_normalised.y);
-
-            if (zoom > zoomMax)
-                zoom = zoomMax;
-        }
+        if (zoom > zoomMax)
+            zoom = zoomMax;
 
         //Update pan based on input
-        Vector2 draggedPanIncr = GameManager.instance.input.inputDrag * zoom * panSensitivity;
-        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (GameManager.instance.input.inputSpread * zoomSensitivity);
+        Vector2 draggedPanIncr = input.inputDrag * zoom * panSensitivity;
+        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (input.inputSpread * zoomSensitivity);
 
         Vector2 panIncr;
 
@@ -189,7 +175,7 @@ public class CameraBehavior : MonoBehaviour
     }
 
     //Calculate the view boundaries in world-space.
-    void CalculateViewBounds()
+    public void CalculateViewBounds()
     {
         //Define the constraining edges of the view.
         if (viewBounds != null)
@@ -199,6 +185,13 @@ public class CameraBehavior : MonoBehaviour
             viewBounds_BL.y = ScreenToWorldPosition(viewBounds.anchoredPosition / screenScale.y).y;
             viewBounds_TR.x = ScreenToWorldPosition((viewBounds.anchoredPosition + new Vector2(viewBounds.rect.width, viewBounds.rect.height)) / screenScale.x).x;
             viewBounds_TR.y = ScreenToWorldPosition((viewBounds.anchoredPosition + new Vector2(viewBounds.rect.width, viewBounds.rect.height)) / screenScale.y).y;
+
+            //Calculate the view dimensions in worldspace as a function of zoom (Required for calculating the maximum zoom).
+            viewWindowDimensions_normalised.x = viewBounds.rect.width * ((100 / screenDimensions.x)) * 0.01f;
+            viewWindowDimensions_normalised.y = viewBounds.rect.height * ((100 / screenDimensions.y)) * 0.01f;
+
+            viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f * viewWindowDimensions_normalised.x;
+            viewWindowDimensions_worldSpace.y = zoom * 2f * viewWindowDimensions_normalised.y;
         }
         else
         {
@@ -207,6 +200,12 @@ public class CameraBehavior : MonoBehaviour
             viewBounds_BL.y = ScreenToWorldPosition(Vector2.zero / screenScale.y).y;
             viewBounds_TR.x = ScreenToWorldPosition(screenDimensions / screenScale.x).x;
             viewBounds_TR.y = ScreenToWorldPosition(screenDimensions / screenScale.y).y;
+
+            //Set the view dimensions in worldspace as a function of zoom.
+            viewWindowDimensions_normalised = new Vector2(1f, 1f);
+
+            viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f;
+            viewWindowDimensions_worldSpace.y = zoom * 2f;
         }
     }    
 

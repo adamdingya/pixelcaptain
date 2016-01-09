@@ -31,7 +31,7 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
     public ShipBuilder_PixelBehavior mountPixel;
 
     //Initialise created turret.
-    public void Init(GameManager game, Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int spriteVariantIndex)
+    public void Init(Game_Manager game, Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int spriteVariantIndex)
     {
         _mountPixel.turret = this; //Set mount pixel's turret reference to this.
         transform.position = _mountPixel.transform.position;

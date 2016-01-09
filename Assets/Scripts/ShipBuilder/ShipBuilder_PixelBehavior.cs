@@ -5,8 +5,8 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
 {
 
     //General references.
-    GameManager game;
-    InputManager input;
+    Game_Manager game;
+    Input_Manager input;
     ShipBuilder_Manager builder;
 
     //Instance pixel type.
@@ -47,10 +47,10 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     public ShipBuilder_PixelBehavior pixel_aboveRight;
 
     //Initialise the pixel.
-    public void Init(GameManager _game, int _index, Pixel.Type _type, Vector2 _coordinates, int _spriteVariantIndex)
+    public void Init(int _index, Pixel.Type _type, Vector2 _coordinates, int _spriteVariantIndex)
     {
-        game = _game;
-        builder = game.builder;
+        game = Game_Manager.instance;
+        builder = game.shipBuilderManager;
         type = _type;
         index = _index;
         coordinates = _coordinates;
@@ -108,7 +108,7 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     //Destroy pixel.
     public void Destroy()
     {
-        //Remove own reference from the ship array.
+        //Remove own reference from the builder array.
         builder.pixels[index] = null;
 
         //Remove reference from surrounding links (saves recalculating them after every action).

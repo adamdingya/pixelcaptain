@@ -2,9 +2,21 @@
 using System.Collections;
 
 public class DefaultValues : MonoBehaviour {
-	
-	// Armour square attributes
-	public static float DEFAULT_ARMOUR_MASS = 20f;
+
+
+
+    public static string DEFAULT_SHIP_NAME = "My Ship";
+
+    public static int DEFAULT_SCRAP_PIXEL_COUNT = 999;
+    public static int DEFAULT_ARMOUR_PIXEL_COUNT = 999;
+    public static int DEFAULT_POWER_PIXEL_COUNT = 999;
+    public static int DEFAULT_HARDPOINT_PIXEL_COUNT = 999;
+    public static int DEFAULT_ENGINE_PIXEL_COUNT = 999;
+
+
+
+    // Armour square attributes
+    public static float DEFAULT_ARMOUR_MASS = 20f;
 	public static float DEFAULT_ARMOUR_HEALTH = 200f;
 
 	// Scrap square attributes

@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class ShipPlayerPixel : MonoBehaviour {
-	
-    CombatManager combatManager;
+
+    Combat_Manager combatManager;
     public Pixel.Type pixelType;
 
     public Turret.Type turretType;
@@ -23,22 +23,22 @@ public class ShipPlayerPixel : MonoBehaviour {
     public Vector2 coordinates;
     public int index;
 
-	public void init(CombatManager combatManager, Turret.Type _turretType)
+	public void init(Combat_Manager combatManager, Turret.Type _turretType)
     {
 		this.combatManager = combatManager;
         turretType = _turretType;
 
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         if(pixelType == Pixel.Type.Hardpoint)
-            spriteRenderer.sprite = GameManager.instance.sprHardpoint[0];
+            spriteRenderer.sprite = Game_Manager.instance.sprHardpoint[0];
         else if (pixelType == Pixel.Type.Armour)
-			spriteRenderer.sprite = GameManager.instance.sprArmour[0];
+			spriteRenderer.sprite = Game_Manager.instance.sprArmour[0];
         else if (pixelType == Pixel.Type.Engine)
-			spriteRenderer.sprite = GameManager.instance.sprEngine[0];
+			spriteRenderer.sprite = Game_Manager.instance.sprEngine[0];
         else if (pixelType == Pixel.Type.Power)
-			spriteRenderer.sprite = GameManager.instance.sprPower[0];
+			spriteRenderer.sprite = Game_Manager.instance.sprPower[0];
         else if (pixelType == Pixel.Type.Scrap)
-			spriteRenderer.sprite = GameManager.instance.sprScrap[0];
+			spriteRenderer.sprite = Game_Manager.instance.sprScrap[0];
     }
 
     public void GetSurroundingPixels()
@@ -71,7 +71,7 @@ public class ShipPlayerPixel : MonoBehaviour {
     public void GetAdjacentPixel( int _xOffset, int _yOffset)
     {
         Vector2 offsetVector = new Vector2(_xOffset, _yOffset);
-        int offsetIndex = index + (int)offsetVector.x + ((int)offsetVector.y * GameManager.instance.shipArraySqrRootLength);
+        int offsetIndex = index + (int)offsetVector.x + ((int)offsetVector.y * Game_Manager.instance.shipArraySqrRootLength);
 
         if (offsetVector == new Vector2(-1, -1))
         {
