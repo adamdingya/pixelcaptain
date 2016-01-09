@@ -3,18 +3,27 @@ using System.Collections;
 
 public class Combat_Manager : MonoBehaviour
 {
-    public ShipPlayerPixel[] shipPixels; //Store all pixelsArray as an array.
+    Game_Manager game;
+    CameraBehavior camera;
+
+    public Combat_PixelBehavior[] shipPixels; //Store all pixelsArray as an array.
 	public int asteroidCount;
 
 	public void Init()
     {
-		shipPixels = new ShipPlayerPixel[Game_Manager.instance.shipArraySqrRootLength * Game_Manager.instance.shipArraySqrRootLength];
+        game = Game_Manager.instance;
+        camera = game.camera;
+        camera.zoom = 100f;
+        camera.pan = DefaultValues.DEFAULT_SHIP_SPAWN_POSITION;
+        shipPixels = new Combat_PixelBehavior[Game_Manager.instance.shipArraySqrRootLength * Game_Manager.instance.shipArraySqrRootLength];
 		loadPlayer (Game_Manager.instance.savedPixels);
 
 		loadEnemies ();
 
 		asteroidCount = DefaultValues.DEFAULT_ASTEROID_COUNT;
 		loadAsteroids ();
+
+        
 	}
 
     public void OnUpdate()
@@ -22,7 +31,7 @@ public class Combat_Manager : MonoBehaviour
 
     }
 
-	void loadPlayer(CompressedPixelData[] savedPixels)
+    void loadPlayer(CompressedPixelData[] savedPixels)
     {
         Vector3 averagePosition = Vector3.zero;
         int averagePositionCount = 0;
@@ -32,7 +41,7 @@ public class Combat_Manager : MonoBehaviour
             if (savedPixels[i] != null)
             {
                 CompressedPixelData savedPixel = savedPixels[i];
-                ShipPlayerPixel buildPixel = new GameObject().AddComponent<ShipPlayerPixel>();
+                Combat_PixelBehavior buildPixel = new GameObject().AddComponent<Combat_PixelBehavior>();
                 buildPixel.transform.name = "Pixel_x" + savedPixel.coordinates.x + "y" + savedPixel.coordinates.y;
                 buildPixel.pixelType = savedPixel.pixelType;
                 buildPixel.turretType = savedPixel.turretType;
@@ -45,8 +54,8 @@ public class Combat_Manager : MonoBehaviour
                 {
                     if (buildPixel.turretType != Turret.Type.None)
                     {
-                        ShipPlayerTurret turret;
-                        turret = new GameObject().AddComponent<ShipPlayerTurret>();
+                        Combat_TurretBehavior turret;
+                        turret = new GameObject().AddComponent<Combat_TurretBehavior>();
                         turret.turretType = buildPixel.turretType;
                         turret.transform.position = buildPixel.transform.position;
                         turret.transform.parent = buildPixel.transform;
@@ -74,7 +83,7 @@ public class Combat_Manager : MonoBehaviour
         //SetParents & Get surrounding pixels
         for (int i = 0; i < shipPixels.Length - 1; i++)
         {
-            ShipPlayerPixel pixel = shipPixels[i];
+            Combat_PixelBehavior pixel = shipPixels[i];
             if (pixel != null)
             {
                 pixel.transform.parent = shipParent.transform;
@@ -82,7 +91,7 @@ public class Combat_Manager : MonoBehaviour
             }
         }
 
-        shipParent.transform.position = Vector3.zero;
+        shipParent.transform.position = DefaultValues.DEFAULT_SHIP_SPAWN_POSITION;
 
 		// Adding controller to the ship
 		shipParent.AddComponent<ShipController> ();
@@ -105,7 +114,7 @@ public class Combat_Manager : MonoBehaviour
 	}
 
 	void addProperties(Transform child){
-		ShipPlayerPixel sps = child.GetComponent<ShipPlayerPixel>();
+		Combat_PixelBehavior sps = child.GetComponent<Combat_PixelBehavior>();
 		switch (sps.pixelType) {
 		case Pixel.Type.Power:
 			PowerSquare powerSquare = child.gameObject.AddComponent<PowerSquare>();
@@ -130,7 +139,7 @@ public class Combat_Manager : MonoBehaviour
 		}
 
 		foreach(Transform childChild in child.transform){
-			ShipPlayerTurret spt = childChild.GetComponent<ShipPlayerTurret> ();
+			Combat_TurretBehavior spt = childChild.GetComponent<Combat_TurretBehavior> ();
 			switch (spt.turretType) {
 			case Turret.Type.Small:
 				TurretSquare smallTurretSquare = childChild.gameObject.AddComponent<TurretSquare>();
@@ -141,10 +150,10 @@ public class Combat_Manager : MonoBehaviour
 	}
 
 	void loadAsteroids(){
-		Sprite[] asteroidSprites = Resources.LoadAll<Sprite>("Sprites/Asteroids/asteroids");
+		Sprite[] asteroidSprites = Resources.LoadAll<Sprite>("Sprites/asteroids");
 		for (int i=0; i<asteroidCount; i++) {
-			Vector3 screenPosition = Camera.main.ScreenToWorldPoint (new Vector3(Random.Range (0, Screen.width), Random.Range (0, Screen.height), -Camera.main.transform.position.z));
-			GameObject asteroid = Instantiate(Resources.Load ("Prefabs/Asteroid"), screenPosition, Quaternion.identity) as GameObject;
+			Vector3 position = new Vector3(Random.Range (0, camera.sceneBounds_TR.x), Random.Range (0, camera.sceneBounds_TR.y), -Camera.main.transform.position.z);
+			GameObject asteroid = Instantiate(Resources.Load ("Prefabs/Asteroid"), position, Quaternion.identity) as GameObject;
 			int randomAsteroidSprite = Random.Range(0, asteroidSprites.Length);
 			asteroid.GetComponent<SpriteRenderer>().sprite = asteroidSprites[randomAsteroidSprite];
 			PolygonCollider2D polygonCollider2D = asteroid.AddComponent<PolygonCollider2D>();

@@ -6,6 +6,11 @@ public class DefaultValues : MonoBehaviour {
     //Input.
     public static float DEFAULT_SPREAD_ANGLE_THRESHOLD = 40f; //The angle fingers have to move apart to define spreading rather than dragging.
 
+    //Builder.
+    public static float DEFAULT_INITIAL_CAMERA_ZOOM = 5f;
+
+    //Combat.
+    public static Vector3 DEFAULT_SHIP_SPAWN_POSITION = new Vector3(50f, 50f, 0f);
 
     //Turret weapon pixel costs;
     public static int DEFAULT_TURRET_SMALL_COST = 3;

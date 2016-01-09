@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShipPlayerTurret : MonoBehaviour
+public class Combat_TurretBehavior : MonoBehaviour
 {
     public Turret.Type turretType;
     public SpriteRenderer spriteRenderer;
-    public ShipPlayerPixel mountPixel;
+    public Combat_PixelBehavior mountPixel;
 
-    public void init(ShipPlayerPixel mountPixel)
+    public void init(Combat_PixelBehavior mountPixel)
     {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-        spriteRenderer.sortingLayerName = "Turrets";
+        spriteRenderer.sortingLayerName = "Turret";
 
 		if (turretType == Turret.Type.Small)
 			spriteRenderer.sprite = Game_Manager.instance.sprTurrets[0];

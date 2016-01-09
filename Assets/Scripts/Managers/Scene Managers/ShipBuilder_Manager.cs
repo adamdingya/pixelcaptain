@@ -88,8 +88,9 @@ public class ShipBuilder_Manager : MonoBehaviour
         //Initiliase the ship pixels array.
         pixels = new ShipBuilder_PixelBehavior[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
         coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
-
         corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, coreSpriteVariant);
+
+        camera.zoom = DefaultValues.DEFAULT_INITIAL_CAMERA_ZOOM;
         camera.pan = (Vector2)corePixel.transform.position + new Vector2((camera.viewBounds_TR.x - camera.viewBounds_BL.x) * 0.5f, 0f);
 
         camera.sceneBounds_BL = Vector2.zero;
@@ -106,7 +107,6 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     public void OnUpdate()
     {
-
         //If the touch is in the grid window.
         if (camera.viewBounds_worldSpace.Contains(game.input.inputPosition))
         {
@@ -307,7 +307,6 @@ public class ShipBuilder_Manager : MonoBehaviour
             if (previewPixel.hoveredPixel != null && previewPixel.hoveredPixel.type == Pixel.Type.Hardpoint)
             {
                 BuildTurret(shipBuilderTurretType, previewPixel.hoveredPixel, previewPixel.spriteVariantIndex);
-
             }
         }
         else if (shipBuilderTool == ShipBuilderTools.CorePixel)
@@ -520,7 +519,7 @@ public class ShipBuilder_Manager : MonoBehaviour
     {
         //If there is a pixel at the build position...
         if (_mountPixel.turret != null)
-            UnBuildTurret(_mountPixel.turret); //Recycle the current pixel.
+            _mountPixel.turret.Destroy();
 
         GameObject turretObj = new GameObject();
         turretObj.transform.position = _mountPixel.transform.position + new Vector3(0.5f, 0.5f, 0f);
@@ -533,22 +532,18 @@ public class ShipBuilder_Manager : MonoBehaviour
         return turret;
     }
 
-    public void UnBuildTurret(ShipBuilder_TurretBehavior _turret)
-    {
-        _turret.Destroy();
-
-        UpdatePixelCounters();
-    }
-
     public void SaveShip()
     {
-        game.savedPixels = new CompressedPixelData[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
-
         //Iterate through the pixels
         for (int index = 0; index < pixels.Length; index++)
         {
+            //Clear the saved array as you we go through it.
+            game.savedPixels[index] = null;
+
+            //Get the current saving pixel.
             ShipBuilder_PixelBehavior pixel = pixels[index];
 
+            //If it is an actual pixel, write it to the array.
             if (pixel != null)
             {
                 //Transfer pixel data.
@@ -561,16 +556,19 @@ public class ShipBuilder_Manager : MonoBehaviour
                 if (pixel.turret != null)
                     savedPixel.turretType = pixel.turret.type;
                 else
-                    savedPixel.turretType = Turret.Type.Small;
+                    savedPixel.turretType = Turret.Type.None;
+
 
                 game.savedPixels[index] = savedPixel;
+
             }
         }
     }
 
     public void LoadShip()
     {
-        pixels = new ShipBuilder_PixelBehavior[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
+
+        ClearBuilderGrid();
 
         //Iterate through the pixels
         for (int index = 0; index < game.savedPixels.Length; index++)
@@ -582,16 +580,25 @@ public class ShipBuilder_Manager : MonoBehaviour
                 ShipBuilder_PixelBehavior pixel = BuildPixel(savedPixel.pixelType, savedPixel.coordinates, savedPixel.spriteVariantIndex);
 
                 //Generate turret based on data.
-                if (savedPixel.turretType != Turret.Type.Small)
+                if (savedPixel.turretType != Turret.Type.None)
                     BuildTurret(savedPixel.turretType, pixel, 0);
 
                 pixels[index] = pixel;
+
+                //Set the corePixel.
+                if (pixel.type == Pixel.Type.Core)
+                {
+                    corePixel = pixels[index];
+                    coreCoordinates = corePixel.coordinates;
+                }
             }
         }
     }
 
     public void TestShip()
     {
+        SaveShip();
+        game.loadScene("Combat");
     }
 
     public void ChangeTurretType(int increment)
@@ -622,4 +629,29 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
     }
 
+    //Clear the grid and reset the core pixel (called by UI).
+    public void ClearGridAction()
+    {
+        ClearBuilderGrid();
+        coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
+        corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, coreSpriteVariant);
+    }
+
+    //Clear the grid.
+    void ClearBuilderGrid()
+    {
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            ShipBuilder_PixelBehavior currentPixel = pixels[i];
+            if (currentPixel != null)
+            {
+                //Destroy core pixels.
+                if (currentPixel.type == Pixel.Type.Core)
+                    currentPixel.Destroy();
+
+                UnBuildPixel(currentPixel);
+            }
+        }
+        ChangeTool("None");
+    }
 }

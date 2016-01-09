@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShipPlayerPixel : MonoBehaviour {
+public class Combat_PixelBehavior : MonoBehaviour {
 
     Combat_Manager combatManager;
     public Pixel.Type pixelType;
 
     public Turret.Type turretType;
-    public ShipPlayerTurret turret;
+    public Combat_TurretBehavior turret;
 
     SpriteRenderer spriteRenderer;
 
-    public ShipPlayerPixel adjacentPixel_below_left;
-    public ShipPlayerPixel adjacentPixel_below;
-    public ShipPlayerPixel adjacentPixel_below_right;
-    public ShipPlayerPixel adjacentPixel_left;
-    public ShipPlayerPixel adjacentPixel_right;
-    public ShipPlayerPixel adjacentPixel_above_left;
-    public ShipPlayerPixel adjacentPixel_above;
-    public ShipPlayerPixel adjacentPixel_above_right;
+    public Combat_PixelBehavior adjacentPixel_below_left;
+    public Combat_PixelBehavior adjacentPixel_below;
+    public Combat_PixelBehavior adjacentPixel_below_right;
+    public Combat_PixelBehavior adjacentPixel_left;
+    public Combat_PixelBehavior adjacentPixel_right;
+    public Combat_PixelBehavior adjacentPixel_above_left;
+    public Combat_PixelBehavior adjacentPixel_above;
+    public Combat_PixelBehavior adjacentPixel_above_right;
 
     public Vector2 coordinates;
     public int index;
@@ -29,6 +29,7 @@ public class ShipPlayerPixel : MonoBehaviour {
         turretType = _turretType;
 
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+        spriteRenderer.sortingLayerName = "GridPixel";
         if(pixelType == Pixel.Type.Hardpoint)
             spriteRenderer.sprite = Game_Manager.instance.sprHardpoint[0];
         else if (pixelType == Pixel.Type.Armour)
@@ -39,6 +40,8 @@ public class ShipPlayerPixel : MonoBehaviour {
 			spriteRenderer.sprite = Game_Manager.instance.sprPower[0];
         else if (pixelType == Pixel.Type.Scrap)
 			spriteRenderer.sprite = Game_Manager.instance.sprScrap[0];
+        else if (pixelType == Pixel.Type.Core)
+            spriteRenderer.sprite = Game_Manager.instance.sprCore[0];
     }
 
     public void GetSurroundingPixels()

@@ -49,6 +49,7 @@ public class Game_Manager : MonoBehaviour
     public Sprite[] sprCore;
     public Sprite[] sprHardpoint;
 
+    //Player's ship name & resources.
     public static string shipName;
     public static int scrapPixels;
     public static int armourPixels;
@@ -67,6 +68,9 @@ public class Game_Manager : MonoBehaviour
         powerPixels = DefaultValues.DEFAULT_POWER_PIXEL_COUNT;
         enginePixels = DefaultValues.DEFAULT_ENGINE_PIXEL_COUNT;
         weaponPixels = DefaultValues.DEFAULT_WEAPON_PIXEL_COUNT;
+
+        //Allocated the ship save space.
+        savedPixels = new CompressedPixelData[shipArraySqrRootLength * shipArraySqrRootLength];
 
         //Singleton pattern.
         if (instance == null)
@@ -120,8 +124,6 @@ public class Game_Manager : MonoBehaviour
             input.Init();
         if (hadToFindNewCamera)
             camera.Init();
-
-        print(Game_Manager.NON_MOBILE_PLATFORM);
 
         //Generic Updaters (objects present in every scene).
         if (!NON_MOBILE_PLATFORM) //Platform specific.
