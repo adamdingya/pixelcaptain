@@ -43,7 +43,7 @@ public class Input_Manager : MonoBehaviour
     public void Init()
     {
         game = Game_Manager.instance;
-        camera = game.camera;
+        spreadAngleThreshold = DefaultValues.DEFAULT_SPREAD_ANGLE_THRESHOLD;
     }
 
     //Calculate the input data for this frame.
@@ -101,7 +101,7 @@ public class Input_Manager : MonoBehaviour
             statePrev = state;
             state = State.One;
             inputPositionScreen = firstTouchPos;
-            inputPosition = camera.ScreenToWorldPosition(inputPositionScreen);
+            inputPosition = game.camera.ScreenToWorldPosition(inputPositionScreen);
 
             //Reset anything from two touch states.
             secondTouchPos = Vector2.zero;
@@ -168,7 +168,7 @@ public class Input_Manager : MonoBehaviour
             statePrev = state;
             state = State.Two;
             inputPositionScreen = (firstTouchPos + secondTouchPos) / 2.0f;
-            inputPosition = (camera.ScreenToWorldPosition(firstTouchPos) + camera.ScreenToWorldPosition(secondTouchPos)) / 2.0f;
+            inputPosition = (game.camera.ScreenToWorldPosition(firstTouchPos) + game.camera.ScreenToWorldPosition(secondTouchPos)) / 2.0f;
 
             //Calculate the current angle between finger movements.
             if (firstTouchPosDelta.sqrMagnitude > 0f && secondTouchPosDelta.sqrMagnitude > 0f)
@@ -187,7 +187,7 @@ public class Input_Manager : MonoBehaviour
             else
             {
                 inputDrag = firstTouchPosDelta + secondTouchPosDelta / 2.0f;
-                inputDrag = new Vector2((inputDrag.x / (float)Screen.width) * camera.aspectRatio, inputDrag.y / (float)Screen.height);
+                inputDrag = new Vector2((inputDrag.x / (float)Screen.width) * game.camera.aspectRatio, inputDrag.y / (float)Screen.height);
                 inputSpread = 0f;
             }
         }
@@ -227,7 +227,7 @@ public class Input_Manager : MonoBehaviour
         if (state == State.Two)
         {
             inputDrag = mousePosDelta;
-            inputDrag = new Vector2((inputDrag.x / (float)Screen.width) * camera.aspectRatio, inputDrag.y / (float)Screen.height) * 2f;
+            inputDrag = new Vector2((inputDrag.x / (float)Screen.width) * game.camera.aspectRatio, inputDrag.y / (float)Screen.height) * 2f;
             inputSpread = -Input.mouseScrollDelta.y * 0.04f;
         }
         else
@@ -237,13 +237,16 @@ public class Input_Manager : MonoBehaviour
         }
 
         inputPositionScreen = mousePos;
-        inputPosition = camera.ScreenToWorldPosition(inputPositionScreen);
+        inputPosition = game.camera.ScreenToWorldPosition(inputPositionScreen);
 
     }
 
     void OnDrawGizmos()
     {
-        Gizmos
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(inputPosition, 1f);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(inputPositionScreen, 0.8f);
     }
     
 }

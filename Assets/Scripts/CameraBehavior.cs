@@ -11,7 +11,6 @@ public class CameraBehavior : MonoBehaviour
 
     //General references.
     public Game_Manager game;
-    public Input_Manager input;
     public Camera camera;
 
     //UI references.
@@ -68,7 +67,6 @@ public class CameraBehavior : MonoBehaviour
         canZoomOrPan = false;
 
         game = Game_Manager.instance;
-        input = game.input;
         camera = GetComponent<Camera>();
 
         UICanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
@@ -85,14 +83,14 @@ public class CameraBehavior : MonoBehaviour
 
         //Choose the centre of zooming.
         if (zoomFocusObj == null)
-            zoomFocus = input.inputPosition;
+            zoomFocus = game.input.inputPosition;
         else
             zoomFocus = zoomFocusObj.position;
 
         //Update zoom based on input & conditions.
         float zoomIncr;
         if (canZoomOrPan)
-            zoomIncr = input.inputSpread * zoom * zoomSensitivity;
+            zoomIncr =  game.input.inputSpread * zoom * zoomSensitivity;
         else
             zoomIncr = 0f;
 
@@ -111,8 +109,8 @@ public class CameraBehavior : MonoBehaviour
             zoom = zoomMax;
 
         //Update pan based on input
-        Vector2 draggedPanIncr = input.inputDrag * zoom * panSensitivity;
-        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (input.inputSpread * zoomSensitivity);
+        Vector2 draggedPanIncr = game.input.inputDrag * zoom * panSensitivity;
+        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (game.input.inputSpread * zoomSensitivity);
 
         Vector2 panIncr;
 

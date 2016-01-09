@@ -229,7 +229,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!1 &1002811908
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,6 +422,14 @@ Prefab:
     - target: {fileID: 178540, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
       propertyPath: m_Name
       value: GameManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
+      propertyPath: HI
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
+      propertyPath: UNITY_REMOTE_MODE
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}

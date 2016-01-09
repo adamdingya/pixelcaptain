@@ -41,9 +41,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: {fileID: 0}
   camera: {fileID: 0}
-  shipBuilder: {fileID: 0}
   state: 0
+  mainMenuManager: {fileID: 0}
+  captainsLogManager: {fileID: 0}
+  settingsManager: {fileID: 0}
+  navigationSystemManager: {fileID: 0}
+  shipBuilderManager: {fileID: 0}
+  combatManager: {fileID: 0}
+  tacticalOptionsManager: {fileID: 0}
   shipArraySqrRootLength: 30
+  UNITY_REMOTE_MODE: 0
   sprTurret:
   - {fileID: 21300000, guid: 9d19c0227c3ddbd479859905fdfb5392, type: 3}
   sprScrap:
@@ -138,6 +145,10 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: UNITY_REMOTE_MODE
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

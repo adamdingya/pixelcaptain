@@ -3,8 +3,13 @@ using System.Collections;
 
 public class DefaultValues : MonoBehaviour {
 
+    //Input.
+    public static float DEFAULT_SPREAD_ANGLE_THRESHOLD = 40f; //The angle fingers have to move apart to define spreading rather than dragging.
 
 
+
+
+    // Ship data.
     public static string DEFAULT_SHIP_NAME = "My Ship";
 
     public static int DEFAULT_SCRAP_PIXEL_COUNT = 999;

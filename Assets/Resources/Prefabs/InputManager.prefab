@@ -45,7 +45,7 @@ MonoBehaviour:
   inputPositionScreen: {x: 0, y: 0}
   inputDrag: {x: 0, y: 0}
   inputSpread: 0
-  spreadAngleThreshold: 0
+  spreadAngleThreshold: 40
   mousePos: {x: 0, y: 0}
   mousePosPrev: {x: 0, y: 0}
   mousePosDelta: {x: 0, y: 0}
@@ -55,7 +55,15 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: inputSpread
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: spreadAngleThreshold
+      value: 40
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 150218}

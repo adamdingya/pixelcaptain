@@ -38,6 +38,8 @@ public class Game_Manager : MonoBehaviour
     //Platform specific behavior, set to 'false' if not on OSX/Windows.
     public static bool NON_MOBILE_PLATFORM = true;
 
+    public bool UNITY_REMOTE_MODE = false;
+
     //Define the game's sprites.
     public Sprite[] sprTurret;
     public Sprite[] sprScrap;
@@ -79,6 +81,9 @@ public class Game_Manager : MonoBehaviour
         if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.OSXPlayer)
             NON_MOBILE_PLATFORM = false;
 
+        //If you're using Unity Remote, the OS will be non-mobile. However, you want mobile behavior as you control the game via the app.
+        if (UNITY_REMOTE_MODE)
+            NON_MOBILE_PLATFORM = false;
 
         //Generic initialisers (objects present in every scene).
         input = GameObject.Find("InputManager").GetComponent<Input_Manager>();
@@ -92,13 +97,29 @@ public class Game_Manager : MonoBehaviour
     //Global Update() method. Calls all others to maintain order.
     void Update()
     {
-        //Generic Initialisers (objects present in every scene, but need to be re-found on scene change).
-        if (input == null)
+        bool hadToFindNewCamera = false;
+        bool hadToFindNewInput = false;
+
+        //Generic finders (objects present in every scene) - Adam, if you wanna use your 'loader' system, re-create it here :)
+        if (camera == null)
         {
-            input = GameObject.Find("InputManager").GetComponent<Input_Manager>();
-            input.Init();
+            hadToFindNewCamera = true;
+            camera = GameObject.Find("Camera").GetComponent<CameraBehavior>();
         }
 
+        if (input == null)
+        {
+            hadToFindNewInput = true;
+            input = GameObject.Find("InputManager").GetComponent<Input_Manager>();
+        }
+
+        //Generic Initialisers (objects present in every scene).
+        if (hadToFindNewInput)
+            input.Init();
+        if (hadToFindNewCamera)
+            camera.Init();
+
+        print(Game_Manager.NON_MOBILE_PLATFORM);
 
         //Generic Updaters (objects present in every scene).
         if (!NON_MOBILE_PLATFORM) //Platform specific.
@@ -106,12 +127,6 @@ public class Game_Manager : MonoBehaviour
         else
             input.GetInputPC();
 
-        //Generic Initialisers (objects present in every scene, but need to be re-found on scene change).
-        if (camera == null)
-        {
-            camera = GameObject.Find("Camera").GetComponent<CameraBehavior>();
-            camera.Init();
-        }
 
         camera.OnUpdate();
 

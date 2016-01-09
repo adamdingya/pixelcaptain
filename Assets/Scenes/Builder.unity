@@ -1034,7 +1034,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 759425189}
         m_MethodName: ChangeShipName
         m_Mode: 1
         m_Arguments:
@@ -3184,7 +3184,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 401530, guid: 682ae3bd139a0ce4a83fd245417cc1db, type: 2}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 682ae3bd139a0ce4a83fd245417cc1db, type: 2}
