@@ -6,7 +6,6 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
 
     //General references.
     Game_Manager game;
-    Input_Manager input;
     ShipBuilder_Manager builder;
 
     //Instance pixel type.

@@ -41,7 +41,7 @@ public class Game_Manager : MonoBehaviour
     public bool UNITY_REMOTE_MODE = false;
 
     //Define the game's sprites.
-    public Sprite[] sprTurret;
+    public Sprite[] sprTurrets;
     public Sprite[] sprScrap;
     public Sprite[] sprArmour;
     public Sprite[] sprEngine;
@@ -55,6 +55,7 @@ public class Game_Manager : MonoBehaviour
     public static int hardpointPixels;
     public static int powerPixels;
     public static int enginePixels;
+    public static int weaponPixels;
 
     //Global Awake() method. Calls all others to maintain order.
     public void Awake()
@@ -65,6 +66,7 @@ public class Game_Manager : MonoBehaviour
         hardpointPixels = DefaultValues.DEFAULT_HARDPOINT_PIXEL_COUNT;
         powerPixels = DefaultValues.DEFAULT_POWER_PIXEL_COUNT;
         enginePixels = DefaultValues.DEFAULT_ENGINE_PIXEL_COUNT;
+        weaponPixels = DefaultValues.DEFAULT_WEAPON_PIXEL_COUNT;
 
         //Singleton pattern.
         if (instance == null)

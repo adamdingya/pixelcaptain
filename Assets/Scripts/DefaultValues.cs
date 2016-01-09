@@ -7,7 +7,10 @@ public class DefaultValues : MonoBehaviour {
     public static float DEFAULT_SPREAD_ANGLE_THRESHOLD = 40f; //The angle fingers have to move apart to define spreading rather than dragging.
 
 
-
+    //Turret weapon pixel costs;
+    public static int DEFAULT_TURRET_SMALL_COST = 3;
+    public static int DEFAULT_TURRET_MEDIUM_COST = 6;
+    public static int DEFAULT_TURRET_LARGE_COST = 9;
 
     // Ship data.
     public static string DEFAULT_SHIP_NAME = "My Ship";
@@ -17,6 +20,7 @@ public class DefaultValues : MonoBehaviour {
     public static int DEFAULT_POWER_PIXEL_COUNT = 999;
     public static int DEFAULT_HARDPOINT_PIXEL_COUNT = 999;
     public static int DEFAULT_ENGINE_PIXEL_COUNT = 999;
+    public static int DEFAULT_WEAPON_PIXEL_COUNT = 999;
 
 
 

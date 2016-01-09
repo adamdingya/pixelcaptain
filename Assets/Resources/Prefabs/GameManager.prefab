@@ -51,8 +51,10 @@ MonoBehaviour:
   tacticalOptionsManager: {fileID: 0}
   shipArraySqrRootLength: 30
   UNITY_REMOTE_MODE: 0
-  sprTurret:
-  - {fileID: 21300000, guid: 9d19c0227c3ddbd479859905fdfb5392, type: 3}
+  sprTurrets:
+  - {fileID: 21300000, guid: c74053526ce78354181f6b86f9762ee2, type: 3}
+  - {fileID: 21300000, guid: 30d9b5644794f674dac11b4c44a450b8, type: 3}
+  - {fileID: 21300000, guid: c22536af42982cb45ae3251499eeff6c, type: 3}
   sprScrap:
   - {fileID: 21300000, guid: 33c7502f02d0faf4a9f8093e00535590, type: 3}
   sprArmour:
@@ -95,6 +97,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: sprEngine.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: sprHardpoint.Array.size
@@ -151,6 +157,21 @@ Prefab:
       propertyPath: UNITY_REMOTE_MODE
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: c74053526ce78354181f6b86f9762ee2,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: 30d9b5644794f674dac11b4c44a450b8,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: c22536af42982cb45ae3251499eeff6c,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 178540}

@@ -74,7 +74,14 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
         else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.ScrapPixel)
             spriteRenderer.sprite = game.sprScrap[spriteVariantIndex];
         else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.Turret)
-            spriteRenderer.sprite = game.sprTurret[spriteVariantIndex];
+        {
+            if (shipBuilder.shipBuilderTurretType == Turret.Type.Small)
+                spriteRenderer.sprite = game.sprTurrets[0];
+            else if (shipBuilder.shipBuilderTurretType == Turret.Type.Medium)
+                spriteRenderer.sprite = game.sprTurrets[1];
+            else if (shipBuilder.shipBuilderTurretType == Turret.Type.Large)
+                spriteRenderer.sprite = game.sprTurrets[2];
+        }
         else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.CorePixel)
             spriteRenderer.sprite = game.sprCore[spriteVariantIndex];
     }

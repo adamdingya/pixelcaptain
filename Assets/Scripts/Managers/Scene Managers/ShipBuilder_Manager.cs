@@ -37,6 +37,11 @@ public class ShipBuilder_Manager : MonoBehaviour
     public Text powerPixelCounter;
     public Text hardpointPixelCounter;
 
+    public Text turretPixelCounter;
+
+    public Text turretPixelCost;
+    public Image turretTypePreview;
+
     public RectTransform builderGridWindowUI; //Screen space build grid window.
     public Vector4 builderGridWindow;
 
@@ -44,12 +49,12 @@ public class ShipBuilder_Manager : MonoBehaviour
     public enum ShipBuilderTools { None, CorePixel, ScrapPixel, ArmourPixel, HardpointPixel, Turret, PixelEraser, PowerPixel, EnginePixel };
     public ShipBuilderTools shipBuilderTool;
 
+    //Currently selected turret type.
+    public Turret.Type shipBuilderTurretType = Turret.Type.Small;
+    public int shipBuilderTurretTypeIndex = 0;
+
     //Reference to the preview pixel.
     public ShipBuilder_PreviewPixel previewPixel;
-
-
-
-
 
 
     //Building & saving pixel arrays.
@@ -66,8 +71,7 @@ public class ShipBuilder_Manager : MonoBehaviour
     public int usedEnginePixelsCount;
     public int usedPowerPixelsCount;
     public int usedHardpointPixelsCount;
-
-
+    public int usedWeaponPixelsCount;
 
 
     //Initialise a new grid.
@@ -94,6 +98,9 @@ public class ShipBuilder_Manager : MonoBehaviour
         pixelPlacement = false;
 
         previewPixel.Init();
+        ChangeTurretType(0);
+
+        UpdatePixelCounters();
 
     }
 
@@ -298,7 +305,10 @@ public class ShipBuilder_Manager : MonoBehaviour
         else if (shipBuilderTool == ShipBuilderTools.Turret)
         {
             if (previewPixel.hoveredPixel != null && previewPixel.hoveredPixel.type == Pixel.Type.Hardpoint)
-                BuildTurret(Turret.Type.Normal, previewPixel.hoveredPixel, previewPixel.spriteVariantIndex);
+            {
+                BuildTurret(shipBuilderTurretType, previewPixel.hoveredPixel, previewPixel.spriteVariantIndex);
+
+            }
         }
         else if (shipBuilderTool == ShipBuilderTools.CorePixel)
         {
@@ -428,6 +438,7 @@ public class ShipBuilder_Manager : MonoBehaviour
         enginePixelCounter.text = (Game_Manager.enginePixels - usedEnginePixelsCount).ToString();
         powerPixelCounter.text = (Game_Manager.powerPixels - usedPowerPixelsCount).ToString();
         hardpointPixelCounter.text = (Game_Manager.hardpointPixels - usedHardpointPixelsCount).ToString();
+        turretPixelCounter.text = (Game_Manager.weaponPixels - usedWeaponPixelsCount).ToString();
     }
 
     //Position converters.
@@ -515,7 +526,9 @@ public class ShipBuilder_Manager : MonoBehaviour
         turretObj.transform.position = _mountPixel.transform.position + new Vector3(0.5f, 0.5f, 0f);
 
         ShipBuilder_TurretBehavior turret = turretObj.AddComponent<ShipBuilder_TurretBehavior>();
-        turret.Init(game, _type, _mountPixel, _spriteVariantIndex);
+        turret.Init(_type, _mountPixel, _spriteVariantIndex);
+
+        UpdatePixelCounters();
 
         return turret;
     }
@@ -523,6 +536,8 @@ public class ShipBuilder_Manager : MonoBehaviour
     public void UnBuildTurret(ShipBuilder_TurretBehavior _turret)
     {
         _turret.Destroy();
+
+        UpdatePixelCounters();
     }
 
     public void SaveShip()
@@ -546,7 +561,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 if (pixel.turret != null)
                     savedPixel.turretType = pixel.turret.type;
                 else
-                    savedPixel.turretType = Turret.Type.None;
+                    savedPixel.turretType = Turret.Type.Small;
 
                 game.savedPixels[index] = savedPixel;
             }
@@ -567,7 +582,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 ShipBuilder_PixelBehavior pixel = BuildPixel(savedPixel.pixelType, savedPixel.coordinates, savedPixel.spriteVariantIndex);
 
                 //Generate turret based on data.
-                if (savedPixel.turretType != Turret.Type.None)
+                if (savedPixel.turretType != Turret.Type.Small)
                     BuildTurret(savedPixel.turretType, pixel, 0);
 
                 pixels[index] = pixel;
@@ -577,6 +592,34 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     public void TestShip()
     {
+    }
+
+    public void ChangeTurretType(int increment)
+    {
+        shipBuilderTurretTypeIndex += increment;
+
+        if (shipBuilderTurretTypeIndex < 0)
+            shipBuilderTurretTypeIndex = game.sprTurrets.Length - 1;
+        if (shipBuilderTurretTypeIndex == game.sprTurrets.Length)
+            shipBuilderTurretTypeIndex = 0;
+
+        turretTypePreview.sprite = game.sprTurrets[shipBuilderTurretTypeIndex];
+
+        if (shipBuilderTurretTypeIndex == 0)
+        {
+            shipBuilderTurretType = Turret.Type.Small;
+            turretPixelCost.text = (DefaultValues.DEFAULT_TURRET_SMALL_COST).ToString();
+        }
+        if (shipBuilderTurretTypeIndex == 1)
+        {
+            shipBuilderTurretType = Turret.Type.Medium;
+            turretPixelCost.text = (DefaultValues.DEFAULT_TURRET_MEDIUM_COST).ToString();
+        }
+        if (shipBuilderTurretTypeIndex == 2)
+        {
+            shipBuilderTurretType = Turret.Type.Large;
+            turretPixelCost.text = (DefaultValues.DEFAULT_TURRET_LARGE_COST).ToString();
+        }
     }
 
 }

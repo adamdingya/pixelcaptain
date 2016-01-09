@@ -132,7 +132,7 @@ public class Combat_Manager : MonoBehaviour
 		foreach(Transform childChild in child.transform){
 			ShipPlayerTurret spt = childChild.GetComponent<ShipPlayerTurret> ();
 			switch (spt.turretType) {
-			case Turret.Type.Normal:
+			case Turret.Type.Small:
 				TurretSquare smallTurretSquare = childChild.gameObject.AddComponent<TurretSquare>();
 				smallTurretSquare.init();
 				break;
