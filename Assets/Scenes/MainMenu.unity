@@ -433,6 +433,21 @@ Prefab:
       propertyPath: UNITY_REMOTE_MODE
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
+      propertyPath: sprArmour.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 96f09eeca446d8545b96cb98aa62c668,
+        type: 3}
+    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
+      propertyPath: sprTurrets.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
+      propertyPath: sprTurrets.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: a0983968550453f49a7276b501129b63,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
   m_IsPrefabParent: 0
