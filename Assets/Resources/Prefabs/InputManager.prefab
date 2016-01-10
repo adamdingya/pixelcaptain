@@ -36,33 +36,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 150218}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e7a2f6ace6fc394d9436e5024e04741, type: 3}
+  m_Script: {fileID: 11500000, guid: 5fb1cab08a0659947afa2a7a3a651b50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
   statePrev: 0
-  touch1Begin: 0
-  touch2Begin: 0
-  touch1End: 0
-  touch2End: 0
-  touch1Pos: {x: 0, y: 0}
-  touch1PosPrev: {x: 0, y: 0}
-  touch1DeltaPos: {x: 0, y: 0}
-  touch1ID: 0
-  touch1IDPrev: 0
-  touch2Pos: {x: 0, y: 0}
-  touch2PosPrev: {x: 0, y: 0}
-  touch2DeltaPos: {x: 0, y: 0}
-  touch2ID: 0
-  touch2IDPrev: 0
-  touch12Angle: 0
+  inputPosition: {x: 0, y: 0}
+  inputPositionScreen: {x: 0, y: 0}
+  inputDrag: {x: 0, y: 0}
+  inputSpread: 0
+  spreadAngleThreshold: 40
+  mousePos: {x: 0, y: 0}
+  mousePosPrev: {x: 0, y: 0}
+  mousePosDelta: {x: 0, y: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: inputSpread
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: spreadAngleThreshold
+      value: 40
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 150218}

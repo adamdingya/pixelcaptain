@@ -44,3 +44,30 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: GridBackground
+    uniqueID: 3471312057
+    locked: 0
+  - name: GridPixel
+    uniqueID: 3524172071
+    locked: 0
+  - name: PreviewPixel
+    uniqueID: 1772048991
+    locked: 0
+  - name: CorePixel
+    uniqueID: 2505397573
+    locked: 0
+  - name: Turret
+    uniqueID: 3854661513
+    locked: 0
+  - name: PreviewTurret
+    uniqueID: 598832513
+    locked: 0
+  - name: UIBackground
+    uniqueID: 1511967431
+    locked: 0
+  - name: UIButtons
+    uniqueID: 1665056283
+    locked: 0
+  - name: UIHighlight
+    uniqueID: 144489261
+    locked: 0

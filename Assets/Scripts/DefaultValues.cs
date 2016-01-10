@@ -2,9 +2,35 @@
 using System.Collections;
 
 public class DefaultValues : MonoBehaviour {
-	
-	// Armour square attributes
-	public static float DEFAULT_ARMOUR_MASS = 20f;
+
+    //Input.
+    public static float DEFAULT_SPREAD_ANGLE_THRESHOLD = 40f; //The angle fingers have to move apart to define spreading rather than dragging.
+
+    //Builder.
+    public static float DEFAULT_INITIAL_CAMERA_ZOOM = 5f;
+
+    //Combat.
+    public static Vector3 DEFAULT_SHIP_SPAWN_POSITION = new Vector3(50f, 50f, 0f);
+
+    //Turret weapon pixel costs;
+    public static int DEFAULT_TURRET_SMALL_COST = 3;
+    public static int DEFAULT_TURRET_MEDIUM_COST = 6;
+    public static int DEFAULT_TURRET_LARGE_COST = 9;
+
+    // Ship data.
+    public static string DEFAULT_SHIP_NAME = "My Ship";
+
+    public static int DEFAULT_SCRAP_PIXEL_COUNT = 999;
+    public static int DEFAULT_ARMOUR_PIXEL_COUNT = 999;
+    public static int DEFAULT_POWER_PIXEL_COUNT = 999;
+    public static int DEFAULT_HARDPOINT_PIXEL_COUNT = 999;
+    public static int DEFAULT_ENGINE_PIXEL_COUNT = 999;
+    public static int DEFAULT_WEAPON_PIXEL_COUNT = 999;
+
+
+
+    // Armour square attributes
+    public static float DEFAULT_ARMOUR_MASS = 20f;
 	public static float DEFAULT_ARMOUR_HEALTH = 200f;
 
 	// Scrap square attributes
