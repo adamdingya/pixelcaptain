@@ -240,13 +240,5 @@ public class Input_Manager : MonoBehaviour
         inputPosition = game.camera.ScreenToWorldPosition(inputPositionScreen);
 
     }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(inputPosition, 1f);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(inputPositionScreen, 0.8f);
-    }
     
 }

@@ -49,7 +49,7 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     public void Init(int _index, Pixel.Type _type, Vector2 _coordinates, int _spriteVariantIndex)
     {
         game = Game_Manager.instance;
-        builder = game.shipBuilderManager;
+        builder = game.shipBuilder;
         type = _type;
         index = _index;
         coordinates = _coordinates;

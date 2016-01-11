@@ -47,7 +47,7 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
         //Get scene references.
         game = Game_Manager.instance;
         input = game.input;
-        shipBuilder = game.shipBuilderManager; 
+        shipBuilder = game.shipBuilder; 
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "PreviewPixel";
 
@@ -59,30 +59,30 @@ public class ShipBuilder_PreviewPixel : MonoBehaviour
     public void CalculateSprite()
     {
         //Work out the sprite.
-        if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.ArmourPixel)
+        if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.ArmourPlacer)
             spriteRenderer.sprite = game.sprArmour[spriteVariantIndex];
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.EnginePixel)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.EnginePlacer)
             spriteRenderer.sprite = game.sprEngine[spriteVariantIndex];
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.HardpointPixel)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.HardpointPlacer)
             spriteRenderer.sprite = game.sprHardpoint[spriteVariantIndex];
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.None)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.None)
             spriteRenderer.sprite = null;
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.PixelEraser)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.Eraser)
             spriteRenderer.sprite = eraserSprite;
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.PowerPixel)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.PowerPlacer)
             spriteRenderer.sprite = game.sprPower[spriteVariantIndex];
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.ScrapPixel)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.ScrapPlacer)
             spriteRenderer.sprite = game.sprScrap[spriteVariantIndex];
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.Turret)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.TurretPlacer)
         {
-            if (shipBuilder.shipBuilderTurretType == Turret.Type.Small)
-                spriteRenderer.sprite = game.sprTurrets[0];
-            else if (shipBuilder.shipBuilderTurretType == Turret.Type.Medium)
-                spriteRenderer.sprite = game.sprTurrets[1];
-            else if (shipBuilder.shipBuilderTurretType == Turret.Type.Large)
-                spriteRenderer.sprite = game.sprTurrets[2];
+            if (shipBuilder.tools.currentTurretType == Turret.Type.Small)
+                spriteRenderer.sprite = game.sprTurrets[DefaultValues.DEFAULT_TURRET_TYPE_SMALL_INDEX];
+            else if (shipBuilder.tools.currentTurretType == Turret.Type.Medium)
+                spriteRenderer.sprite = game.sprTurrets[DefaultValues.DEFAULT_TURRET_TYPE_MEDIUM_INDEX];
+            else if (shipBuilder.tools.currentTurretType == Turret.Type.Large)
+                spriteRenderer.sprite = game.sprTurrets[DefaultValues.DEFAULT_TURRET_TYPE_LARGE_INDEX];
         }
-        else if (shipBuilder.shipBuilderTool == ShipBuilder_Manager.ShipBuilderTools.CorePixel)
+        else if (shipBuilder.tools.currentTool == ShipBuilder_Manager.Tools.Tool.CoreMover)
             spriteRenderer.sprite = game.sprCore[spriteVariantIndex];
     }
 }

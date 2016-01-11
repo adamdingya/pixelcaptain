@@ -39,7 +39,7 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
     public void Init(Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int spriteVariantIndex)
     {
         game = Game_Manager.instance;
-        builder = game.shipBuilderManager;
+        builder = game.shipBuilder;
 
         _mountPixel.turret = this; //Set mount pixel's turret reference to this.
         transform.position = _mountPixel.transform.position;

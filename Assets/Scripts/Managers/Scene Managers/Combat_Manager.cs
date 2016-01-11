@@ -15,8 +15,9 @@ public class Combat_Manager : MonoBehaviour
         camera = game.camera;
         camera.zoom = 100f;
         camera.pan = DefaultValues.DEFAULT_SHIP_SPAWN_POSITION;
+        camera.UserMovementEnabled = true;
         shipPixels = new Combat_PixelBehavior[Game_Manager.instance.shipArraySqrRootLength * Game_Manager.instance.shipArraySqrRootLength];
-		loadPlayer (Game_Manager.instance.savedPixels);
+		loadPlayer (PlaythroughData.savedPixels);
 
 		loadEnemies ();
 
@@ -152,7 +153,7 @@ public class Combat_Manager : MonoBehaviour
 	void loadAsteroids(){
 		Sprite[] asteroidSprites = Resources.LoadAll<Sprite>("Sprites/asteroids");
 		for (int i=0; i<asteroidCount; i++) {
-			Vector3 position = new Vector3(Random.Range (0, camera.sceneBounds_TR.x), Random.Range (0, camera.sceneBounds_TR.y), -Camera.main.transform.position.z);
+			Vector3 position = new Vector3(Random.Range (0, camera.sceneDimensions.x), Random.Range (0, camera.sceneDimensions.y), -Camera.main.transform.position.z);
 			GameObject asteroid = Instantiate(Resources.Load ("Prefabs/Asteroid"), position, Quaternion.identity) as GameObject;
 			int randomAsteroidSprite = Random.Range(0, asteroidSprites.Length);
 			asteroid.GetComponent<SpriteRenderer>().sprite = asteroidSprites[randomAsteroidSprite];
