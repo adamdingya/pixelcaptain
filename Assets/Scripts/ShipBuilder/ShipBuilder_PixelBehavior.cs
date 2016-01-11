@@ -46,7 +46,7 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     public ShipBuilder_PixelBehavior pixel_aboveRight;
 
     //Initialise the pixel.
-    public void Init(int _index, Pixel.Type _type, Vector2 _coordinates, int _spriteVariantIndex)
+    public void Init(int _index, Pixel.Type _type, Vector2 _coordinates, Sprite _sprite)
     {
         game = Game_Manager.instance;
         builder = game.shipBuilder;
@@ -68,36 +68,21 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         else
             spriteRenderer.sortingLayerName = "CorePixel";
 
+        sprite = _sprite; //Set the sprite to the passed value (Passing maintains consistency between what was previewed and what is placed).
+
         //Set sprite and increment counters.
         if (_type == Pixel.Type.Armour)
-        {
-            sprite = game.sprArmour[_spriteVariantIndex];
             builder.usedArmourPixelsCount++;
-        }
         if (_type == Pixel.Type.Engine)
-        {
-            sprite = game.sprEngine[_spriteVariantIndex];
             builder.usedEnginePixelsCount++;
-        }
         if (_type == Pixel.Type.Hardpoint)
-        {
-            sprite = game.sprHardpoint[_spriteVariantIndex];
             builder.usedHardpointPixelsCount++;
-        }
         if (_type == Pixel.Type.Power)
-        {
-            sprite = game.sprPower[_spriteVariantIndex];
             builder.usedPowerPixelsCount++;
-        }
         if (_type == Pixel.Type.Scrap)
-        {
-            sprite = game.sprScrap[_spriteVariantIndex];
             builder.usedScrapPixelsCount++;
-        }
         else if (_type == Pixel.Type.Core)
-        {
             sprite = game.sprCore[builder.coreSpriteVariant];
-        }
 
         //Assign self to the pixel array.
         builder.pixels[index] = this;

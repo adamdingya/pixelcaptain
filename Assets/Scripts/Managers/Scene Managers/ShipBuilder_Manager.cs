@@ -22,9 +22,6 @@ public class ShipBuilder_Manager : MonoBehaviour
     public UserInterface userInterface;
     public Tools tools;
 
-    //Bool to fine-tune the state which allows for pixel placement.
-    public bool pixelPlacement = false;
-
     //Reference to the preview pixel.
     public ShipBuilder_PreviewPixel previewPixel;
 
@@ -33,8 +30,11 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     //Core pixel coordinates.
     public Vector2 coreCoordinates;
-    public int coreSpriteVariant = 0; //There is only one core pixel, so just choose it's sprite at the start for now.
+    public int coreSpriteVariant;
     public ShipBuilder_PixelBehavior corePixel;
+
+    //Last placed or selected turret.
+    public ShipBuilder_TurretBehavior turretEditTarget;
 
     //Amount of pixels used in the current build.
     public int usedScrapPixelsCount;
@@ -44,6 +44,14 @@ public class ShipBuilder_Manager : MonoBehaviour
     public int usedHardpointPixelsCount;
     public int usedWeaponPixelsCount;
 
+    //The user input coordinates, positions, and window visibility checks.
+    public Vector2 inputCoordinate;
+    public Vector2 inputCoordinate_previewOffset;
+    public bool inputIsInBuildWindow;
+    public bool inputCoordinateIsVisibleInBuildWindow; //Check the offset window, so the player can place pixel right up against the edge despite any preview offsets.
+
+    //Pixel placement is allowed.
+    public bool pixelPlacement;
 
     //Initialise a new grid.
     public void Init()
@@ -62,7 +70,8 @@ public class ShipBuilder_Manager : MonoBehaviour
         //Initiliase the ship pixels array.
         pixels = new ShipBuilder_PixelBehavior[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
         coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
-        corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, coreSpriteVariant);
+        coreSpriteVariant = Random.Range(0, game.sprCore.Length);
+        corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, game.sprCore[coreSpriteVariant]);
         SaveShip(); //Save the initial ship with the default core pixel;
 
         //Adjust the camera based on ship-builder requirements.
@@ -82,122 +91,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     public void OnUpdate()
     {
-        if (camera.viewBounds_worldSpace.Contains(game.input.inputPosition))
-        {
-            if (game.input.state == Input_Manager.State.Two && (game.input.statePrev == Input_Manager.State.None || game.input.statePrev == Input_Manager.State.One))
-                camera.UserMovementEnabled = true;
-        }
-
-        //If there were two touches but aren't now, cancel zoom/pan.
-        if (game.input.state != Input_Manager.State.Two && game.input.statePrev == Input_Manager.State.Two)
-            camera.UserMovementEnabled = false;
-
-
-        /*
-        //If the touch is in the grid window.
-        if (camera.viewBounds_worldSpace.Contains(game.input.inputPosition))
-        {
-            if (game.input.state == Input_Manager.State.Two && (game.input.statePrev == Input_Manager.State.None || game.input.statePrev == Input_Manager.State.One))
-                camera.canZoomOrPan = true;
-
-            //If the player begins a touch within the grid window, initiate pixel placement.
-            if (game.input.state == Input_Manager.State.One && game.input.statePrev == Input_Manager.State.None)
-            {
-                Vector2 touchedPixelCoordinates = PositionToCoordinates(game.input.inputPosition);
-                int touchedPixelIndex = (int)(touchedPixelCoordinates.y * game.shipArraySqrRootLength + touchedPixelCoordinates.x);
-
-                if ((pixels[touchedPixelIndex] != null && pixels[touchedPixelIndex].type == Pixel.Type.Core) && currentTool == Tool.None)
-                    currentTool = Tool.CoreMover;
-
-                pixelPlacement = true;
-            }
-        }
-
-        //If there were two touches but aren't now, cancel zoom/pan.
-        if ((game.input.state == Input_Manager.State.None || game.input.state == Input_Manager.State.One) && game.input.statePrev == Input_Manager.State.Two)
-        {
-            camera.canZoomOrPan = false;
-        }
-
-
-        //If there are two touches, cancel placement previewing.
-        if (game.input.state == Input_Manager.State.Two)
-            pixelPlacement = false;
-
-        if (pixelPlacement)
-            PreviewPixel();
-        else
-        {
-            previewPixel.visible = false;
-            corePixel.spriteRenderer.enabled = true; //If the player was moving the core pixel but cancels, be sure to reshow it.
-        }
-
-
-        //Hide any pixels or turrets that are at the previewing position.
-        if (previewPixel.visible == true && currentTool != Tool.None)
-        {
-            //Doesn't apply for turrets, they sit on top anyway. 
-            if (currentTool != Tool.TurretPlacer && currentTool != Tool.Eraser)
-            {
-                //Hide pixel.
-                if (previewPixel.hoveredPixel != null)
-                {
-                    previewPixel.hoveredPixel.visible = false;
-                    //Hide any turret.
-                    if (previewPixel.hoveredPixel.turret != null)
-                        previewPixel.hoveredPixel.turret.visible = false;
-                }
-
-            }
-            //If the tool type is turret, then hide the turret but not the hardpoint pixel.
-            else if (currentTool == Tool.TurretPlacer)
-            {
-                if (previewPixel.hoveredPixel != null && previewPixel.hoveredPixel.turret != null)
-                    previewPixel.hoveredPixel.turret.visible = false;
-            }
-        }
-        else
-        {
-            //If the preview pixel gets hidden, show any hidden grid pixels/turrets.
-            if (previewPixel.hoveredPixel != null)
-            {
-                previewPixel.hoveredPixel.visible = true;
-                if (previewPixel.hoveredPixel.turret != null)
-                    previewPixel.hoveredPixel.turret.visible = true;
-            }
-        }
-
-        //If the preview pixel has changed, but there was a hidden pixel there...
-        if (previewPixel.hoveredPixelPrev != null && previewPixel.hoveredPixelPrev != previewPixel.hoveredPixel)
-        {
-            if (previewPixel.hoveredPixelPrev.visible == false)
-                previewPixel.hoveredPixelPrev.visible = true;
-
-            if (previewPixel.hoveredPixelPrev.turret != null)
-            {
-                if (previewPixel.hoveredPixelPrev.turret.visible == false)
-                    previewPixel.hoveredPixelPrev.turret.visible = true;
-            }
-        }*/
-    }
-
-    //Preview a pixel placement.
-    void PreviewPixel()
-    {
-
-        if ((tools.currentTool == Tools.Tool.TurretPlacer || tools.currentTool == Tools.Tool.Eraser))
-            previewPixel.sortingLayer = "PreviewTurret";
-        else
-        {
-            if (tools.currentTool != Tools.Tool.CoreMover)
-                previewPixel.sortingLayer = "PreviewPixel";
-            else
-            {
-                previewPixel.sortingLayer = "CorePixel";
-                corePixel.spriteRenderer.enabled = false;
-            }
-        }
-
+        //Placement preview offset (to account for the user's finger getting in the way)
         if (!Game_Manager.NON_MOBILE_PLATFORM)
         {
             //Dynamically adjust the preview pixel's offset relative to the current zoom.
@@ -212,65 +106,259 @@ public class ShipBuilder_Manager : MonoBehaviour
             previewPixel.coordinatesOffset = Vector2.zero;
         }
 
-        previewPixel.coordinates.x = (game.input.inputPosition.x / 1f) - (game.input.inputPosition.x % 1f) + previewPixel.coordinatesOffset.x;
-        previewPixel.coordinates.y = (game.input.inputPosition.y / 1f) - (game.input.inputPosition.y % 1f) + previewPixel.coordinatesOffset.y;
+        //Get coordinates.
+        inputCoordinate = PositionToCoordinates(game.input.inputPosition);
+        inputCoordinate_previewOffset = inputCoordinate + previewPixel.coordinatesOffset;
 
-        int gridLength = game.shipArraySqrRootLength;
+        //Check if the  user input position is within the build window.
+        inputIsInBuildWindow = false;
+        if (camera.viewBounds_worldSpace.Contains(input.inputPosition))
+            inputIsInBuildWindow = true;
 
-        if (previewPixel.coordinates.x > (gridLength - 1))
-            previewPixel.coordinates.x = (gridLength - 1);
-        if (previewPixel.coordinates.x < 0)
-            previewPixel.coordinates.x = 0;
-        if (previewPixel.coordinates.y > (gridLength - 1))
-            previewPixel.coordinates.y = (gridLength - 1);
-        if (previewPixel.coordinates.y < 0)
-            previewPixel.coordinates.y = 0;
+        Vector2 offsetInputPosition = CoordinatesToPosition(inputCoordinate_previewOffset);
 
-        previewPixel.transform.position = previewPixel.coordinates + new Vector2(0.5f, 0.5f);
-        previewPixel.hoveredPixelPrev = previewPixel.hoveredPixel;
-        previewPixel.hoveredPixel = pixels[(int)((previewPixel.coordinates.y * gridLength) + previewPixel.coordinates.x)];
+        //Check if the previewer's offset position is within the build window (calculated in all directions with offsets of 0.5, to account for the visible pixel edge, rather than it's centre).
+        inputCoordinateIsVisibleInBuildWindow = false;
+        if ((offsetInputPosition.x + 0.5f) > camera.viewBounds_worldSpace.x && (offsetInputPosition.x - 0.5f) < (camera.viewBounds_worldSpace.x + camera.viewBounds_worldSpace.width)
+            && (offsetInputPosition.y + 0.5f) > camera.viewBounds_worldSpace.y && (offsetInputPosition.y - 0.5f) < (camera.viewBounds_worldSpace.y + camera.viewBounds_worldSpace.height))
+        {
+            inputCoordinateIsVisibleInBuildWindow = true;
+        }
 
-        if (previewPixel.hoveredPixel != null && previewPixel.hoveredPixel.type == Pixel.Type.Core)
-            previewPixel.visible = false;
-        else
+        //CAMERA MOVEMENT
+
+        //If user touches two fingers in the build window...
+        if (inputIsInBuildWindow && (input.stateChange == Input_Manager.StateChange.NoneToTwo || input.stateChange == Input_Manager.StateChange.OneToTwo))
+            camera.UserMovementEnabled = true; //Let the camera be controlled.
+
+        //If user stops a two-finger touch anywhere...
+        if (input.stateChange == Input_Manager.StateChange.TwoToNone || input.stateChange == Input_Manager.StateChange.TwoToOne)
+            camera.UserMovementEnabled = false; //Stop the camera from being controlled.
+
+        // TOUCH BEGIN
+
+        //If the user begins a single touch in the build window...
+        if (inputIsInBuildWindow && input.stateChange == Input_Manager.StateChange.NoneToOne)
+        {
+
+
+            //If no tool is active...
+            if (tools.currentTool == Tools.Tool.None)
+            {
+                Vector2 touchedPixelCoordinates = PositionToCoordinates(game.input.inputPosition);
+                int touchedPixelIndex = (int)(touchedPixelCoordinates.y * game.shipArraySqrRootLength + touchedPixelCoordinates.x);
+                ShipBuilder_PixelBehavior touchedPixel = pixels[touchedPixelIndex];
+
+                //If the user has touched a pixel...
+                if (touchedPixel != null)
+                {
+                    //If the user has touched down on a turret...
+                    if (touchedPixel.turret != null)
+                    {
+                        turretEditTarget = touchedPixel.turret;
+                        tools.ChangeTool(Tools.Tool.TurretEditor);
+                    }
+
+                    //If the user has touched down on the core pixel...
+                    if (touchedPixel.type == Pixel.Type.Core)
+                    {
+                        corePixel.Destroy();
+                        tools.ChangeTool(Tools.Tool.CoreMover);
+
+                        //Pixel placement can commence.
+                        pixelPlacement = true;
+                    }
+                }
+            }
+            else
+            {
+                //Pixel placement can commence.
+                pixelPlacement = true;
+            }
+        }
+
+        //TOUCH CANCEL
+
+        //If the user cancels a single touch, or ends it outside the build window...
+        if ((!inputCoordinateIsVisibleInBuildWindow && input.stateChange == Input_Manager.StateChange.OneToNone) || input.stateChange == Input_Manager.StateChange.OneToTwo)
+        {
+
+            //If in the core movement tool, exit it here.
+            if (tools.currentTool == Tools.Tool.CoreMover)
+            {
+                corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, previewPixel.spriteRenderer.sprite);
+                tools.ChangeTool(Tools.Tool.None);
+            }
+
+            //If in the core movement tool, exit it here.
+            if (tools.currentTool == Tools.Tool.TurretEditor)
+            {
+
+                tools.ChangeTool(Tools.Tool.None);
+            }
+
+            pixelPlacement = false;
+        }
+
+        //TOUCH END
+
+        //If the user ends a single touch within the build window...
+        if (inputCoordinateIsVisibleInBuildWindow && input.stateChange == Input_Manager.StateChange.OneToNone)
+        {
+
+            if (tools.currentTool != Tools.Tool.None)
+            {
+                //If in the core movement tool, exit it here.
+                if (tools.currentTool == Tools.Tool.CoreMover)
+                {
+                    coreCoordinates = previewPixel.coordinates;
+                    corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, previewPixel.spriteRenderer.sprite);
+                    tools.ChangeTool(Tools.Tool.None);
+                }
+                //If in the core movement tool, exit it here.
+                else if (tools.currentTool == Tools.Tool.TurretEditor)
+                {
+
+                    tools.ChangeTool(Tools.Tool.None);
+                }
+                else
+                {
+                    if (pixelPlacement)
+                        PlacePixel();
+                }
+
+            }
+
+            pixelPlacement = false;
+        }
+
+
+        // PREVIEW PIXEL PLACEMENT
+
+        if (pixelPlacement)
+        {
+            //Placement preview sprite rendering.
+            previewPixel.sortingLayer = "PreviewPixel";
+            if (tools.currentTool == Tools.Tool.ArmourPlacer)
+                previewPixel.spriteRenderer.sprite = game.sprArmour[Random.Range(0, game.sprArmour.Length)];
+            if (tools.currentTool == Tools.Tool.CoreMover)
+            {
+                previewPixel.sortingLayer = "CorePixel";
+                previewPixel.spriteRenderer.sprite = game.sprCore[Random.Range(0, game.sprCore.Length)];
+            }
+            if (tools.currentTool == Tools.Tool.EnginePlacer)
+                previewPixel.spriteRenderer.sprite = game.sprEngine[Random.Range(0, game.sprEngine.Length)];
+            if (tools.currentTool == Tools.Tool.Eraser)
+            {
+                previewPixel.sortingLayer = "Eraser";
+                previewPixel.spriteRenderer.sprite = game.sprEraser;
+            }
+            if (tools.currentTool == Tools.Tool.HardpointPlacer)
+                previewPixel.spriteRenderer.sprite = game.sprHardpoint[Random.Range(0, game.sprHardpoint.Length)];
+            if (tools.currentTool == Tools.Tool.PowerPlacer)
+                previewPixel.spriteRenderer.sprite = game.sprPower[Random.Range(0, game.sprPower.Length)];
+            if (tools.currentTool == Tools.Tool.ScrapPlacer)
+                previewPixel.spriteRenderer.sprite = game.sprScrap[Random.Range(0, game.sprScrap.Length)];
+            if (tools.currentTool == Tools.Tool.TurretPlacer)
+            {
+                previewPixel.sortingLayer = "PreviewTurret";
+                previewPixel.spriteRenderer.sprite = game.sprTurrets[tools.currentTurretType_index];
+            }
+
             previewPixel.visible = true;
 
-        previewPixel.CalculateSprite();
 
-        //Work out the coordinates of the pixels visible along the edges.
-        Vector2 maxVisibleCoordinates = PositionToCoordinates(new Vector2(camera.viewBounds_worldSpace.x + camera.viewBounds_worldSpace.width, camera.viewBounds_worldSpace.y + camera.viewBounds_worldSpace.height));
-        Vector2 minVisibleCoordinates = PositionToCoordinates(new Vector2(camera.viewBounds_worldSpace.x, camera.viewBounds_worldSpace.y));
+            //Placement preview position.
+            previewPixel.coordinates = inputCoordinate_previewOffset;
 
-        //Calculate whether or not a pixel can be placed.
-        bool canPlacePixel = true;
+            if (previewPixel.coordinates.x > (game.shipArraySqrRootLength - 1))
+                previewPixel.coordinates.x = (game.shipArraySqrRootLength - 1);
+            if (previewPixel.coordinates.x < 0)
+                previewPixel.coordinates.x = 0;
+            if (previewPixel.coordinates.y > (game.shipArraySqrRootLength - 1))
+                previewPixel.coordinates.y = (game.shipArraySqrRootLength - 1);
+            if (previewPixel.coordinates.y < 0)
+                previewPixel.coordinates.y = 0;
 
-        if (previewPixel.hoveredPixel != null && previewPixel.hoveredPixel.type == Pixel.Type.Core)
-            canPlacePixel = false; //Cant replace the core pixel!
+            previewPixel.transform.position = CoordinatesToPosition(previewPixel.coordinates);
 
-        //Check if the edge coordinate is visible. (Requires the grid window to be on the left, offset to go left)
-        if (maxVisibleCoordinates.x < (game.shipArraySqrRootLength - 1))
-        {
-            if (!(previewPixel.coordinates.x < maxVisibleCoordinates.x + 1 && previewPixel.coordinates.x > minVisibleCoordinates.x - 1 && previewPixel.coordinates.y < maxVisibleCoordinates.y + 1 && previewPixel.coordinates.y > minVisibleCoordinates.y - 1))
-                canPlacePixel = false; //If the pixel is not visible in the window, disable placement.
+            //Placement preview selection...
+            previewPixel.selectedPixelPrev = previewPixel.selectedPixel;
+            previewPixel.selectedPixel = pixels[(int)((previewPixel.coordinates.y * game.shipArraySqrRootLength) + previewPixel.coordinates.x)];
+
+            //Placement selection hiding.
+            if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.type == Pixel.Type.Core)
+                previewPixel.visible = false;
+            else
+                previewPixel.visible = true;
+
         }
         else
         {
-            //The edge of the grid doesn't have any further coordinates, so calculate based on the touhc position distance form the view edge.
-            if (!(game.input.inputPosition.x < game.shipArraySqrRootLength + Mathf.Abs(previewPixel.coordinatesOffset.x)))
-                canPlacePixel = false; //If the pixel is not visible in the window, disable placement.
-        }
-
-        //Hide the hover (preview) pixel if placement isn't going to be possible.
-        if (!canPlacePixel)
+            previewPixel.spriteRenderer.sprite = null;
             previewPixel.visible = false;
 
-        //If release touch...
-        if (game.input.statePrev == Input_Manager.State.One && game.input.state == Input_Manager.State.None)
-        {
-            pixelPlacement = false; //End placement mode.
+            //Show any pixels hidden by the previewer.
+            if (previewPixel.selectedPixel != null)
+                previewPixel.selectedPixel.visible = true;
 
-            if (canPlacePixel)
-                PlacePixel(); //Place pixzel.
+            if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.turret != null)
+                previewPixel.selectedPixel.turret.visible = true;
+        }
+
+        //Show any pixels hidden by the previewer when they are no longer selected.
+        if (previewPixel.selectedPixelPrev != previewPixel.selectedPixel)
+        {
+            if (previewPixel.selectedPixelPrev != null)
+            {
+                previewPixel.selectedPixelPrev.visible = true;
+
+                if (previewPixel.selectedPixelPrev.turret != null)
+                    previewPixel.selectedPixelPrev.turret.visible = true;
+
+            }
+        }
+
+        //Hide pixels underneath the preview.
+        if (previewPixel.visible == true && tools.currentTool != Tools.Tool.Eraser)
+        {
+            if (tools.currentTool != Tools.Tool.TurretPlacer)
+            {
+                if (previewPixel.selectedPixel != null)
+                {
+                    previewPixel.selectedPixel.visible = false;
+                    if (previewPixel.selectedPixel.turret != null)
+                        previewPixel.selectedPixel.turret.visible = false;
+                }
+                else
+                {
+                    if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.turret != null)
+                        previewPixel.selectedPixel.turret.visible = false;
+                }
+            }
+            else
+            {
+                if (previewPixel.selectedPixel != null)
+                {
+                    previewPixel.selectedPixel.visible = true;
+
+                    if (previewPixel.selectedPixel.turret != null)
+                        previewPixel.selectedPixel.turret.visible = true;
+
+                }
+            }
+        }
+
+        // TURRET EDITING
+
+        if (tools.currentTool == Tools.Tool.TurretEditor)
+        {
+            Vector2 turretToTouch = (input.inputPosition - (Vector2)turretEditTarget.transform.position);
+            //Acute angle.
+            if (input.inputPosition.x <= turretEditTarget.transform.position.x)
+                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized));
+            else
+                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, 360f - Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized));
         }
     }
 
@@ -278,29 +366,30 @@ public class ShipBuilder_Manager : MonoBehaviour
     void PlacePixel()
     {
         if (tools.currentTool == Tools.Tool.ArmourPlacer && PlaythroughData.armourPixels > usedArmourPixelsCount)
-            BuildPixel(Pixel.Type.Armour, previewPixel.coordinates, previewPixel.spriteVariantIndex);
+            BuildPixel(Pixel.Type.Armour, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
         else if (tools.currentTool == Tools.Tool.EnginePlacer && PlaythroughData.enginePixels > usedEnginePixelsCount)
-            BuildPixel(Pixel.Type.Engine, previewPixel.coordinates, previewPixel.spriteVariantIndex);
+            BuildPixel(Pixel.Type.Engine, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
         else if (tools.currentTool == Tools.Tool.HardpointPlacer && PlaythroughData.hardpointPixels > usedHardpointPixelsCount)
-            BuildPixel(Pixel.Type.Hardpoint, previewPixel.coordinates, previewPixel.spriteVariantIndex);
+            BuildPixel(Pixel.Type.Hardpoint, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
         else if (tools.currentTool == Tools.Tool.Eraser)
-            UnBuildPixel(previewPixel.hoveredPixel);
+            UnBuildPixel(previewPixel.selectedPixel);
         else if (tools.currentTool == Tools.Tool.PowerPlacer && PlaythroughData.powerPixels > usedPowerPixelsCount)
-            BuildPixel(Pixel.Type.Power, previewPixel.coordinates, previewPixel.spriteVariantIndex);
+            BuildPixel(Pixel.Type.Power, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
         else if (tools.currentTool == Tools.Tool.ScrapPlacer && PlaythroughData.scrapPixels > usedScrapPixelsCount)
-            BuildPixel(Pixel.Type.Scrap, previewPixel.coordinates, previewPixel.spriteVariantIndex);
+            BuildPixel(Pixel.Type.Scrap, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
+
         else if (tools.currentTool == Tools.Tool.TurretPlacer)
         {
-            if (previewPixel.hoveredPixel != null && previewPixel.hoveredPixel.type == Pixel.Type.Hardpoint)
+            if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.type == Pixel.Type.Hardpoint)
             {
-                BuildTurret(tools.currentTurretType, previewPixel.hoveredPixel, previewPixel.spriteVariantIndex);
+                turretEditTarget = BuildTurret(tools.currentTurretType, previewPixel.selectedPixel, previewPixel.spriteVariantIndex);
             }
         }
         else if (tools.currentTool == Tools.Tool.CoreMover)
         {
             //Unbuild the core pixel, rebuild it elsewhere.
             UnBuildPixel(corePixel);
-            corePixel = BuildPixel(Pixel.Type.Core, previewPixel.coordinates, coreSpriteVariant);
+            corePixel = BuildPixel(Pixel.Type.Core, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
             coreCoordinates = corePixel.coordinates;
 
             tools.currentTool = Tools.Tool.CoreMover; //Reset the tool to none now its placed.
@@ -332,7 +421,7 @@ public class ShipBuilder_Manager : MonoBehaviour
     }
 
     //Build a pixel in the ship builder.
-    public ShipBuilder_PixelBehavior BuildPixel(Pixel.Type _type, Vector2 _coordinates, int _spriteVariantIndex)
+    public ShipBuilder_PixelBehavior BuildPixel(Pixel.Type _type, Vector2 _coordinates, Sprite _sprite)
     {
         //Calculate the array index position from the passed in coordinates.
         int index = (int)(_coordinates.y * game.shipArraySqrRootLength + _coordinates.x);
@@ -356,7 +445,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         //Assign the pixel behvaior script.
         ShipBuilder_PixelBehavior pixel = pixelObj.AddComponent<ShipBuilder_PixelBehavior>();
-        pixel.Init(index, _type, _coordinates, _spriteVariantIndex);
+        pixel.Init(index, _type, _coordinates, _sprite);
 
         //Update the pixel counter UI.
         userInterface.UpdatePixelCounters();
@@ -477,10 +566,15 @@ public class ShipBuilder_Manager : MonoBehaviour
             TestShip();
     }
 
+    //Clear the grid and reset the core pixel (called by UI).
     public void ToolSelect_ClearGrid()
     {
         if (input.state == Input_Manager.State.None)
+        {
             ClearGrid();
+            coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
+            corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, game.sprCore[coreSpriteVariant]);
+        }
     }
 
     public void SaveShip()
@@ -519,7 +613,7 @@ public class ShipBuilder_Manager : MonoBehaviour
     public void LoadShip()
     {
 
-        ClearBuilderGrid();
+        ClearGrid();
 
         //Iterate through the pixels
         for (int index = 0; index < PlaythroughData.savedPixels.Length; index++)
@@ -528,7 +622,21 @@ public class ShipBuilder_Manager : MonoBehaviour
             if (savedPixel != null)
             {
                 //Generate pixel based on data.
-                ShipBuilder_PixelBehavior pixel = BuildPixel(savedPixel.pixelType, savedPixel.coordinates, savedPixel.spriteVariantIndex);
+                Sprite loadedSprite = null;
+                if (savedPixel.pixelType == Pixel.Type.Armour)
+                    loadedSprite = game.sprArmour[savedPixel.spriteVariantIndex];
+                if (savedPixel.pixelType == Pixel.Type.Core)
+                    loadedSprite = game.sprCore[savedPixel.spriteVariantIndex];
+                if (savedPixel.pixelType == Pixel.Type.Engine)
+                    loadedSprite = game.sprEngine[savedPixel.spriteVariantIndex];
+                if (savedPixel.pixelType == Pixel.Type.Hardpoint)
+                    loadedSprite = game.sprHardpoint[savedPixel.spriteVariantIndex];
+                if (savedPixel.pixelType == Pixel.Type.Power)
+                    loadedSprite = game.sprPower[savedPixel.spriteVariantIndex];
+                if (savedPixel.pixelType == Pixel.Type.Scrap)
+                    loadedSprite = game.sprScrap[savedPixel.spriteVariantIndex];
+
+                ShipBuilder_PixelBehavior pixel = BuildPixel(savedPixel.pixelType, savedPixel.coordinates, loadedSprite);
 
                 //Generate turret based on data.
                 if (savedPixel.turretType != Turret.Type.None)
@@ -552,16 +660,7 @@ public class ShipBuilder_Manager : MonoBehaviour
         game.loadScene("Combat");
     }
 
-    //Clear the grid and reset the core pixel (called by UI).
-    public void ClearGrid()
-    {
-        ClearBuilderGrid();
-        coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
-        corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, coreSpriteVariant);
-    }
-
-    //Clear the grid.
-    void ClearBuilderGrid()
+    void ClearGrid()
     {
         for (int i = 0; i < pixels.Length; i++)
         {
@@ -633,6 +732,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 //Core pixel movement tool.
                 case Tool.CoreMover:
                     currentTool = Tool.CoreMover;
+                    userInterface.button_selected.enabled = false;
                     break;
 
                 //Engine pixel placement tool.
@@ -710,6 +810,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 //Turret editing tool.
                 case Tool.TurretEditor:
                     currentTool = Tool.TurretEditor;
+                    userInterface.button_selected.enabled = false;
                     break;
 
             }

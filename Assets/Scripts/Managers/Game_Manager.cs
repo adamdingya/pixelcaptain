@@ -46,8 +46,9 @@ public class Game_Manager : MonoBehaviour
     public Sprite[] sprPower;
     public Sprite[] sprCore;
     public Sprite[] sprHardpoint;
+    public Sprite sprEraser;
 
-    
+
 
     //Global Awake() method. Calls all others to maintain order.
     public void Awake()
@@ -104,11 +105,7 @@ public class Game_Manager : MonoBehaviour
         if (hadToFindNewCamera)
             camera.Init();
 
-        //Generic Updaters (objects present in every scene).
-        if (!NON_MOBILE_PLATFORM) //Platform specific.
-            input.GetInput();
-        else
-            input.GetInputPC();
+        input.GetInput();
 
 
         camera.OnUpdate();
