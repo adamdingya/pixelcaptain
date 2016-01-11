@@ -52,8 +52,8 @@ MonoBehaviour:
   shipArraySqrRootLength: 30
   UNITY_REMOTE_MODE: 0
   sprTurrets:
-  - {fileID: 21300000, guid: a0983968550453f49a7276b501129b63, type: 3}
-  - {fileID: 21300000, guid: 30d9b5644794f674dac11b4c44a450b8, type: 3}
+  - {fileID: 21300000, guid: 4b6b906633b661147ba829ad546291ea, type: 3}
+  - {fileID: 21300000, guid: 59746ea32f787e245beab213ff216e57, type: 3}
   - {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1, type: 3}
   sprScrap:
   - {fileID: 21300000, guid: 33c7502f02d0faf4a9f8093e00535590, type: 3}
@@ -160,12 +160,12 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: sprTurrets.Array.data[0]
       value: 
-      objectReference: {fileID: 21300000, guid: a0983968550453f49a7276b501129b63,
+      objectReference: {fileID: 21300000, guid: 4b6b906633b661147ba829ad546291ea,
         type: 3}
     - target: {fileID: 0}
       propertyPath: sprTurrets.Array.data[1]
       value: 
-      objectReference: {fileID: 21300000, guid: 30d9b5644794f674dac11b4c44a450b8,
+      objectReference: {fileID: 21300000, guid: 59746ea32f787e245beab213ff216e57,
         type: 3}
     - target: {fileID: 0}
       propertyPath: sprTurrets.Array.data[2]
