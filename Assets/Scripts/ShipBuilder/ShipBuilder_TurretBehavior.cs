@@ -35,13 +35,22 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
     //Reference to the Hardpoint mount pixel.
     public ShipBuilder_PixelBehavior mountPixel;
 
+    //Uder-defined z-rotation which the turret sweeps around.
+    public float facingRotationAngle;
+
+    //Is this turret currently being edited?
+    public bool editing;
+
+    //Sweep Animations
+    float animationIncrement;
+
     //Initialise created turret.
     public void Init(Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int spriteVariantIndex)
     {
         game = Game_Manager.instance;
         builder = game.shipBuilder;
-
-        _mountPixel.turret = this; //Set mount pixel's turret reference to this.
+        mountPixel = _mountPixel;
+        mountPixel.turret = this; //Set mount pixel's turret reference to this.
         transform.position = _mountPixel.transform.position;
         transform.name = _type + " Turret at " + _mountPixel.coordinates;
 
@@ -66,6 +75,9 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             sprite = game.sprTurrets[2];
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_LARGE_COST;
         }
+
+        animationIncrement = 0f;
+
     }
 
     //Destroy this turret, recycle pixels.
@@ -80,6 +92,21 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             builder.usedWeaponPixelsCount -= DefaultValues.DEFAULT_TURRET_LARGE_COST;
 
         GameObject.Destroy(this.gameObject);
+    }
+
+    public void OnUpdate()
+    {
+        if (!editing)
+            animationIncrement += DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED * (DefaultValues.DEFAULT_TURRET_ANGLE_RANGE / mountPixel.turretMountRange); //Increment the animation proportional to the sweep distance ratio (keeps speed constant).
+        else
+            animationIncrement = 0f;
+
+        if (animationIncrement > Mathf.PI * 2f)
+            animationIncrement -= Mathf.PI * 2f;
+
+        float animationAngleShift = Mathf.Sin(animationIncrement);
+
+        transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle + (animationAngleShift * (mountPixel.turretMountRange * 0.5f)));
     }
 
 }

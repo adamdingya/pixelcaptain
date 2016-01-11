@@ -46,6 +46,7 @@ public class Game_Manager : MonoBehaviour
     public Sprite[] sprPower;
     public Sprite[] sprCore;
     public Sprite[] sprHardpoint;
+    public Sprite[] sprHardpointDisabled;
     public Sprite sprEraser;
 
 

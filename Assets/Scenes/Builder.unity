@@ -384,7 +384,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 138732032}
   - 212: {fileID: 138732033}
-  - 114: {fileID: 138732034}
   m_Layer: 0
   m_Name: PixelPlacementPreview
   m_TagString: Untagged
@@ -434,24 +433,6 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
---- !u!114 &138732034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 138732031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30e1ae955d9f4a148a9f08e0cdb7aa39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 0}
-  eraserSprite: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2, type: 3}
-  coordinates: {x: 0, y: 0}
-  selectedPixel: {fileID: 0}
-  selectedPixelPrev: {fileID: 0}
-  coordinatesOffset: {x: 0, y: 0}
-  spriteVariantIndex: 0
 --- !u!1 &220197381
 GameObject:
   m_ObjectHideFlags: 0
@@ -1935,7 +1916,14 @@ MonoBehaviour:
     currentTool: 0
     currentTurretType: 0
     currentTurretType_index: 0
-  previewPixel: {fileID: 138732034}
+  previewPixelObj: {fileID: 138732031}
+  previewPixel:
+    spriteRenderer: {fileID: 0}
+    coordinates: {x: 0, y: 0}
+    selectedPixel: {fileID: 0}
+    selectedPixelPrev: {fileID: 0}
+    coordinatesOffset: {x: 0, y: 0}
+    spriteVariantIndex: 0
   pixels: []
   coreCoordinates: {x: 0, y: 0}
   coreSpriteVariant: 0

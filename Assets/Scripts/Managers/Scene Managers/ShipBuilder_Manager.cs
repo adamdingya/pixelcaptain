@@ -21,9 +21,8 @@ public class ShipBuilder_Manager : MonoBehaviour
     //Ship builder manager sub-classes.
     public UserInterface userInterface;
     public Tools tools;
-
-    //Reference to the preview pixel.
-    public ShipBuilder_PreviewPixel previewPixel;
+    public GameObject previewPixelObj;
+    public PreviewPixel previewPixel;
 
     //Building & saving pixel arrays.
     public ShipBuilder_PixelBehavior[] pixels;
@@ -64,8 +63,11 @@ public class ShipBuilder_Manager : MonoBehaviour
         //Instanciate & initialise ship-builder sub-managers.
         userInterface = new UserInterface();
         tools = new Tools();
+        previewPixel = new PreviewPixel();
+
         userInterface.Init(game);
         tools.Init(game);
+        previewPixel.Init(this);
 
         //Initiliase the ship pixels array.
         pixels = new ShipBuilder_PixelBehavior[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
@@ -82,7 +84,8 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         pixelPlacement = false;
 
-        previewPixel.Init();
+        
+
         tools.ChangeTurretType(DefaultValues.DEFAULT_INITIAL_TURRET_TYPE);
 
         userInterface.UpdatePixelCounters();
@@ -280,7 +283,7 @@ public class ShipBuilder_Manager : MonoBehaviour
             if (previewPixel.coordinates.y < 0)
                 previewPixel.coordinates.y = 0;
 
-            previewPixel.transform.position = CoordinatesToPosition(previewPixel.coordinates);
+            previewPixelObj.transform.position = CoordinatesToPosition(previewPixel.coordinates);
 
             //Placement preview selection...
             previewPixel.selectedPixelPrev = previewPixel.selectedPixel;
@@ -350,19 +353,115 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
 
         // TURRET EDITING
+        if (turretEditTarget != null)
+            turretEditTarget.editing = false;
 
         if (tools.currentTool == Tools.Tool.TurretEditor)
         {
             Vector2 turretToTouch = (input.inputPosition - (Vector2)turretEditTarget.transform.position);
+
+            turretEditTarget.editing = true;
+
             //Acute angle.
             if (input.inputPosition.x <= turretEditTarget.transform.position.x)
-                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized));
+            {
+                turretEditTarget.facingRotationAngle = Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized);
+                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, turretEditTarget.facingRotationAngle);
+            }
             else
-                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, 360f - Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized));
+            {
+                turretEditTarget.facingRotationAngle = 360f - Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized);
+                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, turretEditTarget.facingRotationAngle);
+            }
+        }
+
+
+        // PIXEL UPDATES
+
+        for (int i = 0; i < game.shipArraySqrRootLength * game.shipArraySqrRootLength; i++)
+        {
+            if (pixels[i] != null)
+                pixels[i].OnUpdate();
+        }
+
+    }
+
+    //Iterate through the grid, checking for various conditions.
+    void UpdateGridRelationships()
+    {
+
+        //Set the defaults before checking (catches stuff after pixel deletion).
+        for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
+        {
+            ShipBuilder_PixelBehavior currentPixel = pixels[i];
+
+            if (currentPixel != null && currentPixel.type == Pixel.Type.Hardpoint)
+            {
+                currentPixel.SwitchHardpoint(true);
+                currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE;
+            }
+        }
+
+        int disableDistance = 2; //Turret disable distance.
+
+
+        //Go through and check for turrets, disabling surrounding hardpoints.
+        for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
+        {
+            ShipBuilder_PixelBehavior currentPixel = pixels[i];
+            if (currentPixel != null)
+            {
+                //If there is a turret.
+                if (currentPixel != null && currentPixel.type == Pixel.Type.Hardpoint && currentPixel.turret != null)
+                {
+
+                    //Check for surrounding hardpoints, upgrade the turret angle sweep accordingly.
+                    int numberOfSupportingHardpoints = 0;
+
+                    if (currentPixel.pixel_left != null && currentPixel.pixel_left.type == Pixel.Type.Hardpoint)
+                        numberOfSupportingHardpoints++;
+                    if (currentPixel.pixel_right != null && currentPixel.pixel_right.type == Pixel.Type.Hardpoint)
+                        numberOfSupportingHardpoints++;
+                    if (currentPixel.pixel_above != null && currentPixel.pixel_above.type == Pixel.Type.Hardpoint)
+                        numberOfSupportingHardpoints++;
+                    if (currentPixel.pixel_below != null && currentPixel.pixel_below.type == Pixel.Type.Hardpoint)
+                        numberOfSupportingHardpoints++;
+
+                    if (numberOfSupportingHardpoints == 1)
+                        currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS1;
+                    else if (numberOfSupportingHardpoints == 2)
+                        currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS2;
+                    if (numberOfSupportingHardpoints >= 3)
+                        currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS3;
+
+                    //Access all hardpoint pixels around the turret within a two pixel distance, disable their ability.
+                    Vector2 turretCoordinates = currentPixel.coordinates;
+                    for (int x = (int)turretCoordinates.x - disableDistance; x < (int)turretCoordinates.x + (disableDistance + 1); x++)
+                    {
+                        for (int y = (int)turretCoordinates.y - disableDistance; y < (int)turretCoordinates.y + (disableDistance + 1); y++)
+                        {
+                            Vector2 checkCoordinates = new Vector2(x, y);
+                            if (checkCoordinates != turretCoordinates)
+                            {
+                                int checkIndex = (int)checkCoordinates.y * 30 + (int)checkCoordinates.x;
+                                ShipBuilder_PixelBehavior checkPixel = pixels[checkIndex];
+                                if (checkPixel != null && checkPixel.type == Pixel.Type.Hardpoint)
+                                {
+                                    checkPixel.SwitchHardpoint(false);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //Engine exhaust
+
+
+            }
         }
     }
 
-    //Place a pixel.
+    //Place a pixel or turret.
     void PlacePixel()
     {
         if (tools.currentTool == Tools.Tool.ArmourPlacer && PlaythroughData.armourPixels > usedArmourPixelsCount)
@@ -380,7 +479,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         else if (tools.currentTool == Tools.Tool.TurretPlacer)
         {
-            if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.type == Pixel.Type.Hardpoint)
+            if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.canHaveTurret == true)
             {
                 turretEditTarget = BuildTurret(tools.currentTurretType, previewPixel.selectedPixel, previewPixel.spriteVariantIndex);
             }
@@ -394,6 +493,9 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             tools.currentTool = Tools.Tool.CoreMover; //Reset the tool to none now its placed.
         }
+
+        UpdateGridRelationships();
+
     }
 
     //Position converters.
@@ -599,7 +701,10 @@ public class ShipBuilder_Manager : MonoBehaviour
 
                 //Transfer turret data.
                 if (pixel.turret != null)
+                {
                     savedPixel.turretType = pixel.turret.type;
+                    savedPixel.turretPointingAngle = pixel.turret.facingRotationAngle;
+                }
                 else
                     savedPixel.turretType = Turret.Type.None;
 
@@ -640,7 +745,11 @@ public class ShipBuilder_Manager : MonoBehaviour
 
                 //Generate turret based on data.
                 if (savedPixel.turretType != Turret.Type.None)
-                    BuildTurret(savedPixel.turretType, pixel, 0);
+                {
+                    ShipBuilder_TurretBehavior turret = BuildTurret(savedPixel.turretType, pixel, 0);
+                    turret.facingRotationAngle = savedPixel.turretPointingAngle;
+
+                }
 
                 pixels[index] = pixel;
 
@@ -978,5 +1087,34 @@ public class ShipBuilder_Manager : MonoBehaviour
             }
         }
 
+    }
+
+    [System.Serializable]
+    public class PreviewPixel
+    {
+        //Preview pixel attributes.
+        public SpriteRenderer spriteRenderer;
+        public Vector2 coordinates;
+        public ShipBuilder_PixelBehavior selectedPixel;
+        public ShipBuilder_PixelBehavior selectedPixelPrev;
+        public Vector2 coordinatesOffset;
+        public int spriteVariantIndex;
+        public string sortingLayer
+        {
+            get { return spriteRenderer.sortingLayerName; }
+            set { spriteRenderer.sortingLayerName = value; }
+        }
+        public bool visible
+        {
+            get { return spriteRenderer.enabled; }
+            set { spriteRenderer.enabled = value; }
+        }
+
+        public void Init(ShipBuilder_Manager shipBuidler)
+        {
+            spriteRenderer = shipBuidler.previewPixelObj.GetComponent<SpriteRenderer>();
+            sortingLayer = "PreviewPixel";
+            selectedPixel = null;
+        }
     }
 }

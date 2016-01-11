@@ -67,6 +67,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 191c2deb81e661d428a8008400e65950, type: 3}
   sprHardpoint:
   - {fileID: 21300000, guid: f38ba3ec18e231a4f9af786bf4a598f3, type: 3}
+  sprHardpointDisabled:
+  - {fileID: 21300000, guid: 56a41164ebcec84488746db5bd23b5f8, type: 3}
   sprEraser: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2, type: 3}
 --- !u!1001 &100100000
 Prefab:
@@ -96,9 +98,18 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
+      propertyPath: sprHardpointDisabled.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: sprEraser
       value: 
       objectReference: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprHardpointDisabled.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 56a41164ebcec84488746db5bd23b5f8,
         type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

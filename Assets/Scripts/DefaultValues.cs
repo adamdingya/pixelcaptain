@@ -82,9 +82,20 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_TURRET_DAMAGE = 35f;
 	public static float DEFAULT_TURRET_ROTATION_COEFFICIENT = 5f;
 	public static float DEFAULT_TURRET_ACCURACY = 0.8f;
-	
-	// Shield square attributes
-	public static float DEFAULT_SHIELD_MASS = 170f;
+
+
+    // Hardpoint & turret attributes;
+    public static float DEFAULT_TURRET_ANGLE_RANGE = 90;
+    public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS1 = 180;
+    public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS2 = 270;
+    public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS3 = 360;
+    public static float DEFAULT_TURRET_SWEEP_PREVIEW_SPEED = 0.1f;
+
+
+
+
+    // Shield square attributes
+    public static float DEFAULT_SHIELD_MASS = 170f;
 	public static float DEFAULT_SHIELD_HEALTH = 90f;
 	public static float DEFAULT_SHIELD_COMSUMPTION = 200f;
 	public static int DEFAULT_SHIELD_HORIZONTAL_COVERAGE = 3;

@@ -14,6 +14,12 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     //Instance turret type (If it has one mounted).
     public ShipBuilder_TurretBehavior turret;
 
+    //Can a turret be mounted? (Default true for all hardpoints, but gets altered by their proximity to another turret).
+    public bool canHaveTurret;
+
+    //Range of the mounted turret's sweep, for doubling up hardpoints.
+    public float turretMountRange;
+
     //Array position.
     public Vector2 coordinates;
     public int index;
@@ -70,13 +76,19 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
 
         sprite = _sprite; //Set the sprite to the passed value (Passing maintains consistency between what was previewed and what is placed).
 
+        canHaveTurret = false; //Set the default turret holding ability.
+        turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE;
+
         //Set sprite and increment counters.
         if (_type == Pixel.Type.Armour)
             builder.usedArmourPixelsCount++;
         if (_type == Pixel.Type.Engine)
             builder.usedEnginePixelsCount++;
         if (_type == Pixel.Type.Hardpoint)
+        {
+            canHaveTurret = true; //Hardpoint pixels can have turrets (this ability may get disabled later by the builder manager).
             builder.usedHardpointPixelsCount++;
+        }
         if (_type == Pixel.Type.Power)
             builder.usedPowerPixelsCount++;
         if (_type == Pixel.Type.Scrap)
@@ -87,6 +99,16 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         //Assign self to the pixel array.
         builder.pixels[index] = this;
 
+    }
+
+    //Enable or disable a Hardpoint's turret mount ability.
+    public void SwitchHardpoint(bool _bool)
+    {
+        canHaveTurret = _bool;
+        if (canHaveTurret)
+            sprite = game.sprHardpoint[0];
+        else
+            sprite = game.sprHardpointDisabled[0];
     }
 
     //Destroy pixel.
@@ -189,4 +211,13 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         if (pixel_aboveRight != null)
             pixel_aboveRight.pixel_belowLeft = this;
     }
+
+    //Method which gets called every frame, for animation purposes (keep this lightweight!).
+    public void OnUpdate()
+    {
+        if (turret != null)
+            turret.OnUpdate();
+    }
+
+
 }

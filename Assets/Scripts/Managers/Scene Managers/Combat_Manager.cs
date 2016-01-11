@@ -60,6 +60,7 @@ public class Combat_Manager : MonoBehaviour
                         turret.turretType = buildPixel.turretType;
                         turret.transform.position = buildPixel.transform.position;
                         turret.transform.parent = buildPixel.transform;
+                        turret.transform.localRotation = Quaternion.Euler(0f, 0f, savedPixel.turretPointingAngle);
 						turret.init(buildPixel);
                         buildPixel.turret = turret;
                     }
