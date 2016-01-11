@@ -448,8 +448,8 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   eraserSprite: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2, type: 3}
   coordinates: {x: 0, y: 0}
-  hoveredPixel: {fileID: 0}
-  hoveredPixelPrev: {fileID: 0}
+  selectedPixel: {fileID: 0}
+  selectedPixelPrev: {fileID: 0}
   coordinatesOffset: {x: 0, y: 0}
   spriteVariantIndex: 0
 --- !u!1 &220197381
@@ -1097,75 +1097,6 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!1001 &398475958
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: sprTurrets.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 480140, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: state
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: UNITY_REMOTE_MODE
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: sprTurrets.Array.data[0]
-      value: 
-      objectReference: {fileID: 21300000, guid: c74053526ce78354181f6b86f9762ee2,
-        type: 3}
-    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: sprTurrets.Array.data[1]
-      value: 
-      objectReference: {fileID: 21300000, guid: 30d9b5644794f674dac11b4c44a450b8,
-        type: 3}
-    - target: {fileID: 11417730, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-      propertyPath: sprTurrets.Array.data[2]
-      value: 
-      objectReference: {fileID: 21300000, guid: c22536af42982cb45ae3251499eeff6c,
-        type: 3}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &422933929
 GameObject:
   m_ObjectHideFlags: 0
