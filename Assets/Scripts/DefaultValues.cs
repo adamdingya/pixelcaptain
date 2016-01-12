@@ -22,10 +22,6 @@ public class DefaultValues : MonoBehaviour {
 
     public static Turret.Type DEFAULT_INITIAL_TURRET_TYPE = Turret.Type.Small; //Current turret type.
 
-    public static int DEFAULT_TURRET_TYPE_SMALL_INDEX = 0; //Small type turret's index position in the sprite array.
-    public static int DEFAULT_TURRET_TYPE_MEDIUM_INDEX = 1; //Medium type turret's index position in the sprite array.
-    public static int DEFAULT_TURRET_TYPE_LARGE_INDEX = 2; //Large type turret's index position in the sprite array.
-
     public static float DEFAULT_TURRET_ANGLE_TEMPLATE_ALPHA = 0.3f;
 
     public static float DEFAULT_EXHAUST_REGION_ALPHA = 0.3f;
@@ -37,6 +33,7 @@ public class DefaultValues : MonoBehaviour {
     public static int DEFAULT_TURRET_SMALL_COST = 3;
     public static int DEFAULT_TURRET_MEDIUM_COST = 6;
     public static int DEFAULT_TURRET_LARGE_COST = 9;
+    public static int DEFAULT_TURRET_LASER_COST = 13;
 
     //Ship data.
     public static string DEFAULT_SHIP_NAME = "My Ship";

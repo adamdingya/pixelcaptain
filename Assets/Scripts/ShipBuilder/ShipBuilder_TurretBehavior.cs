@@ -72,31 +72,26 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
         spriteRenderer.sortingLayerName = "Turret";
 
         //Set Turret angle sprite
-            turretAngleTemplate = new GameObject();
-            turretAngleTemplate.transform.parent = transform;
-            turretAngleTemplate.transform.name = transform.name + "'s turret angle template";
-            turretAngleTemplate.transform.position = transform.position;
-            turretAngle_spriteRenderer = turretAngleTemplate.AddComponent<SpriteRenderer>();
-            turretAngle_spriteRenderer.color = new Color(1f, 1f, 1f, DefaultValues.DEFAULT_TURRET_ANGLE_TEMPLATE_ALPHA);
-            turretAngle_spriteRenderer.sortingLayerName = "ExhaustRegion";
+        turretAngleTemplate = new GameObject();
+        turretAngleTemplate.transform.parent = transform;
+        turretAngleTemplate.transform.name = transform.name + "'s turret angle template";
+        turretAngleTemplate.transform.position = transform.position;
+        turretAngle_spriteRenderer = turretAngleTemplate.AddComponent<SpriteRenderer>();
+        turretAngle_spriteRenderer.color = new Color(1f, 1f, 1f, DefaultValues.DEFAULT_TURRET_ANGLE_TEMPLATE_ALPHA);
+        turretAngle_spriteRenderer.sortingLayerName = "ExhaustRegion";
        
+
+        sprite = game.sprTurrets[(int)_type - 1];
 
         //Type specific sprite assignment.
         if (_type == Turret.Type.Small)
-        {
-            sprite = game.sprTurrets[0];
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_SMALL_COST;
-        }
         else if (_type == Turret.Type.Medium)
-        {
-            sprite = game.sprTurrets[1];
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_MEDIUM_COST;
-        }
         else if (_type == Turret.Type.Large)
-        {
-            sprite = game.sprTurrets[2];
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_LARGE_COST;
-        }
+        else if (_type == Turret.Type.Laser)
+            builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_LASER_COST;
 
     }
 

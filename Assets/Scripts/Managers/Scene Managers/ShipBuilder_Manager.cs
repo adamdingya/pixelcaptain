@@ -278,7 +278,7 @@ public class ShipBuilder_Manager : MonoBehaviour
             if (tools.currentTool == Tools.Tool.TurretPlacer)
             {
                 previewPixel.sortingLayer = "PreviewTurret";
-                previewPixel.spriteRenderer.sprite = game.sprTurrets[tools.currentTurretType_index];
+                previewPixel.spriteRenderer.sprite = game.sprTurrets[(int)tools.currentTurretType - 1];
             }
 
             previewPixel.SetVisibility(true);
@@ -687,9 +687,11 @@ public class ShipBuilder_Manager : MonoBehaviour
     //Used by the core-connection algorithm to set pixels accordingly.
     void CheckForCoreConnection(Vector2 _coordinates)
     {
-        if (_coordinates.x >= 0 && _coordinates.x < game.shipArraySqrRootLength && _coordinates.y >= 0 && _coordinates.y < game.shipArraySqrRootLength)
+        int currentIndex = (int)_coordinates.x + (int)(_coordinates.y * game.shipArraySqrRootLength);
+
+        if (currentIndex < pixels.Length && currentIndex >= 0)
         {
-            ShipBuilder_PixelBehavior currentPixel = pixels[(int)_coordinates.x + (int)(_coordinates.y * game.shipArraySqrRootLength)];
+            ShipBuilder_PixelBehavior currentPixel = pixels[currentIndex];
             if (currentPixel != null)
             {
                 if (currentPixel.pixel_left != null && currentPixel.pixel_left.coreConnection == true)
@@ -816,6 +818,8 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     public ShipBuilder_TurretBehavior BuildTurret(Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int _spriteVariantIndex)
     {
+        print(_type);
+
         //If there is a pixel at the build position...
         if (_mountPixel.turret != null)
             _mountPixel.turret.Destroy();
@@ -1010,6 +1014,9 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
         //Recalculate grid pixel relationships.
         UpdateGridRelationships();
+
+        //Update the counters
+        userInterface.UpdatePixelCounters();
     }
 
     public void TestShip()
@@ -1186,20 +1193,25 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             userInterface.image_turretType.sprite = game.sprTurrets[currentTurretType_index];
 
-            if (currentTurretType_index == DefaultValues.DEFAULT_TURRET_TYPE_SMALL_INDEX)
+            if (currentTurretType_index == (int)Turret.Type.Small - 1)
             {
                 currentTurretType = Turret.Type.Small;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_SMALL_COST).ToString();
             }
-            if (currentTurretType_index == DefaultValues.DEFAULT_TURRET_TYPE_MEDIUM_INDEX)
+            if (currentTurretType_index == (int)Turret.Type.Medium - 1)
             {
                 currentTurretType = Turret.Type.Medium;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_MEDIUM_COST).ToString();
             }
-            if (currentTurretType_index == DefaultValues.DEFAULT_TURRET_TYPE_LARGE_INDEX)
+            if (currentTurretType_index == (int)Turret.Type.Large - 1)
             {
                 currentTurretType = Turret.Type.Large;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LARGE_COST).ToString();
+            }
+            if (currentTurretType_index == (int)Turret.Type.Laser - 1)
+            {
+                currentTurretType = Turret.Type.Laser;
+                userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LASER_COST).ToString();
             }
         }
 
@@ -1212,21 +1224,27 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             if (currentTurretType == Turret.Type.Small)
             {
-                currentTurretType_index = DefaultValues.DEFAULT_TURRET_TYPE_SMALL_INDEX;
+                currentTurretType_index = (int)Turret.Type.Small - 1;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_SMALL_COST).ToString();
             }
             if (currentTurretType == Turret.Type.Medium)
             {
-                currentTurretType_index = DefaultValues.DEFAULT_TURRET_TYPE_MEDIUM_INDEX;
+                currentTurretType_index = (int)Turret.Type.Medium - 1;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_MEDIUM_COST).ToString();
             }
             if (currentTurretType == Turret.Type.Large)
             {
-                currentTurretType_index = DefaultValues.DEFAULT_TURRET_TYPE_LARGE_INDEX;
+                currentTurretType_index = (int)Turret.Type.Large - 1;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LARGE_COST).ToString();
+            }
+            if (currentTurretType == Turret.Type.Laser)
+            {
+                currentTurretType_index = (int)Turret.Type.Laser - 1;
+                userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LASER_COST).ToString();
             }
         }
     }
+
 
     //UI Attributes & Methods.
     [System.Serializable]

@@ -212,40 +212,73 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
                 int searchIndex = index + (int)searchOffset.x + ((int)searchOffset.y * game.shipArraySqrRootLength);
 
                 //Assign found pixel/null to the array, increment.
-                if (searchIndex >= 0 && searchIndex < (_pixels.Length - 1))
+                if (searchIndex >= 0 && searchIndex < _pixels.Length)
                     surroundingPixels[surroundingPixelsIndex] = _pixels[searchIndex];
 
                 surroundingPixelsIndex++;
             } 
         }
 
-        //Assign search results to variables for easier access.
-        pixel_belowLeft = surroundingPixels[0];
+        //Set surrounding pixels (account for edges!)
+
+        if (coordinates.x != 0 && coordinates.y != 0)
+            pixel_belowLeft = surroundingPixels[0];
+
+        if (coordinates.y != 0)
+            pixel_below = surroundingPixels[1];
+
+        if (coordinates.x != (game.shipArraySqrRootLength - 1) && coordinates.y != 0)
+            pixel_belowRight = surroundingPixels[2];
+
+        if (coordinates.x != 0)
+            pixel_left = surroundingPixels[3];
+
+        if (coordinates.x != (game.shipArraySqrRootLength - 1))
+            pixel_right = surroundingPixels[4];
+
+        if (coordinates.x != 0 && coordinates.y != (game.shipArraySqrRootLength - 1))
+            pixel_aboveLeft = surroundingPixels[5];
+
+        if (coordinates.y != (game.shipArraySqrRootLength - 1))
+            pixel_above = surroundingPixels[6];
+
+        if (coordinates.x != (game.shipArraySqrRootLength - 1) && coordinates.y != (game.shipArraySqrRootLength - 1))
+            pixel_aboveRight = surroundingPixels[7];
+
+
+        
+        //Mutually assign references of self to surrounding pixels, saves them having to do their own searches!
         if (pixel_belowLeft != null)
             pixel_belowLeft.pixel_aboveRight = this;
-        pixel_below = surroundingPixels[1];
+
         if (pixel_below != null)
             pixel_below.pixel_above = this;
-        pixel_belowRight = surroundingPixels[2];
+
         if (pixel_belowRight != null)
             pixel_belowRight.pixel_aboveLeft = this;
 
-        pixel_left = surroundingPixels[3];
         if (pixel_left != null)
             pixel_left.pixel_right = this;
-        pixel_right = surroundingPixels[4];
+
         if (pixel_right != null)
             pixel_right.pixel_left = this;
 
-        pixel_aboveLeft = surroundingPixels[5];
         if (pixel_aboveLeft != null)
             pixel_aboveLeft.pixel_belowRight = this;
-        pixel_above = surroundingPixels[6];
+
         if (pixel_above != null)
             pixel_above.pixel_below = this;
-        pixel_aboveRight = surroundingPixels[7];
+
         if (pixel_aboveRight != null)
             pixel_aboveRight.pixel_belowLeft = this;
+        
+
+
+        //POSITIONAL SPRITE SCHANGES (EDGES E.T.C) GO HERE!!
+        /// ***
+
+
+
     }
 
     //Method which gets called every frame, for animation purposes (keep this lightweight!).

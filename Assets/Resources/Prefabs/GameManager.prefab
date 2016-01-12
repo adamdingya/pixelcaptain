@@ -55,6 +55,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4b6b906633b661147ba829ad546291ea, type: 3}
   - {fileID: 21300000, guid: 59746ea32f787e245beab213ff216e57, type: 3}
   - {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1, type: 3}
+  - {fileID: 21300000, guid: 127ba668e12f56f4ab6642a5b4d2087e, type: 3}
   sprScrap:
   - {fileID: 21300000, guid: 33c7502f02d0faf4a9f8093e00535590, type: 3}
   sprArmour:
@@ -98,6 +99,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: sprArmour.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.size
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: sprHardpoint.Array.size
@@ -145,6 +150,206 @@ Prefab:
       propertyPath: sprTurretAngleTemplate.Array.data[3]
       value: 
       objectReference: {fileID: 21300000, guid: edaa86360892a694fb37b538e7b7cfc3,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[4]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[5]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[6]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[7]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[8]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[9]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[10]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[11]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[12]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[13]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[14]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[15]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[16]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[17]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[18]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[19]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[20]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[21]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[22]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[23]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[24]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[25]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[26]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[27]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[28]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[29]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[30]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[31]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[32]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[33]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[34]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[35]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[36]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[37]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[38]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[39]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[40]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[41]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[42]
+      value: 
+      objectReference: {fileID: 21300000, guid: d4be7cdb923b68643a8a764803e176e1,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurrets.Array.data[3]
+      value: 
+      objectReference: {fileID: 21300000, guid: 127ba668e12f56f4ab6642a5b4d2087e,
         type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

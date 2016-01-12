@@ -104,8 +104,6 @@ public class Combat_Manager : MonoBehaviour
 			// Adding properties such as mass and health to each gameobject under parent
 			addProperties(child);
 		}
-
-        Debug.Log("Succesfully Loaded Player!");
     }
 
 	void addRigidBodyAndCollider(Transform child){

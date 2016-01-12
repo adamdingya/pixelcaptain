@@ -8,5 +8,5 @@ public class Turret
     /// </summary>
 
     //Define turret types.
-    public enum Type { None, Small, Medium, Large};
+    public enum Type { None, Small, Medium, Large, Laser};
 }
