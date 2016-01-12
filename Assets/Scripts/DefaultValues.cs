@@ -26,6 +26,8 @@ public class DefaultValues : MonoBehaviour {
     public static int DEFAULT_TURRET_TYPE_MEDIUM_INDEX = 1; //Medium type turret's index position in the sprite array.
     public static int DEFAULT_TURRET_TYPE_LARGE_INDEX = 2; //Large type turret's index position in the sprite array.
 
+    public static float DEFAULT_TURRET_ANGLE_TEMPLATE_ALPHA = 0.3f;
+
     public static float DEFAULT_EXHAUST_REGION_ALPHA = 0.3f;
 
     //Combat.
@@ -95,7 +97,7 @@ public class DefaultValues : MonoBehaviour {
     public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS1 = 180;
     public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS2 = 270;
     public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS3 = 360;
-    public static float DEFAULT_TURRET_SWEEP_PREVIEW_SPEED = 0.05f;
+    public static float DEFAULT_TURRET_SWEEP_PREVIEW_SPEED = 0.5f;
 
 
 

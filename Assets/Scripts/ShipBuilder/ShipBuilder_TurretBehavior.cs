@@ -46,7 +46,12 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
     public bool editing;
 
     //Sweep Animations
-    float animationIncrement;
+    float animationAngleShift = 0;
+    bool turnRight = true;
+
+    //Firing angle sprite renderer
+    public GameObject turretAngleTemplate;
+    public SpriteRenderer turretAngle_spriteRenderer;
 
     //Initialise created turret.
     public void Init(Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int spriteVariantIndex)
@@ -65,7 +70,17 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
 
         spriteRenderer = this.gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "Turret";
-        
+
+        //Set Turret angle sprite
+            turretAngleTemplate = new GameObject();
+            turretAngleTemplate.transform.parent = transform;
+            turretAngleTemplate.transform.name = transform.name + "'s turret angle template";
+            turretAngleTemplate.transform.position = transform.position;
+            turretAngle_spriteRenderer = turretAngleTemplate.AddComponent<SpriteRenderer>();
+            turretAngle_spriteRenderer.color = new Color(1f, 1f, 1f, DefaultValues.DEFAULT_TURRET_ANGLE_TEMPLATE_ALPHA);
+            turretAngle_spriteRenderer.sortingLayerName = "ExhaustRegion";
+       
+
         //Type specific sprite assignment.
         if (_type == Turret.Type.Small)
         {
@@ -82,8 +97,6 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             sprite = game.sprTurrets[2];
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_LARGE_COST;
         }
-
-        animationIncrement = 0f;
 
     }
 
@@ -110,23 +123,45 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             spriteRGB = new Vector3(1f, 1f, 1f); //White
     }
 
+    
     public void OnUpdate()
     {
-        if (!editing)
-            animationIncrement += DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED * (DefaultValues.DEFAULT_TURRET_ANGLE_RANGE / mountPixel.turretMountRange); //Increment the animation proportional to the sweep distance ratio (keeps speed constant).
+        //Set Turret angle template sprite depending on mount angle
+        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE)
+            turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[0];
+        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS1)
+            turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[1];
+        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS2)
+            turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[2];
+        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS3)
+            turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[3];
+
+        //Sets turret to sweep in builder
+        if (editing)
+            animationAngleShift = 0;
+              
+        if (turnRight == true && animationAngleShift < mountPixel.turretMountRange * 0.5f)
+        {
+            animationAngleShift += DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED;
+        }
         else
-            animationIncrement = 0f;
+        {
+            turnRight = false;
+            animationAngleShift -= DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED;
+        }
+        if (animationAngleShift < -mountPixel.turretMountRange * 0.5f)
+            turnRight = true;
 
-        if (animationIncrement > Mathf.PI * 2f)
-            animationIncrement -= Mathf.PI * 2f;
-
-        float animationAngleShift = Mathf.Sin(animationIncrement);
+        
 
         //Set rotation
-        transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle + (animationAngleShift * (mountPixel.turretMountRange * 0.5f)));
+        transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle + animationAngleShift);
+        turretAngleTemplate.transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle);
 
         //Set colour
         spriteRenderer.color = new Color (spriteRGB.x, spriteRGB.y, spriteRGB.z, spriteAlpha);
     }
+
+
 
 }

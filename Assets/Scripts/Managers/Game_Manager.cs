@@ -52,6 +52,7 @@ public class Game_Manager : MonoBehaviour
 
     public Sprite sprExhaustRegion;
 
+    public Sprite[] sprTurretAngleTemplate;
     //Global Awake() method. Calls all others to maintain order.
     public void Awake()
     {
