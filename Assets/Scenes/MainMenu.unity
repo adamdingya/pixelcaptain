@@ -425,6 +425,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 11474294, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
+      propertyPath: sprHardpointDisabled.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 64316a8c12f7e4d4c9c5ba066948c147,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 40e958e189ee24043932f3c61793c4dd, type: 2}
   m_IsPrefabParent: 0

@@ -71,6 +71,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6a3d401d1f44a274d8b30fcd9b2b275d, type: 3}
   sprEraser: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2, type: 3}
   sprExhaustRegion: {fileID: 21300000, guid: 64b375e3444a7ec4e93337e6cc49d3f5, type: 3}
+  sprTurretAngleTemplate:
+  - {fileID: 21300000, guid: 7715e86d75a0ee74a80372103ab1ef74, type: 3}
+  - {fileID: 21300000, guid: cc97cd55ca88b9840bbf633395d70d38, type: 3}
+  - {fileID: 21300000, guid: 44ee5f7608e85d444a03486641d7d5d8, type: 3}
+  - {fileID: 21300000, guid: edaa86360892a694fb37b538e7b7cfc3, type: 3}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -103,6 +108,10 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
+      propertyPath: sprTurretAngleTemplate.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: sprEraser
       value: 
       objectReference: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2,
@@ -116,6 +125,26 @@ Prefab:
       propertyPath: sprExhaustRegion
       value: 
       objectReference: {fileID: 21300000, guid: 64b375e3444a7ec4e93337e6cc49d3f5,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurretAngleTemplate.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 7715e86d75a0ee74a80372103ab1ef74,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurretAngleTemplate.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: cc97cd55ca88b9840bbf633395d70d38,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurretAngleTemplate.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: 44ee5f7608e85d444a03486641d7d5d8,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: sprTurretAngleTemplate.Array.data[3]
+      value: 
+      objectReference: {fileID: 21300000, guid: edaa86360892a694fb37b538e7b7cfc3,
         type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
