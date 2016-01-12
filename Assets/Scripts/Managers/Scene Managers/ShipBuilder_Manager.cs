@@ -84,11 +84,12 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         pixelPlacement = false;
 
-        
-
         tools.ChangeTurretType(DefaultValues.DEFAULT_INITIAL_TURRET_TYPE);
 
+        //Update the pixel counter UI.
         userInterface.UpdatePixelCounters();
+        //Recalculate grid pixel relationships.
+        UpdateGridRelationships();
 
     }
 
@@ -191,6 +192,11 @@ public class ShipBuilder_Manager : MonoBehaviour
             {
                 corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, previewPixel.spriteRenderer.sprite);
                 tools.ChangeTool(Tools.Tool.None);
+
+                //Update the pixel counter UI.
+                userInterface.UpdatePixelCounters();
+                //Recalculate grid pixel relationships.
+                UpdateGridRelationships();
             }
 
             //If in the core movement tool, exit it here.
@@ -217,6 +223,11 @@ public class ShipBuilder_Manager : MonoBehaviour
                     coreCoordinates = previewPixel.coordinates;
                     corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, previewPixel.spriteRenderer.sprite);
                     tools.ChangeTool(Tools.Tool.None);
+
+                    //Update the pixel counter UI.
+                    userInterface.UpdatePixelCounters();
+                    //Recalculate grid pixel relationships.
+                    UpdateGridRelationships();
                 }
                 //If in the core movement tool, exit it here.
                 else if (tools.currentTool == Tools.Tool.TurretEditor)
@@ -237,6 +248,8 @@ public class ShipBuilder_Manager : MonoBehaviour
 
 
         // PREVIEW PIXEL PLACEMENT
+
+        previewPixel.visiblePrev = previewPixel.visible; //Sample preview pixel visibiltiy before any changes.
 
         if (pixelPlacement)
         {
@@ -268,8 +281,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 previewPixel.spriteRenderer.sprite = game.sprTurrets[tools.currentTurretType_index];
             }
 
-            previewPixel.visible = true;
-
+            previewPixel.SetVisibility(true);
 
             //Placement preview position.
             previewPixel.coordinates = inputCoordinate_previewOffset;
@@ -291,15 +303,16 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             //Placement selection hiding.
             if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.type == Pixel.Type.Core)
-                previewPixel.visible = false;
+                previewPixel.SetVisibility(false);
             else
-                previewPixel.visible = true;
+                previewPixel.SetVisibility(true);
 
         }
         else
         {
             previewPixel.spriteRenderer.sprite = null;
-            previewPixel.visible = false;
+
+            previewPixel.SetVisibility(false);
 
             //Show any pixels hidden by the previewer.
             if (previewPixel.selectedPixel != null)
@@ -346,8 +359,29 @@ public class ShipBuilder_Manager : MonoBehaviour
                     previewPixel.selectedPixel.visible = true;
 
                     if (previewPixel.selectedPixel.turret != null)
-                        previewPixel.selectedPixel.turret.visible = true;
+                        previewPixel.selectedPixel.turret.visible = false;
 
+                }
+            }
+        }
+
+        // TURRET DIMMING DURING PLACEMENT PREVIEW
+
+        //If there has been a change in preview pixel visibility...
+        if (previewPixel.visible != previewPixel.visiblePrev)
+        {
+            //Dim all the turrets
+            for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
+            {
+                if (pixels[i] != null)
+                {
+                    if (pixels[i].turret != null)
+                    {
+                        if (previewPixel.visible)
+                            pixels[i].turret.spriteAlpha = DefaultValues.DEFAULT_TURRET_DIM;
+                        else
+                            pixels[i].turret.spriteAlpha = 1f;
+                    }
                 }
             }
         }
@@ -378,6 +412,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         // PIXEL UPDATES
 
+        //Iterate through the whole grid once per frame, call pixel's OnUpdate() methods. (lightweight animation code e.t.c).
         for (int i = 0; i < game.shipArraySqrRootLength * game.shipArraySqrRootLength; i++)
         {
             if (pixels[i] != null)
@@ -387,24 +422,30 @@ public class ShipBuilder_Manager : MonoBehaviour
     }
 
     //Iterate through the grid, checking for various conditions.
-    void UpdateGridRelationships()
+    public void UpdateGridRelationships()
     {
-
         //Set the defaults before checking (catches stuff after pixel deletion).
         for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
         {
             ShipBuilder_PixelBehavior currentPixel = pixels[i];
 
-            if (currentPixel != null && currentPixel.type == Pixel.Type.Hardpoint)
+            if (currentPixel != null)
             {
-                currentPixel.SwitchHardpoint(true);
-                currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE;
+                currentPixel.SwitchCoreConnection(false); //Switch core connection off by default.
+
+                if (currentPixel.type == Pixel.Type.Hardpoint)
+                {
+                    currentPixel.SwitchHardpoint(true);
+                    currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE;
+                }
+                else if (currentPixel.type == Pixel.Type.Core)
+                    currentPixel.SwitchCoreConnection(true); //Switch the core's core connection to true, as it always would be.
             }
         }
 
+        // TURRET PROXIMITY
+
         int disableDistance = 2; //Turret disable distance.
-
-
         //Go through and check for turrets, disabling surrounding hardpoints.
         for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
         {
@@ -453,15 +494,21 @@ public class ShipBuilder_Manager : MonoBehaviour
                         }
                     }
                 }
-
-                //Engine exhaust
-
-
             }
         }
+
+        //CORE CONNECTION
+
+
+
+        //******************************************************************************************************************************************************************************************************************************************
+
+
+
+
     }
 
-    //Place a pixel or turret.
+    //Place a pixel or turret / move the core pixel.
     void PlacePixel()
     {
         if (tools.currentTool == Tools.Tool.ArmourPlacer && PlaythroughData.armourPixels > usedArmourPixelsCount)
@@ -480,22 +527,13 @@ public class ShipBuilder_Manager : MonoBehaviour
         else if (tools.currentTool == Tools.Tool.TurretPlacer)
         {
             if (previewPixel.selectedPixel != null && previewPixel.selectedPixel.canHaveTurret == true)
-            {
                 turretEditTarget = BuildTurret(tools.currentTurretType, previewPixel.selectedPixel, previewPixel.spriteVariantIndex);
-            }
-        }
-        else if (tools.currentTool == Tools.Tool.CoreMover)
-        {
-            //Unbuild the core pixel, rebuild it elsewhere.
-            UnBuildPixel(corePixel);
-            corePixel = BuildPixel(Pixel.Type.Core, previewPixel.coordinates, previewPixel.spriteRenderer.sprite);
-            coreCoordinates = corePixel.coordinates;
-
-            tools.currentTool = Tools.Tool.CoreMover; //Reset the tool to none now its placed.
         }
 
+        //Update the pixel counter UI.
+        userInterface.UpdatePixelCounters();
+        //Recalculate grid pixel relationships.
         UpdateGridRelationships();
-
     }
 
     //Position converters.
@@ -549,8 +587,6 @@ public class ShipBuilder_Manager : MonoBehaviour
         ShipBuilder_PixelBehavior pixel = pixelObj.AddComponent<ShipBuilder_PixelBehavior>();
         pixel.Init(index, _type, _coordinates, _sprite);
 
-        //Update the pixel counter UI.
-        userInterface.UpdatePixelCounters();
         return pixel;
     }
 
@@ -569,6 +605,7 @@ public class ShipBuilder_Manager : MonoBehaviour
             }
             _pixel.Destroy();
 
+            //Update the pixel counter UI.
             userInterface.UpdatePixelCounters();
         }
     }
@@ -584,8 +621,6 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         ShipBuilder_TurretBehavior turret = turretObj.AddComponent<ShipBuilder_TurretBehavior>();
         turret.Init(_type, _mountPixel, _spriteVariantIndex);
-
-        userInterface.UpdatePixelCounters();
 
         return turret;
     }
@@ -679,8 +714,16 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
     }
 
+    public void ToolSelect_ChangeShipName()
+    {
+        userInterface.ChangeShipName();
+    }
+
     public void SaveShip()
     {
+        //Recalculate grid pixel relationships.
+        UpdateGridRelationships();
+
         //Iterate through the pixels
         for (int index = 0; index < pixels.Length; index++)
         {
@@ -761,6 +804,8 @@ public class ShipBuilder_Manager : MonoBehaviour
                 }
             }
         }
+        //Recalculate grid pixel relationships.
+        UpdateGridRelationships();
     }
 
     public void TestShip()
@@ -1061,7 +1106,7 @@ public class ShipBuilder_Manager : MonoBehaviour
             button_eraser = GameObject.Find("Button_eraser");
         }
 
-        //Sync the UI pixel amounts to the correct values.
+        //Sync the UI pixel amounts to the correct values.   ADD STAT UI REPORTING HERE <<<<<
         public void UpdatePixelCounters()
         {
             resourceCounter_scrapPixels.text = (PlaythroughData.scrapPixels - shipBuilder.usedScrapPixelsCount).ToString();
@@ -1089,6 +1134,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     }
 
+    //Preview pixel methods and attributes;
     [System.Serializable]
     public class PreviewPixel
     {
@@ -1104,10 +1150,13 @@ public class ShipBuilder_Manager : MonoBehaviour
             get { return spriteRenderer.sortingLayerName; }
             set { spriteRenderer.sortingLayerName = value; }
         }
-        public bool visible
+        public bool visible;
+        public bool visiblePrev;
+
+        public void SetVisibility(bool _bool)
         {
-            get { return spriteRenderer.enabled; }
-            set { spriteRenderer.enabled = value; }
+            visible = _bool;
+            spriteRenderer.enabled = visible;
         }
 
         public void Init(ShipBuilder_Manager shipBuidler)

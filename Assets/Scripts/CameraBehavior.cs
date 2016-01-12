@@ -75,7 +75,6 @@ public class CameraBehavior : MonoBehaviour
         UserMovementEnabled = false;
 
         //Get the UI Canvas & Scaler.
-        UICanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
         UICanvasScaler = UICanvas.GetComponent<CanvasScaler>();
         UICanvasScaler.referenceResolution = DefaultValues.DEFAULT_TARGET_RESOLUTION;
 

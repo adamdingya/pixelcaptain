@@ -135,6 +135,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 11468062, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
+      propertyPath: UICanvas
+      value: 
+      objectReference: {fileID: 1178597699}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
   m_IsPrefabParent: 0

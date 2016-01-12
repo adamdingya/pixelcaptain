@@ -25,6 +25,8 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
         get { return this.spriteRenderer.sprite; }
         set { this.spriteRenderer.sprite = value; }
     }
+    public float spriteAlpha;
+    public Vector3 spriteRGB;
 
     public bool visible
     {
@@ -37,6 +39,8 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
 
     //Uder-defined z-rotation which the turret sweeps around.
     public float facingRotationAngle;
+
+    public bool coreConnection;
 
     //Is this turret currently being edited?
     public bool editing;
@@ -55,6 +59,9 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
         transform.name = _type + " Turret at " + _mountPixel.coordinates;
 
         type = _type;
+
+        spriteAlpha = 1f;
+        spriteRGB = new Vector3(1f, 1f, 1f);
 
         spriteRenderer = this.gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "Turret";
@@ -94,6 +101,15 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
         GameObject.Destroy(this.gameObject);
     }
 
+    public void SwitchCoreConnection(bool _bool)
+    {
+        coreConnection = _bool;
+        if (!coreConnection)
+            spriteRGB = new Vector3(DefaultValues.DEFAULT_NO_CORE_CONNECTION_TINT.r, DefaultValues.DEFAULT_NO_CORE_CONNECTION_TINT.g, DefaultValues.DEFAULT_NO_CORE_CONNECTION_TINT.b); //Tint
+        else
+            spriteRGB = new Vector3(1f, 1f, 1f); //White
+    }
+
     public void OnUpdate()
     {
         if (!editing)
@@ -106,7 +122,11 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
 
         float animationAngleShift = Mathf.Sin(animationIncrement);
 
+        //Set rotation
         transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle + (animationAngleShift * (mountPixel.turretMountRange * 0.5f)));
+
+        //Set colour
+        spriteRenderer.color = new Color (spriteRGB.x, spriteRGB.y, spriteRGB.z, spriteAlpha);
     }
 
 }

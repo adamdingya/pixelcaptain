@@ -47,9 +47,10 @@ public class Game_Manager : MonoBehaviour
     public Sprite[] sprCore;
     public Sprite[] sprHardpoint;
     public Sprite[] sprHardpointDisabled;
+
     public Sprite sprEraser;
 
-
+    public Sprite sprExhaustRegion;
 
     //Global Awake() method. Calls all others to maintain order.
     public void Awake()

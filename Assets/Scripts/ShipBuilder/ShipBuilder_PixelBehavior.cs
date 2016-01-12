@@ -11,6 +11,8 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     //Instance pixel type.
     public Pixel.Type type;
 
+    public bool coreConnection;
+
     //Instance turret type (If it has one mounted).
     public ShipBuilder_TurretBehavior turret;
 
@@ -51,6 +53,11 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     public ShipBuilder_PixelBehavior pixel_above;
     public ShipBuilder_PixelBehavior pixel_aboveRight;
 
+
+    //Exhaust region display
+    public GameObject exhaustRegion;
+    public SpriteRenderer exhaustRegion_spriteRenderer;
+
     //Initialise the pixel.
     public void Init(int _index, Pixel.Type _type, Vector2 _coordinates, Sprite _sprite)
     {
@@ -64,6 +71,8 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         transform.name = _type + " Pixel at " + _coordinates;
 
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+
+        coreConnection = false;
 
         //Get the surrounding pixels.
         GetSurroundingPixels(builder.pixels);
@@ -83,7 +92,17 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         if (_type == Pixel.Type.Armour)
             builder.usedArmourPixelsCount++;
         if (_type == Pixel.Type.Engine)
+        {
             builder.usedEnginePixelsCount++;
+            exhaustRegion = new GameObject();
+            exhaustRegion.transform.parent = transform;
+            exhaustRegion.transform.name = transform.name + "'s exhaust region";
+            exhaustRegion.transform.position = transform.position + new Vector3(0f, -1f, 0f);
+            exhaustRegion_spriteRenderer = exhaustRegion.AddComponent<SpriteRenderer>();
+            exhaustRegion_spriteRenderer.sprite = game.sprExhaustRegion;
+            exhaustRegion_spriteRenderer.color = new Color(1f, 1f, 1f, DefaultValues.DEFAULT_EXHAUST_REGION_ALPHA);
+            exhaustRegion_spriteRenderer.sortingLayerName = "ExhaustRegion";
+        }
         if (_type == Pixel.Type.Hardpoint)
         {
             canHaveTurret = true; //Hardpoint pixels can have turrets (this ability may get disabled later by the builder manager).
@@ -98,6 +117,19 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
 
         //Assign self to the pixel array.
         builder.pixels[index] = this;
+
+    }
+
+    public void SwitchCoreConnection(bool _bool)
+    {
+        coreConnection = _bool;
+        if (!coreConnection)
+            spriteRenderer.color = DefaultValues.DEFAULT_NO_CORE_CONNECTION_TINT;
+        else
+            spriteRenderer.color = Color.white;
+
+        if (turret != null)
+            turret.SwitchCoreConnection(coreConnection);
 
     }
 
@@ -150,6 +182,10 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
             builder.usedPowerPixelsCount--;
         if (type == Pixel.Type.Scrap)
             builder.usedScrapPixelsCount--;
+
+        //Remove any exhaust regions.
+        if (exhaustRegion != null)
+            GameObject.Destroy(exhaustRegion);
 
         //Destroy.
         GameObject.Destroy(gameObject);

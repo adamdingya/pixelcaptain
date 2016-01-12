@@ -1066,7 +1066,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 759425189}
-        m_MethodName: ChangeShipName
+        m_MethodName: ToolSelect_ChangeShipName
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2562,6 +2562,10 @@ Prefab:
       propertyPath: viewBounds
       value: 
       objectReference: {fileID: 1899752916}
+    - target: {fileID: 11468062, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
+      propertyPath: UICanvas
+      value: 
+      objectReference: {fileID: 1403648842}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1408bbffd5bd2a34283acd415c8c1b57, type: 2}
   m_IsPrefabParent: 0

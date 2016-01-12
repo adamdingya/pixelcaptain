@@ -62,6 +62,9 @@ TagManager:
   - name: PreviewTurret
     uniqueID: 598832513
     locked: 0
+  - name: ExhaustRegion
+    uniqueID: 1963934687
+    locked: 0
   - name: Eraser
     uniqueID: 2307917551
     locked: 0
