@@ -447,7 +447,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         int disableDistance = 2; //Turret disable distance.
         //Go through and check for turrets, disabling surrounding hardpoints.
-        for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
+        for (int i = 0; i < ((game.shipArraySqrRootLength * game.shipArraySqrRootLength)); i++)
         {
             ShipBuilder_PixelBehavior currentPixel = pixels[i];
             if (currentPixel != null)
@@ -498,14 +498,207 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
 
         //CORE CONNECTION
+        for (int i = 0; i < game.shipArraySqrRootLength; i++)
+        CoreConnectionSearch();
 
+    }
 
+    void CoreConnectionSearch()
+    {
+        //    ****    OUTWARDS    ****
 
-        //******************************************************************************************************************************************************************************************************************************************
+        Vector2 coreCheckCurrentCoordinates = coreCoordinates;
 
+        int maxRing = 1; //Count the number of rings the first algorithm counts, so the second can count down from there.
 
+        //Step up-left diagonally to a new ring of pixels.
+        for (int currentRing = 0; currentRing < game.shipArraySqrRootLength; currentRing++)
+        {
+            //Work out the length of the current ring's rows/coloumns.
+            int ringSideLength = (2 * (currentRing + 1)) + 1;
 
+            //Choose top-left corner.
+            coreCheckCurrentCoordinates = coreCoordinates - new Vector2((currentRing + 1), -1 * (currentRing + 1));
 
+            //    ****    LOOP ROUND CURRENT RING    ****
+
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < ringSideLength; stepToTopRightCorner++)
+            {
+                //Start on top-left corner, then step to top-right.
+                if (stepToTopRightCorner > 0)
+                    coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step down to bottom-right.
+                coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < (ringSideLength - 1); stepToBottomLeftCorner++)
+            {
+                //Step left to bottom-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step left to bottom-left.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //    ****    REVERSE LOOP ROUND CURRENT RING    ****
+            //Step to bottom-left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < (ringSideLength - 1); stepToBottomLeftCorner++)
+            {
+                //Step down to bottom-left.
+                coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step left to bottom-right.
+                coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < (ringSideLength - 1); stepToTopRightCorner++)
+            {
+                //Step up to top-right.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step left to top-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            maxRing += 1;
+        }
+        //    ****    INWARDS    ****
+        //Start at the outer most edge, step down-right diagonally to a new ring of pixels.
+        for (int currentRing = maxRing; currentRing > 0; currentRing--)
+        {
+            //Work out the length of the current ring's rows/coloumns.
+            int ringSideLength = (2 * (currentRing)) + 1;
+            coreCheckCurrentCoordinates = coreCoordinates + new Vector2(-currentRing, currentRing);
+            CheckForCoreConnection(coreCheckCurrentCoordinates);
+            //    ****    LOOP ROUND CURRENT RING    ****
+
+            //Step to bottom_left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < ringSideLength; stepToBottomLeftCorner++)
+            {
+                //Start on top-left corner, then step to bottom-left.
+                if (stepToBottomLeftCorner > 0)
+                    coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step right to bottom-right.
+                coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < (ringSideLength - 1); stepToTopRightCorner++)
+            {
+                //Step up to top-right.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step left to top-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //    ****    REVERSE LOOP ROUND CURRENT RING    ****
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < (ringSideLength - 1); stepToTopRightCorner++)
+            {
+                //Step right to top-right.
+                coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step down to bottom-right.
+                coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < (ringSideLength - 1); stepToBottomLeftCorner++)
+            {
+                //Step left to bottom-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step up to top-left.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+        }
+    }
+
+    //Used by the core-connection algorithm to set pixels accordingly.
+    void CheckForCoreConnection(Vector2 _coordinates)
+    {
+        if (_coordinates.x >= 0 && _coordinates.x < game.shipArraySqrRootLength && _coordinates.y >= 0 && _coordinates.y < game.shipArraySqrRootLength)
+        {
+            ShipBuilder_PixelBehavior currentPixel = pixels[(int)_coordinates.x + (int)(_coordinates.y * game.shipArraySqrRootLength)];
+            if (currentPixel != null)
+            {
+                if (currentPixel.pixel_left != null && currentPixel.pixel_left.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_aboveLeft != null && currentPixel.pixel_aboveLeft.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_above != null && currentPixel.pixel_above.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_aboveRight != null && currentPixel.pixel_aboveRight.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_right != null && currentPixel.pixel_right.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_belowRight != null && currentPixel.pixel_belowRight.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_below != null && currentPixel.pixel_below.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.pixel_belowLeft != null && currentPixel.pixel_belowLeft.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+
+                if (currentPixel.coreConnection == true)
+                {
+                    if (currentPixel.pixel_left != null)
+                        currentPixel.pixel_left.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_aboveLeft != null)
+                        currentPixel.pixel_aboveLeft.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_above != null)
+                        currentPixel.pixel_above.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_aboveRight != null)
+                        currentPixel.pixel_aboveRight.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_right != null)
+                        currentPixel.pixel_right.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_belowRight != null)
+                        currentPixel.pixel_belowRight.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_below != null)
+                        currentPixel.pixel_below.SwitchCoreConnection(true);
+                    if (currentPixel.pixel_belowLeft != null)
+                        currentPixel.pixel_belowLeft.SwitchCoreConnection(true);
+                }
+            }
+        }
     }
 
     //Place a pixel or turret / move the core pixel.
@@ -1166,4 +1359,6 @@ public class ShipBuilder_Manager : MonoBehaviour
             selectedPixel = null;
         }
     }
+
+
 }

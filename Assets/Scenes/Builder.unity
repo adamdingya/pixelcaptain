@@ -1924,6 +1924,8 @@ MonoBehaviour:
     selectedPixelPrev: {fileID: 0}
     coordinatesOffset: {x: 0, y: 0}
     spriteVariantIndex: 0
+    visible: 0
+    visiblePrev: 0
   pixels: []
   coreCoordinates: {x: 0, y: 0}
   coreSpriteVariant: 0
