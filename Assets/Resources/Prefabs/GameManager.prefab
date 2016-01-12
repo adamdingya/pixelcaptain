@@ -68,7 +68,7 @@ MonoBehaviour:
   sprHardpoint:
   - {fileID: 21300000, guid: f38ba3ec18e231a4f9af786bf4a598f3, type: 3}
   sprHardpointDisabled:
-  - {fileID: 21300000, guid: 6a3d401d1f44a274d8b30fcd9b2b275d, type: 3}
+  - {fileID: 21300000, guid: 64316a8c12f7e4d4c9c5ba066948c147, type: 3}
   sprEraser: {fileID: 21300000, guid: 3c6f82f63714f2c42a6b765ff68536a2, type: 3}
   sprExhaustRegion: {fileID: 21300000, guid: 64b375e3444a7ec4e93337e6cc49d3f5, type: 3}
   sprTurretAngleTemplate:
@@ -119,7 +119,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: sprHardpointDisabled.Array.data[0]
       value: 
-      objectReference: {fileID: 21300000, guid: 6a3d401d1f44a274d8b30fcd9b2b275d,
+      objectReference: {fileID: 21300000, guid: 64316a8c12f7e4d4c9c5ba066948c147,
         type: 3}
     - target: {fileID: 0}
       propertyPath: sprExhaustRegion
