@@ -498,13 +498,44 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
 
         //CORE CONNECTION
-        for (int i = 0; i < game.shipArraySqrRootLength; i++)
         CoreConnectionSearch();
 
+        //Check through pixels, ensuring that none 'core-connected' pixels have neighbors set to disconnected...  (This is the only way we found to handle the caveats discovered in CoreConnectionSearch(), it seems to work - woo!)
+        for (int index = 0; index < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); index++)
+        {
+            bool runSearch = false;
+            ShipBuilder_PixelBehavior currentPixel = pixels[index];
+            if (currentPixel != null && currentPixel.coreConnection == true)
+            {
+                if (currentPixel.pixel_above != null && currentPixel.pixel_above.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_aboveRight != null && currentPixel.pixel_aboveRight.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_right != null && currentPixel.pixel_right.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_belowRight != null && currentPixel.pixel_belowRight.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_below != null && currentPixel.pixel_below.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_belowLeft != null && currentPixel.pixel_belowLeft.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_left != null && currentPixel.pixel_left.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.pixel_aboveLeft != null && currentPixel.pixel_aboveLeft.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+            }
+            //If any are wrong, re-calculate core connections & reset the text.
+            if (runSearch)
+            {
+                CoreConnectionSearch();
+                index = 0;
+            }
+        }
     }
 
     void CoreConnectionSearch()
     {
+
         //    ****    OUTWARDS    ****
 
         Vector2 coreCheckCurrentCoordinates = coreCoordinates;
@@ -677,26 +708,6 @@ public class ShipBuilder_Manager : MonoBehaviour
                     currentPixel.SwitchCoreConnection(true);
                 if (currentPixel.pixel_belowLeft != null && currentPixel.pixel_belowLeft.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-
-                if (currentPixel.coreConnection == true)
-                {
-                    if (currentPixel.pixel_left != null)
-                        currentPixel.pixel_left.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_aboveLeft != null)
-                        currentPixel.pixel_aboveLeft.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_above != null)
-                        currentPixel.pixel_above.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_aboveRight != null)
-                        currentPixel.pixel_aboveRight.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_right != null)
-                        currentPixel.pixel_right.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_belowRight != null)
-                        currentPixel.pixel_belowRight.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_below != null)
-                        currentPixel.pixel_below.SwitchCoreConnection(true);
-                    if (currentPixel.pixel_belowLeft != null)
-                        currentPixel.pixel_belowLeft.SwitchCoreConnection(true);
-                }
             }
         }
     }
@@ -1359,6 +1370,5 @@ public class ShipBuilder_Manager : MonoBehaviour
             selectedPixel = null;
         }
     }
-
-
 }
+
