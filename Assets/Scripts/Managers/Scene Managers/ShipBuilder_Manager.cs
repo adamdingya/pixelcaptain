@@ -69,12 +69,18 @@ public class ShipBuilder_Manager : MonoBehaviour
         tools.Init(game);
         previewPixel.Init(this);
 
-        //Initiliase the ship pixels array.
+        //Initiliase the ship pixels array. Either fill it with saved pixels or set up a new grid... (depending on if there is a saved ship).
         pixels = new ShipBuilder_PixelBehavior[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
-        coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
-        coreSpriteVariant = Random.Range(0, game.sprCore.Length);
-        corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, game.sprCore[coreSpriteVariant]);
-        SaveShip(); //Save the initial ship with the default core pixel;
+        if (!game.savedShip)
+        {
+            coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
+            coreSpriteVariant = Random.Range(0, game.sprCore.Length);
+            corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, game.sprCore[coreSpriteVariant]);
+            SaveShip(); //Save the initial ship with the default core pixel;
+        }
+        else
+            LoadShip();
+        
 
         //Adjust the camera based on ship-builder requirements.
         camera.zoom = DefaultValues.DEFAULT_INITIAL_CAMERA_ZOOM;
@@ -459,13 +465,13 @@ public class ShipBuilder_Manager : MonoBehaviour
                     //Check for surrounding hardpoints, upgrade the turret angle sweep accordingly.
                     int numberOfSupportingHardpoints = 0;
 
-                    if (currentPixel.pixel_left != null && currentPixel.pixel_left.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_left != null && currentPixel.adjacentPixel_left.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
-                    if (currentPixel.pixel_right != null && currentPixel.pixel_right.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_right != null && currentPixel.adjacentPixel_right.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
-                    if (currentPixel.pixel_above != null && currentPixel.pixel_above.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_above != null && currentPixel.adjacentPixel_above.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
-                    if (currentPixel.pixel_below != null && currentPixel.pixel_below.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_below != null && currentPixel.adjacentPixel_below.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
 
                     if (numberOfSupportingHardpoints == 1)
@@ -507,21 +513,21 @@ public class ShipBuilder_Manager : MonoBehaviour
             ShipBuilder_PixelBehavior currentPixel = pixels[index];
             if (currentPixel != null && currentPixel.coreConnection == true)
             {
-                if (currentPixel.pixel_above != null && currentPixel.pixel_above.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_above != null && currentPixel.adjacentPixel_above.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_aboveRight != null && currentPixel.pixel_aboveRight.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_above_right != null && currentPixel.adjacentPixel_above_right.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_right != null && currentPixel.pixel_right.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_right != null && currentPixel.adjacentPixel_right.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_belowRight != null && currentPixel.pixel_belowRight.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_below_right != null && currentPixel.adjacentPixel_below_right.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_below != null && currentPixel.pixel_below.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_below != null && currentPixel.adjacentPixel_below.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_belowLeft != null && currentPixel.pixel_belowLeft.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_below_left != null && currentPixel.adjacentPixel_below_left.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_left != null && currentPixel.pixel_left.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_left != null && currentPixel.adjacentPixel_left.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
-                if (currentPixel.pixel_aboveLeft != null && currentPixel.pixel_aboveLeft.coreConnection != currentPixel.coreConnection)
+                if (currentPixel.adjacentPixel_above_left != null && currentPixel.adjacentPixel_above_left.coreConnection != currentPixel.coreConnection)
                     runSearch = true;
             }
             //If any are wrong, re-calculate core connections & reset the text.
@@ -533,6 +539,7 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
     }
 
+    //Algorithm 
     void CoreConnectionSearch()
     {
 
@@ -694,21 +701,21 @@ public class ShipBuilder_Manager : MonoBehaviour
             ShipBuilder_PixelBehavior currentPixel = pixels[currentIndex];
             if (currentPixel != null)
             {
-                if (currentPixel.pixel_left != null && currentPixel.pixel_left.coreConnection == true)
+                if (currentPixel.adjacentPixel_left != null && currentPixel.adjacentPixel_left.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_aboveLeft != null && currentPixel.pixel_aboveLeft.coreConnection == true)
+                if (currentPixel.adjacentPixel_above_left != null && currentPixel.adjacentPixel_above_left.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_above != null && currentPixel.pixel_above.coreConnection == true)
+                if (currentPixel.adjacentPixel_above != null && currentPixel.adjacentPixel_above.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_aboveRight != null && currentPixel.pixel_aboveRight.coreConnection == true)
+                if (currentPixel.adjacentPixel_above_right != null && currentPixel.adjacentPixel_above_right.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_right != null && currentPixel.pixel_right.coreConnection == true)
+                if (currentPixel.adjacentPixel_right != null && currentPixel.adjacentPixel_right.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_belowRight != null && currentPixel.pixel_belowRight.coreConnection == true)
+                if (currentPixel.adjacentPixel_below_right != null && currentPixel.adjacentPixel_below_right.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_below != null && currentPixel.pixel_below.coreConnection == true)
+                if (currentPixel.adjacentPixel_below != null && currentPixel.adjacentPixel_below.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
-                if (currentPixel.pixel_belowLeft != null && currentPixel.pixel_belowLeft.coreConnection == true)
+                if (currentPixel.adjacentPixel_below_left != null && currentPixel.adjacentPixel_below_left.coreConnection == true)
                     currentPixel.SwitchCoreConnection(true);
             }
         }
@@ -818,8 +825,6 @@ public class ShipBuilder_Manager : MonoBehaviour
 
     public ShipBuilder_TurretBehavior BuildTurret(Turret.Type _type, ShipBuilder_PixelBehavior _mountPixel, int _spriteVariantIndex)
     {
-        print(_type);
-
         //If there is a pixel at the build position...
         if (_mountPixel.turret != null)
             _mountPixel.turret.Destroy();
@@ -922,9 +927,20 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
     }
 
+    //Change the ship name.
     public void ToolSelect_ChangeShipName()
     {
-        userInterface.ChangeShipName();
+        if (!Game_Manager.NON_MOBILE_PLATFORM)
+            userInterface.keyboard = TouchScreenKeyboard.Open(userInterface.text_shipName.text, TouchScreenKeyboardType.Default);
+    }
+    //Required for the ship name change to function ^
+    void OnGUI()
+    {
+        if (userInterface.keyboard != null)
+        {
+            PlaythroughData.shipName = userInterface.keyboard.text;
+            userInterface.text_shipName.text = PlaythroughData.shipName;
+        }
     }
 
     public void SaveShip()
@@ -964,6 +980,8 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             }
         }
+
+        game.savedShip = true;
     }
 
     public void LoadShip()
@@ -1256,8 +1274,8 @@ public class ShipBuilder_Manager : MonoBehaviour
         ShipBuilder_Manager shipBuilder;
 
         //Ship (re-)naming.
-        Text text_shipName;
-        TouchScreenKeyboard keyboard;
+        public Text text_shipName;
+        public TouchScreenKeyboard keyboard;
 
         //White crosshair which highlights the currently selected tool.
         public Image button_selected;
@@ -1286,8 +1304,10 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         public GameObject button_eraser;
 
-        public RectTransform builderGridWindowUI; //Screen space build grid window.
-        public Vector4 builderGridWindow;
+        //Stats
+        public Text stat_totalMass;
+        public Text stat_totalPixelsInShip;
+
 
         //Intialise.
         public void Init(Game_Manager _game)
@@ -1326,6 +1346,10 @@ public class ShipBuilder_Manager : MonoBehaviour
             text_turretCost = GameObject.Find("Text_turretCost").GetComponent<Text>();
 
             button_eraser = GameObject.Find("Button_eraser");
+
+            stat_totalMass = GameObject.Find("Stat_totalMass").GetComponent<Text>();
+            stat_totalPixelsInShip = GameObject.Find("Stat_totalPixelsInShip").GetComponent<Text>();
+
         }
 
         //Sync the UI pixel amounts to the correct values.   ADD STAT UI REPORTING HERE <<<<<
@@ -1337,21 +1361,8 @@ public class ShipBuilder_Manager : MonoBehaviour
             resourceCounter_powerPixels.text = (PlaythroughData.powerPixels - shipBuilder.usedPowerPixelsCount).ToString();
             resourceCounter_hardpointPixels.text = (PlaythroughData.hardpointPixels - shipBuilder.usedHardpointPixelsCount).ToString();
             resourceCounter_turretPixels.text = (PlaythroughData.weaponPixels - shipBuilder.usedWeaponPixelsCount).ToString();
-        }
-
-        //Ship name.
-        public void ChangeShipName()
-        {
-            if (!Game_Manager.NON_MOBILE_PLATFORM)
-                keyboard = TouchScreenKeyboard.Open(text_shipName.text, TouchScreenKeyboardType.Default);
-        }
-        void OnGUI()
-        {
-            if (keyboard != null)
-            {
-                PlaythroughData.shipName = keyboard.text;
-                text_shipName.text = PlaythroughData.shipName;
-            }
+            stat_totalPixelsInShip.text = "Total Pixels Used :" + (shipBuilder.usedScrapPixelsCount + shipBuilder.usedArmourPixelsCount + shipBuilder.usedEnginePixelsCount + shipBuilder.usedHardpointPixelsCount + shipBuilder.usedPowerPixelsCount + shipBuilder.usedWeaponPixelsCount).ToString();
+            stat_totalMass.text = "Total Mass: " + (shipBuilder.usedScrapPixelsCount * DefaultValues.DEFAULT_SCRAP_MASS + shipBuilder.usedArmourPixelsCount * DefaultValues.DEFAULT_ARMOUR_MASS + shipBuilder.usedEnginePixelsCount * DefaultValues.DEFAULT_ENGINE_MASS + shipBuilder.usedHardpointPixelsCount * DefaultValues.DEFAULT_HARDPOINT_MASS + shipBuilder.usedPowerPixelsCount * DefaultValues.DEFAULT_POWER_MASS + shipBuilder.usedWeaponPixelsCount * DefaultValues.DEFAULT_TURRET_MASS).ToString();
         }
 
     }

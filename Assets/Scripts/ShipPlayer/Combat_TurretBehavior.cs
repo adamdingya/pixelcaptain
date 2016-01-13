@@ -13,11 +13,13 @@ public class Combat_TurretBehavior : MonoBehaviour
         spriteRenderer.sortingLayerName = "Turret";
 
 		if (turretType == Turret.Type.Small)
-			spriteRenderer.sprite = Game_Manager.instance.sprTurrets[0];
+			spriteRenderer.sprite = Game_Manager.instance.sprTurrets[(int)Turret.Type.Small - 1];
         if (turretType == Turret.Type.Medium)
-            spriteRenderer.sprite = Game_Manager.instance.sprTurrets[1];
+            spriteRenderer.sprite = Game_Manager.instance.sprTurrets[(int)Turret.Type.Medium - 1];
         if (turretType == Turret.Type.Large)
-            spriteRenderer.sprite = Game_Manager.instance.sprTurrets[2];
+            spriteRenderer.sprite = Game_Manager.instance.sprTurrets[(int)Turret.Type.Large - 1];
+        if (turretType == Turret.Type.Laser)
+            spriteRenderer.sprite = Game_Manager.instance.sprTurrets[(int)Turret.Type.Laser - 1];
 
         transform.name = mountPixel.transform.name + "'s " + turretType + " Turret";
     }

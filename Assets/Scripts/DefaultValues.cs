@@ -88,7 +88,6 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_TURRET_ROTATION_COEFFICIENT = 5f;
 	public static float DEFAULT_TURRET_ACCURACY = 0.8f;
 
-
     // Hardpoint & turret attributes;
     public static float DEFAULT_TURRET_ANGLE_RANGE = 90;
     public static float DEFAULT_TURRET_ANGLE_RANGE_PLUS1 = 180;
