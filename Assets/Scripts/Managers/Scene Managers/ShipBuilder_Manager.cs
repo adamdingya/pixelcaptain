@@ -1361,7 +1361,7 @@ public class ShipBuilder_Manager : MonoBehaviour
             resourceCounter_powerPixels.text = (PlaythroughData.powerPixels - shipBuilder.usedPowerPixelsCount).ToString();
             resourceCounter_hardpointPixels.text = (PlaythroughData.hardpointPixels - shipBuilder.usedHardpointPixelsCount).ToString();
             resourceCounter_turretPixels.text = (PlaythroughData.weaponPixels - shipBuilder.usedWeaponPixelsCount).ToString();
-            stat_totalPixelsInShip.text = "Total Pixels Used :" + (shipBuilder.usedScrapPixelsCount + shipBuilder.usedArmourPixelsCount + shipBuilder.usedEnginePixelsCount + shipBuilder.usedHardpointPixelsCount + shipBuilder.usedPowerPixelsCount + shipBuilder.usedWeaponPixelsCount).ToString();
+            stat_totalPixelsInShip.text = "Total Pixels Used: " + (shipBuilder.usedScrapPixelsCount + shipBuilder.usedArmourPixelsCount + shipBuilder.usedEnginePixelsCount + shipBuilder.usedHardpointPixelsCount + shipBuilder.usedPowerPixelsCount + shipBuilder.usedWeaponPixelsCount).ToString();
             stat_totalMass.text = "Total Mass: " + (shipBuilder.usedScrapPixelsCount * DefaultValues.DEFAULT_SCRAP_MASS + shipBuilder.usedArmourPixelsCount * DefaultValues.DEFAULT_ARMOUR_MASS + shipBuilder.usedEnginePixelsCount * DefaultValues.DEFAULT_ENGINE_MASS + shipBuilder.usedHardpointPixelsCount * DefaultValues.DEFAULT_HARDPOINT_MASS + shipBuilder.usedPowerPixelsCount * DefaultValues.DEFAULT_POWER_MASS + shipBuilder.usedWeaponPixelsCount * DefaultValues.DEFAULT_TURRET_MASS).ToString();
         }
 

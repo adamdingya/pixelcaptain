@@ -105,6 +105,8 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             builder.usedWeaponPixelsCount -= DefaultValues.DEFAULT_TURRET_MEDIUM_COST;
         if (type == Turret.Type.Large)
             builder.usedWeaponPixelsCount -= DefaultValues.DEFAULT_TURRET_LARGE_COST;
+        if (type == Turret.Type.Laser)
+            builder.usedWeaponPixelsCount -= DefaultValues.DEFAULT_TURRET_LASER_COST;
 
         GameObject.Destroy(this.gameObject);
     }
