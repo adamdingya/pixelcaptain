@@ -32,6 +32,12 @@ public class Combat_Manager : MonoBehaviour
 
     }
 
+    public void GoToBuilder()
+    {
+        game.savedShip = true;
+        game.loadScene("Builder");
+    }
+
     void loadPlayer(CompressedPixelData[] savedPixels)
     {
         Vector3 averagePosition = Vector3.zero;
@@ -49,7 +55,7 @@ public class Combat_Manager : MonoBehaviour
                 buildPixel.transform.position = savedPixel.coordinates + new Vector2(0.5f, 0.5f);
                 buildPixel.coordinates = savedPixel.coordinates;
                 buildPixel.index = i;
-				buildPixel.init(this, savedPixel.turretType);
+				buildPixel.init(savedPixel.turretType);
                 //Hardpoint & turret.
                 if (buildPixel.pixelType == Pixel.Type.Hardpoint)
                 {
@@ -69,11 +75,6 @@ public class Combat_Manager : MonoBehaviour
                 shipPixels[i] = buildPixel;
                 averagePositionCount++;
                 averagePosition += buildPixel.transform.position;
-
-                if (pixel.pixelType == Pixel.Type.Hardpoint)
-                    Debug.Log("Imported HardPoint Pixel (Turret: " + pixel.turretType + ") at position " + i + ".");
-                else
-                    Debug.Log("Imported " + pixel.pixelType + "Pixel at position " + i + ".");
             }
         }
 
@@ -89,7 +90,7 @@ public class Combat_Manager : MonoBehaviour
             if (pixel != null)
             {
                 pixel.transform.parent = shipParent.transform;
-                pixel.GetSurroundingPixels();
+                pixel.GetSurroundingPixels(shipPixels);
             }
         }
 
@@ -104,8 +105,6 @@ public class Combat_Manager : MonoBehaviour
 			// Adding properties such as mass and health to each gameobject under parent
 			addProperties(child);
 		}
-
-        Debug.Log("Succesfully Loaded Player!");
     }
 
 	void addRigidBodyAndCollider(Transform child){

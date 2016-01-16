@@ -44,15 +44,14 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
     }
 
     //Surrounding pixels.
-    public ShipBuilder_PixelBehavior pixel_belowLeft;
-    public ShipBuilder_PixelBehavior pixel_below;
-    public ShipBuilder_PixelBehavior pixel_belowRight;
-    public ShipBuilder_PixelBehavior pixel_left;
-    public ShipBuilder_PixelBehavior pixel_right;
-    public ShipBuilder_PixelBehavior pixel_aboveLeft;
-    public ShipBuilder_PixelBehavior pixel_above;
-    public ShipBuilder_PixelBehavior pixel_aboveRight;
-
+    public ShipBuilder_PixelBehavior adjacentPixel_below_left;
+    public ShipBuilder_PixelBehavior adjacentPixel_below;
+    public ShipBuilder_PixelBehavior adjacentPixel_below_right;
+    public ShipBuilder_PixelBehavior adjacentPixel_left;
+    public ShipBuilder_PixelBehavior adjacentPixel_right;
+    public ShipBuilder_PixelBehavior adjacentPixel_above_left;
+    public ShipBuilder_PixelBehavior adjacentPixel_above;
+    public ShipBuilder_PixelBehavior adjacentPixel_above_right;
 
     //Exhaust region display
     public GameObject exhaustRegion;
@@ -150,22 +149,22 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         builder.pixels[index] = null;
 
         //Remove reference from surrounding links (saves recalculating them after every action).
-        if (pixel_belowLeft != null)
-            pixel_belowLeft.pixel_aboveRight = null;
-        if (pixel_below != null)
-            pixel_below.pixel_above = null;
-        if (pixel_belowRight != null)
-            pixel_belowRight.pixel_aboveLeft = null;
-        if (pixel_left != null)
-            pixel_left.pixel_right = null;
-        if (pixel_right != null)
-            pixel_right.pixel_left = null;
-        if (pixel_aboveLeft != null)
-            pixel_aboveLeft.pixel_belowRight = null;
-        if (pixel_above != null)
-            pixel_above.pixel_below = null;
-        if (pixel_aboveRight != null)
-            pixel_aboveRight.pixel_belowLeft = null;
+        if (adjacentPixel_below_left != null)
+            adjacentPixel_below_left.adjacentPixel_above_right = null;
+        if (adjacentPixel_below != null)
+            adjacentPixel_below.adjacentPixel_above = null;
+        if (adjacentPixel_below_right != null)
+            adjacentPixel_below_right.adjacentPixel_above_left = null;
+        if (adjacentPixel_left != null)
+            adjacentPixel_left.adjacentPixel_right = null;
+        if (adjacentPixel_right != null)
+            adjacentPixel_right.adjacentPixel_left = null;
+        if (adjacentPixel_above_left != null)
+            adjacentPixel_above_left.adjacentPixel_below_right = null;
+        if (adjacentPixel_above != null)
+            adjacentPixel_above.adjacentPixel_below = null;
+        if (adjacentPixel_above_right != null)
+            adjacentPixel_above_right.adjacentPixel_below_left = null;
 
         //Remove any turrets.
         if (turret != null)
@@ -212,40 +211,73 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
                 int searchIndex = index + (int)searchOffset.x + ((int)searchOffset.y * game.shipArraySqrRootLength);
 
                 //Assign found pixel/null to the array, increment.
-                if (searchIndex >= 0 && searchIndex < (_pixels.Length - 1))
+                if (searchIndex >= 0 && searchIndex < _pixels.Length)
                     surroundingPixels[surroundingPixelsIndex] = _pixels[searchIndex];
 
                 surroundingPixelsIndex++;
             } 
         }
 
-        //Assign search results to variables for easier access.
-        pixel_belowLeft = surroundingPixels[0];
-        if (pixel_belowLeft != null)
-            pixel_belowLeft.pixel_aboveRight = this;
-        pixel_below = surroundingPixels[1];
-        if (pixel_below != null)
-            pixel_below.pixel_above = this;
-        pixel_belowRight = surroundingPixels[2];
-        if (pixel_belowRight != null)
-            pixel_belowRight.pixel_aboveLeft = this;
+        //Set surrounding pixels (account for edges!)
 
-        pixel_left = surroundingPixels[3];
-        if (pixel_left != null)
-            pixel_left.pixel_right = this;
-        pixel_right = surroundingPixels[4];
-        if (pixel_right != null)
-            pixel_right.pixel_left = this;
+        if (coordinates.x != 0 && coordinates.y != 0)
+            adjacentPixel_below_left = surroundingPixels[0];
 
-        pixel_aboveLeft = surroundingPixels[5];
-        if (pixel_aboveLeft != null)
-            pixel_aboveLeft.pixel_belowRight = this;
-        pixel_above = surroundingPixels[6];
-        if (pixel_above != null)
-            pixel_above.pixel_below = this;
-        pixel_aboveRight = surroundingPixels[7];
-        if (pixel_aboveRight != null)
-            pixel_aboveRight.pixel_belowLeft = this;
+        if (coordinates.y != 0)
+            adjacentPixel_below = surroundingPixels[1];
+
+        if (coordinates.x != (game.shipArraySqrRootLength - 1) && coordinates.y != 0)
+            adjacentPixel_below_right = surroundingPixels[2];
+
+        if (coordinates.x != 0)
+            adjacentPixel_left = surroundingPixels[3];
+
+        if (coordinates.x != (game.shipArraySqrRootLength - 1))
+            adjacentPixel_right = surroundingPixels[4];
+
+        if (coordinates.x != 0 && coordinates.y != (game.shipArraySqrRootLength - 1))
+            adjacentPixel_above_left = surroundingPixels[5];
+
+        if (coordinates.y != (game.shipArraySqrRootLength - 1))
+            adjacentPixel_above = surroundingPixels[6];
+
+        if (coordinates.x != (game.shipArraySqrRootLength - 1) && coordinates.y != (game.shipArraySqrRootLength - 1))
+            adjacentPixel_above_right = surroundingPixels[7];
+
+
+        
+        //Mutually assign references of self to surrounding pixels, saves them having to do their own searches!
+        if (adjacentPixel_below_left != null)
+            adjacentPixel_below_left.adjacentPixel_above_right = this;
+
+        if (adjacentPixel_below != null)
+            adjacentPixel_below.adjacentPixel_above = this;
+
+        if (adjacentPixel_below_right != null)
+            adjacentPixel_below_right.adjacentPixel_above_left = this;
+
+        if (adjacentPixel_left != null)
+            adjacentPixel_left.adjacentPixel_right = this;
+
+        if (adjacentPixel_right != null)
+            adjacentPixel_right.adjacentPixel_left = this;
+
+        if (adjacentPixel_above_left != null)
+            adjacentPixel_above_left.adjacentPixel_below_right = this;
+
+        if (adjacentPixel_above != null)
+            adjacentPixel_above.adjacentPixel_below = this;
+
+        if (adjacentPixel_above_right != null)
+            adjacentPixel_above_right.adjacentPixel_below_left = this;
+        
+
+
+        //POSITIONAL SPRITE SCHANGES (EDGES E.T.C) GO HERE!!
+        /// ***
+
+
+
     }
 
     //Method which gets called every frame, for animation purposes (keep this lightweight!).

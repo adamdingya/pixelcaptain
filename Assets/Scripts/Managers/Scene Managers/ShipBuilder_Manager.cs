@@ -69,12 +69,18 @@ public class ShipBuilder_Manager : MonoBehaviour
         tools.Init(game);
         previewPixel.Init(this);
 
-        //Initiliase the ship pixels array.
+        //Initiliase the ship pixels array. Either fill it with saved pixels or set up a new grid... (depending on if there is a saved ship).
         pixels = new ShipBuilder_PixelBehavior[game.shipArraySqrRootLength * game.shipArraySqrRootLength];
-        coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
-        coreSpriteVariant = Random.Range(0, game.sprCore.Length);
-        corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, game.sprCore[coreSpriteVariant]);
-        SaveShip(); //Save the initial ship with the default core pixel;
+        if (!game.savedShip)
+        {
+            coreCoordinates = new Vector2(game.shipArraySqrRootLength * 0.5f - 1f, game.shipArraySqrRootLength * 0.5f - 1f); //Calculate centre coordinates.
+            coreSpriteVariant = Random.Range(0, game.sprCore.Length);
+            corePixel = BuildPixel(Pixel.Type.Core, coreCoordinates, game.sprCore[coreSpriteVariant]);
+            SaveShip(); //Save the initial ship with the default core pixel;
+        }
+        else
+            LoadShip();
+        
 
         //Adjust the camera based on ship-builder requirements.
         camera.zoom = DefaultValues.DEFAULT_INITIAL_CAMERA_ZOOM;
@@ -278,7 +284,7 @@ public class ShipBuilder_Manager : MonoBehaviour
             if (tools.currentTool == Tools.Tool.TurretPlacer)
             {
                 previewPixel.sortingLayer = "PreviewTurret";
-                previewPixel.spriteRenderer.sprite = game.sprTurrets[tools.currentTurretType_index];
+                previewPixel.spriteRenderer.sprite = game.sprTurrets[(int)tools.currentTurretType - 1];
             }
 
             previewPixel.SetVisibility(true);
@@ -447,7 +453,7 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         int disableDistance = 2; //Turret disable distance.
         //Go through and check for turrets, disabling surrounding hardpoints.
-        for (int i = 0; i < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); i++)
+        for (int i = 0; i < ((game.shipArraySqrRootLength * game.shipArraySqrRootLength)); i++)
         {
             ShipBuilder_PixelBehavior currentPixel = pixels[i];
             if (currentPixel != null)
@@ -459,13 +465,13 @@ public class ShipBuilder_Manager : MonoBehaviour
                     //Check for surrounding hardpoints, upgrade the turret angle sweep accordingly.
                     int numberOfSupportingHardpoints = 0;
 
-                    if (currentPixel.pixel_left != null && currentPixel.pixel_left.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_left != null && currentPixel.adjacentPixel_left.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
-                    if (currentPixel.pixel_right != null && currentPixel.pixel_right.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_right != null && currentPixel.adjacentPixel_right.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
-                    if (currentPixel.pixel_above != null && currentPixel.pixel_above.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_above != null && currentPixel.adjacentPixel_above.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
-                    if (currentPixel.pixel_below != null && currentPixel.pixel_below.type == Pixel.Type.Hardpoint)
+                    if (currentPixel.adjacentPixel_below != null && currentPixel.adjacentPixel_below.type == Pixel.Type.Hardpoint)
                         numberOfSupportingHardpoints++;
 
                     if (numberOfSupportingHardpoints == 1)
@@ -498,14 +504,221 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
 
         //CORE CONNECTION
+        CoreConnectionSearch();
 
+        //Check through pixels, ensuring that none 'core-connected' pixels have neighbors set to disconnected...  (This is the only way we found to handle the caveats discovered in CoreConnectionSearch(), it seems to work - woo!)
+        for (int index = 0; index < (game.shipArraySqrRootLength * game.shipArraySqrRootLength); index++)
+        {
+            bool runSearch = false;
+            ShipBuilder_PixelBehavior currentPixel = pixels[index];
+            if (currentPixel != null && currentPixel.coreConnection == true)
+            {
+                if (currentPixel.adjacentPixel_above != null && currentPixel.adjacentPixel_above.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_above_right != null && currentPixel.adjacentPixel_above_right.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_right != null && currentPixel.adjacentPixel_right.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_below_right != null && currentPixel.adjacentPixel_below_right.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_below != null && currentPixel.adjacentPixel_below.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_below_left != null && currentPixel.adjacentPixel_below_left.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_left != null && currentPixel.adjacentPixel_left.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+                if (currentPixel.adjacentPixel_above_left != null && currentPixel.adjacentPixel_above_left.coreConnection != currentPixel.coreConnection)
+                    runSearch = true;
+            }
+            //If any are wrong, re-calculate core connections & reset the text.
+            if (runSearch)
+            {
+                CoreConnectionSearch();
+                index = 0;
+            }
+        }
+    }
 
+    //Algorithm 
+    void CoreConnectionSearch()
+    {
 
-        //******************************************************************************************************************************************************************************************************************************************
+        //    ****    OUTWARDS    ****
 
+        Vector2 coreCheckCurrentCoordinates = coreCoordinates;
 
+        int maxRing = 1; //Count the number of rings the first algorithm counts, so the second can count down from there.
 
+        //Step up-left diagonally to a new ring of pixels.
+        for (int currentRing = 0; currentRing < game.shipArraySqrRootLength; currentRing++)
+        {
+            //Work out the length of the current ring's rows/coloumns.
+            int ringSideLength = (2 * (currentRing + 1)) + 1;
 
+            //Choose top-left corner.
+            coreCheckCurrentCoordinates = coreCoordinates - new Vector2((currentRing + 1), -1 * (currentRing + 1));
+
+            //    ****    LOOP ROUND CURRENT RING    ****
+
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < ringSideLength; stepToTopRightCorner++)
+            {
+                //Start on top-left corner, then step to top-right.
+                if (stepToTopRightCorner > 0)
+                    coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step down to bottom-right.
+                coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < (ringSideLength - 1); stepToBottomLeftCorner++)
+            {
+                //Step left to bottom-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step left to bottom-left.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //    ****    REVERSE LOOP ROUND CURRENT RING    ****
+            //Step to bottom-left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < (ringSideLength - 1); stepToBottomLeftCorner++)
+            {
+                //Step down to bottom-left.
+                coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step left to bottom-right.
+                coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < (ringSideLength - 1); stepToTopRightCorner++)
+            {
+                //Step up to top-right.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step left to top-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            maxRing += 1;
+        }
+        //    ****    INWARDS    ****
+        //Start at the outer most edge, step down-right diagonally to a new ring of pixels.
+        for (int currentRing = maxRing; currentRing > 0; currentRing--)
+        {
+            //Work out the length of the current ring's rows/coloumns.
+            int ringSideLength = (2 * (currentRing)) + 1;
+            coreCheckCurrentCoordinates = coreCoordinates + new Vector2(-currentRing, currentRing);
+            CheckForCoreConnection(coreCheckCurrentCoordinates);
+            //    ****    LOOP ROUND CURRENT RING    ****
+
+            //Step to bottom_left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < ringSideLength; stepToBottomLeftCorner++)
+            {
+                //Start on top-left corner, then step to bottom-left.
+                if (stepToBottomLeftCorner > 0)
+                    coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step right to bottom-right.
+                coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < (ringSideLength - 1); stepToTopRightCorner++)
+            {
+                //Step up to top-right.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step left to top-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //    ****    REVERSE LOOP ROUND CURRENT RING    ****
+            //Step to top-right corner.
+            for (int stepToTopRightCorner = 0; stepToTopRightCorner < (ringSideLength - 1); stepToTopRightCorner++)
+            {
+                //Step right to top-right.
+                coreCheckCurrentCoordinates.x += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-right corner.
+            for (int stepToBottomRightCorner = 0; stepToBottomRightCorner < (ringSideLength - 1); stepToBottomRightCorner++)
+            {
+                //Step down to bottom-right.
+                coreCheckCurrentCoordinates.y -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to bottom-left corner.
+            for (int stepToBottomLeftCorner = 0; stepToBottomLeftCorner < (ringSideLength - 1); stepToBottomLeftCorner++)
+            {
+                //Step left to bottom-left.
+                coreCheckCurrentCoordinates.x -= 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+            //Step to top-left corner.
+            for (int stepToTopLeftCorner = 0; stepToTopLeftCorner < (ringSideLength - 1); stepToTopLeftCorner++)
+            {
+                //Step up to top-left.
+                coreCheckCurrentCoordinates.y += 1;
+                CheckForCoreConnection(coreCheckCurrentCoordinates);
+            }
+        }
+    }
+
+    //Used by the core-connection algorithm to set pixels accordingly.
+    void CheckForCoreConnection(Vector2 _coordinates)
+    {
+        int currentIndex = (int)_coordinates.x + (int)(_coordinates.y * game.shipArraySqrRootLength);
+
+        if (currentIndex < pixels.Length && currentIndex >= 0)
+        {
+            ShipBuilder_PixelBehavior currentPixel = pixels[currentIndex];
+            if (currentPixel != null)
+            {
+                if (currentPixel.adjacentPixel_left != null && currentPixel.adjacentPixel_left.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_above_left != null && currentPixel.adjacentPixel_above_left.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_above != null && currentPixel.adjacentPixel_above.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_above_right != null && currentPixel.adjacentPixel_above_right.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_right != null && currentPixel.adjacentPixel_right.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_below_right != null && currentPixel.adjacentPixel_below_right.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_below != null && currentPixel.adjacentPixel_below.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+                if (currentPixel.adjacentPixel_below_left != null && currentPixel.adjacentPixel_below_left.coreConnection == true)
+                    currentPixel.SwitchCoreConnection(true);
+            }
+        }
     }
 
     //Place a pixel or turret / move the core pixel.
@@ -714,9 +927,20 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
     }
 
+    //Change the ship name.
     public void ToolSelect_ChangeShipName()
     {
-        userInterface.ChangeShipName();
+        if (!Game_Manager.NON_MOBILE_PLATFORM)
+            userInterface.keyboard = TouchScreenKeyboard.Open(userInterface.text_shipName.text, TouchScreenKeyboardType.Default);
+    }
+    //Required for the ship name change to function ^
+    void OnGUI()
+    {
+        if (userInterface.keyboard != null)
+        {
+            PlaythroughData.shipName = userInterface.keyboard.text;
+            userInterface.text_shipName.text = PlaythroughData.shipName;
+        }
     }
 
     public void SaveShip()
@@ -756,6 +980,8 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             }
         }
+
+        game.savedShip = true;
     }
 
     public void LoadShip()
@@ -806,6 +1032,9 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
         //Recalculate grid pixel relationships.
         UpdateGridRelationships();
+
+        //Update the counters
+        userInterface.UpdatePixelCounters();
     }
 
     public void TestShip()
@@ -982,20 +1211,25 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             userInterface.image_turretType.sprite = game.sprTurrets[currentTurretType_index];
 
-            if (currentTurretType_index == DefaultValues.DEFAULT_TURRET_TYPE_SMALL_INDEX)
+            if (currentTurretType_index == (int)Turret.Type.Small - 1)
             {
                 currentTurretType = Turret.Type.Small;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_SMALL_COST).ToString();
             }
-            if (currentTurretType_index == DefaultValues.DEFAULT_TURRET_TYPE_MEDIUM_INDEX)
+            if (currentTurretType_index == (int)Turret.Type.Medium - 1)
             {
                 currentTurretType = Turret.Type.Medium;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_MEDIUM_COST).ToString();
             }
-            if (currentTurretType_index == DefaultValues.DEFAULT_TURRET_TYPE_LARGE_INDEX)
+            if (currentTurretType_index == (int)Turret.Type.Large - 1)
             {
                 currentTurretType = Turret.Type.Large;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LARGE_COST).ToString();
+            }
+            if (currentTurretType_index == (int)Turret.Type.Laser - 1)
+            {
+                currentTurretType = Turret.Type.Laser;
+                userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LASER_COST).ToString();
             }
         }
 
@@ -1008,21 +1242,27 @@ public class ShipBuilder_Manager : MonoBehaviour
 
             if (currentTurretType == Turret.Type.Small)
             {
-                currentTurretType_index = DefaultValues.DEFAULT_TURRET_TYPE_SMALL_INDEX;
+                currentTurretType_index = (int)Turret.Type.Small - 1;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_SMALL_COST).ToString();
             }
             if (currentTurretType == Turret.Type.Medium)
             {
-                currentTurretType_index = DefaultValues.DEFAULT_TURRET_TYPE_MEDIUM_INDEX;
+                currentTurretType_index = (int)Turret.Type.Medium - 1;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_MEDIUM_COST).ToString();
             }
             if (currentTurretType == Turret.Type.Large)
             {
-                currentTurretType_index = DefaultValues.DEFAULT_TURRET_TYPE_LARGE_INDEX;
+                currentTurretType_index = (int)Turret.Type.Large - 1;
                 userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LARGE_COST).ToString();
+            }
+            if (currentTurretType == Turret.Type.Laser)
+            {
+                currentTurretType_index = (int)Turret.Type.Laser - 1;
+                userInterface.text_turretCost.text = (DefaultValues.DEFAULT_TURRET_LASER_COST).ToString();
             }
         }
     }
+
 
     //UI Attributes & Methods.
     [System.Serializable]
@@ -1034,8 +1274,8 @@ public class ShipBuilder_Manager : MonoBehaviour
         ShipBuilder_Manager shipBuilder;
 
         //Ship (re-)naming.
-        Text text_shipName;
-        TouchScreenKeyboard keyboard;
+        public Text text_shipName;
+        public TouchScreenKeyboard keyboard;
 
         //White crosshair which highlights the currently selected tool.
         public Image button_selected;
@@ -1064,8 +1304,10 @@ public class ShipBuilder_Manager : MonoBehaviour
 
         public GameObject button_eraser;
 
-        public RectTransform builderGridWindowUI; //Screen space build grid window.
-        public Vector4 builderGridWindow;
+        //Stats
+        public Text stat_totalMass;
+        public Text stat_totalPixelsInShip;
+
 
         //Intialise.
         public void Init(Game_Manager _game)
@@ -1104,6 +1346,10 @@ public class ShipBuilder_Manager : MonoBehaviour
             text_turretCost = GameObject.Find("Text_turretCost").GetComponent<Text>();
 
             button_eraser = GameObject.Find("Button_eraser");
+
+            stat_totalMass = GameObject.Find("Stat_totalMass").GetComponent<Text>();
+            stat_totalPixelsInShip = GameObject.Find("Stat_totalPixelsInShip").GetComponent<Text>();
+
         }
 
         //Sync the UI pixel amounts to the correct values.   ADD STAT UI REPORTING HERE <<<<<
@@ -1115,21 +1361,8 @@ public class ShipBuilder_Manager : MonoBehaviour
             resourceCounter_powerPixels.text = (PlaythroughData.powerPixels - shipBuilder.usedPowerPixelsCount).ToString();
             resourceCounter_hardpointPixels.text = (PlaythroughData.hardpointPixels - shipBuilder.usedHardpointPixelsCount).ToString();
             resourceCounter_turretPixels.text = (PlaythroughData.weaponPixels - shipBuilder.usedWeaponPixelsCount).ToString();
-        }
-
-        //Ship name.
-        public void ChangeShipName()
-        {
-            if (!Game_Manager.NON_MOBILE_PLATFORM)
-                keyboard = TouchScreenKeyboard.Open(text_shipName.text, TouchScreenKeyboardType.Default);
-        }
-        void OnGUI()
-        {
-            if (keyboard != null)
-            {
-                PlaythroughData.shipName = keyboard.text;
-                text_shipName.text = PlaythroughData.shipName;
-            }
+            stat_totalPixelsInShip.text = "Total Pixels Used: " + (shipBuilder.usedScrapPixelsCount + shipBuilder.usedArmourPixelsCount + shipBuilder.usedEnginePixelsCount + shipBuilder.usedHardpointPixelsCount + shipBuilder.usedPowerPixelsCount + shipBuilder.usedWeaponPixelsCount).ToString();
+            stat_totalMass.text = "Total Mass: " + (shipBuilder.usedScrapPixelsCount * DefaultValues.DEFAULT_SCRAP_MASS + shipBuilder.usedArmourPixelsCount * DefaultValues.DEFAULT_ARMOUR_MASS + shipBuilder.usedEnginePixelsCount * DefaultValues.DEFAULT_ENGINE_MASS + shipBuilder.usedHardpointPixelsCount * DefaultValues.DEFAULT_HARDPOINT_MASS + shipBuilder.usedPowerPixelsCount * DefaultValues.DEFAULT_POWER_MASS + shipBuilder.usedWeaponPixelsCount * DefaultValues.DEFAULT_TURRET_MASS).ToString();
         }
 
     }
@@ -1167,3 +1400,4 @@ public class ShipBuilder_Manager : MonoBehaviour
         }
     }
 }
+

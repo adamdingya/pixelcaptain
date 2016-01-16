@@ -53,6 +53,12 @@ public class Game_Manager : MonoBehaviour
     public Sprite sprExhaustRegion;
 
     public Sprite[] sprTurretAngleTemplate;
+
+    //Is there a saved ship?
+    public bool savedShip = false;
+
+
+
     //Global Awake() method. Calls all others to maintain order.
     public void Awake()
     {
