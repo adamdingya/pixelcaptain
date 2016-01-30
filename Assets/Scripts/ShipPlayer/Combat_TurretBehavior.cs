@@ -6,8 +6,10 @@ public class Combat_TurretBehavior : MonoBehaviour
     public Turret.Type turretType;
     public SpriteRenderer spriteRenderer;
     public Combat_PixelBehavior mountPixel;
+	public float turretFacingAngle;
+	public float turretMountRange;
 
-    public void init(Combat_PixelBehavior mountPixel)
+    public void Init(Combat_PixelBehavior mountPixel)
     {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sortingLayerName = "Turret";
@@ -21,6 +23,7 @@ public class Combat_TurretBehavior : MonoBehaviour
         if (turretType == Turret.Type.Laser)
             spriteRenderer.sprite = Game_Manager.instance.sprTurrets[(int)Turret.Type.Laser - 1];
 
+		this.mountPixel = mountPixel;
         transform.name = mountPixel.transform.name + "'s " + turretType + " Turret";
     }
 	

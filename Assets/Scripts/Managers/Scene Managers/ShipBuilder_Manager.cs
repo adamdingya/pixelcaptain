@@ -405,13 +405,13 @@ public class ShipBuilder_Manager : MonoBehaviour
             //Acute angle.
             if (input.inputPosition.x <= turretEditTarget.transform.position.x)
             {
-                turretEditTarget.facingRotationAngle = Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized);
-                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, turretEditTarget.facingRotationAngle);
+				turretEditTarget.turretFacingAngle = Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized);
+				turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, turretEditTarget.turretFacingAngle);
             }
             else
             {
-                turretEditTarget.facingRotationAngle = 360f - Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized);
-                turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, turretEditTarget.facingRotationAngle);
+				turretEditTarget.turretFacingAngle = 360f - Vector2.Angle(new Vector2(0f, 1f), turretToTouch.normalized);
+				turretEditTarget.transform.rotation = Quaternion.Euler(0f, 0f, turretEditTarget.turretFacingAngle);
             }
         }
 
@@ -442,7 +442,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 if (currentPixel.type == Pixel.Type.Hardpoint)
                 {
                     currentPixel.SwitchHardpoint(true);
-                    currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE;
+                    currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_MOUNT_RANGE;
                 }
                 else if (currentPixel.type == Pixel.Type.Core)
                     currentPixel.SwitchCoreConnection(true); //Switch the core's core connection to true, as it always would be.
@@ -475,11 +475,11 @@ public class ShipBuilder_Manager : MonoBehaviour
                         numberOfSupportingHardpoints++;
 
                     if (numberOfSupportingHardpoints == 1)
-                        currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS1;
+						currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_MOUNT_RANGE * 2;
                     else if (numberOfSupportingHardpoints == 2)
-                        currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS2;
+						currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_MOUNT_RANGE * 3;
                     if (numberOfSupportingHardpoints >= 3)
-                        currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS3;
+						currentPixel.turretMountRange = DefaultValues.DEFAULT_TURRET_MOUNT_RANGE * 4;
 
                     //Access all hardpoint pixels around the turret within a two pixel distance, disable their ability.
                     Vector2 turretCoordinates = currentPixel.coordinates;
@@ -955,29 +955,28 @@ public class ShipBuilder_Manager : MonoBehaviour
             PlaythroughData.savedPixels[index] = null;
 
             //Get the current saving pixel.
-            ShipBuilder_PixelBehavior pixel = pixels[index];
+            ShipBuilder_PixelBehavior pixelBehaviour = pixels[index];
 
             //If it is an actual pixel, write it to the array.
-            if (pixel != null)
+			if (pixelBehaviour != null)
             {
                 //Transfer pixel data.
                 CompressedPixelData savedPixel = new CompressedPixelData();
-                savedPixel.pixelType = pixel.type;
-                savedPixel.coordinates = pixel.coordinates;
-                savedPixel.spriteVariantIndex = pixel.spriteVariantIndex;
+				savedPixel.pixelType = pixelBehaviour.type;
+				savedPixel.coordinates = pixelBehaviour.coordinates;
+				savedPixel.spriteVariantIndex = pixelBehaviour.spriteVariantIndex;
 
                 //Transfer turret data.
-                if (pixel.turret != null)
+				if (pixelBehaviour.turret != null)
                 {
-                    savedPixel.turretType = pixel.turret.type;
-                    savedPixel.turretPointingAngle = pixel.turret.facingRotationAngle;
+					savedPixel.turretType = pixelBehaviour.turret.type;
+					savedPixel.turretFacingAngle = pixelBehaviour.turret.turretFacingAngle;
+					savedPixel.turretMountRange = pixelBehaviour.turretMountRange;
                 }
                 else
                     savedPixel.turretType = Turret.Type.None;
 
-
                 PlaythroughData.savedPixels[index] = savedPixel;
-
             }
         }
 
@@ -1016,8 +1015,7 @@ public class ShipBuilder_Manager : MonoBehaviour
                 if (savedPixel.turretType != Turret.Type.None)
                 {
                     ShipBuilder_TurretBehavior turret = BuildTurret(savedPixel.turretType, pixel, 0);
-                    turret.facingRotationAngle = savedPixel.turretPointingAngle;
-
+					turret.turretFacingAngle = savedPixel.turretFacingAngle;
                 }
 
                 pixels[index] = pixel;

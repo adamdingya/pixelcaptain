@@ -4,7 +4,7 @@ using System;
 
 public class AsteroidController : MonoBehaviour {
 
-	public Asteroid asteroid;
+	private Asteroid asteroid;
 
 	// Use this for initialization
 	void Start () {
@@ -17,7 +17,7 @@ public class AsteroidController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// Rotating astroids.
+		// Rotating asteroids.
 		transform.Rotate (Vector3.forward * asteroid.getRotationCoefficient() * Time.deltaTime);
 	}
 

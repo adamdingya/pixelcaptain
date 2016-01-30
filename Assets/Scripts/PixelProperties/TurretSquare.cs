@@ -4,7 +4,6 @@ using System.Collections;
 public class TurretSquare : MonoBehaviour {
 
 	public float mass;
-	public float health;
 	public float comsumption;
 	public int barrelCount;
 	public float bulletSpeed;
@@ -14,32 +13,31 @@ public class TurretSquare : MonoBehaviour {
 	public float rotationCoefficient;
 	public float accuracy;
 
-	public void init(){
+	public void init(Turret.Type type){
 		mass = DefaultValues.DEFAULT_TURRET_MASS;
-		health = DefaultValues.DEFAULT_TURRET_HEALTH;
 		comsumption = DefaultValues.DEFAULT_TURRET_COMSUMPTION;
 		barrelCount = DefaultValues.DEFAULT_TURRET_BARREL_COUNT;
 		bulletSpeed = DefaultValues.DEFAULT_TURRET_BULLET_SPEED;
 		rateOfFire = DefaultValues.DEFAULT_TURRET_RATE_OF_FIRE;
-		range = DefaultValues.DEFAULT_TURRET_RANGE;
 		damage = DefaultValues.DEFAULT_TURRET_DAMAGE;
 		rotationCoefficient = DefaultValues.DEFAULT_TURRET_ROTATION_COEFFICIENT;
 		accuracy = DefaultValues.DEFAULT_TURRET_ACCURACY;
+		switch (type) {
+		case Turret.Type.Small:
+			range = DefaultValues.DEFAULT_TURRET_SMALL_FIRING_RANGE;
+			break;
+		case Turret.Type.Medium:
+			range = DefaultValues.DEFAULT_TURRET_MEDIUM_FIRING_RANGE;
+			break;
+		case Turret.Type.Large:
+			range = DefaultValues.DEFAULT_TURRET_LARGE_FIRING_RANGE;
+			break;
+		case Turret.Type.Laser:
+			range = DefaultValues.DEFAULT_TURRET_LASER_FIRING_RANGE;
+			break;
+		}
 	}
 
-	public void init(float mass, float health, float comsumption, int barrelCount, float bulletSpeed, float rateOfFire, float range, float damage, float rotationCoefficient, float accuracy) {
-		this.mass = mass;
-		this.health = health;
-		this.comsumption = comsumption;
-		this.barrelCount = barrelCount;
-		this.bulletSpeed = bulletSpeed;
-		this.rateOfFire = rateOfFire;
-		this.range = range;
-		this.damage = damage;
-		this.rotationCoefficient = rotationCoefficient;
-		this.accuracy = accuracy;
-	}
-	
 	public void setComsumption(float comsumption){
 		this.comsumption = comsumption;
 	}
