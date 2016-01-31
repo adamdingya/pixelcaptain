@@ -73,15 +73,15 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_TURRET_MASS = 150f;
 	public static float DEFAULT_TURRET_COMSUMPTION = 150f;
 	public static int DEFAULT_TURRET_BARREL_COUNT = 1;
-	public static float DEFAULT_TURRET_BULLET_SPEED = 600f;
-	public static float DEFAULT_TURRET_RATE_OF_FIRE = 5f;
+	public static float DEFAULT_TURRET_BULLET_SPEED = 1500f;
+	public static float DEFAULT_TURRET_COOLDOWN = 3f;
 	public static float DEFAULT_TURRET_DAMAGE = 35f;
 	public static float DEFAULT_TURRET_ROTATION_COEFFICIENT = 5f;
 	public static float DEFAULT_TURRET_ACCURACY = 0.8f;
-	public static float DEFAULT_TURRET_SMALL_FIRING_RANGE = 200f;
-	public static float DEFAULT_TURRET_MEDIUM_FIRING_RANGE = 100f;
-	public static float DEFAULT_TURRET_LARGE_FIRING_RANGE = 100f;
-	public static float DEFAULT_TURRET_LASER_FIRING_RANGE = 100f;
+	public static float DEFAULT_TURRET_SMALL_FIRING_RANGE = 1500f;
+	public static float DEFAULT_TURRET_MEDIUM_FIRING_RANGE = 1000f;
+	public static float DEFAULT_TURRET_LARGE_FIRING_RANGE = 1000f;
+	public static float DEFAULT_TURRET_LASER_FIRING_RANGE = 1000f;
 
     // Hardpoint & turret attributes;
 	public static float DEFAULT_TURRET_MOUNT_RANGE = 90;
@@ -106,11 +106,8 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_ASTEROID_FORCE_X_MAX = 75f;
 	public static float DEFAULT_ASTEROID_FORCE_Y_MIN = 25f;
 	public static float DEFUALT_ASTEROID_FORCE_Y_MAX = 75f;
-
-
+	
 	public static float DEFAULT_BULLET_SELF_DESTRUCTION_TIME = 10f;
-	public static int DEFAULT_MAX_CONCURRENT_ENEMY_COUNT = 3;
-	public static Vector3[] DEFAULT_ENEMY_SPAWNING_POINT = new Vector3[]{new Vector3(16f, 13f, -1f), new Vector3(10f, 13f, -1f), new Vector3(16f, 6f, -1f)};	
 
 	// Development test attributes
 	public static bool turretOn = true;

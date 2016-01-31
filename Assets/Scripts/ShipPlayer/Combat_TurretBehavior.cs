@@ -7,7 +7,7 @@ public class Combat_TurretBehavior : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Combat_PixelBehavior mountPixel;
 	public float turretFacingAngle;
-	public float turretMountRange;
+	public float turretMountSpan;
 
     public void Init(Combat_PixelBehavior mountPixel)
     {

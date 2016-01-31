@@ -68,7 +68,7 @@ public class Combat_Manager : MonoBehaviour
 						turretBehaviour.transform.parent = buildPixel.transform;
 						turretBehaviour.transform.localRotation = Quaternion.Euler(0f, 0f, savedPixel.turretFacingAngle);
 						turretBehaviour.turretFacingAngle = savedPixel.turretFacingAngle;
-						turretBehaviour.turretMountRange = savedPixel.turretMountRange;
+						turretBehaviour.turretMountSpan = savedPixel.turretMountRange;
 
 						turretBehaviour.Init(buildPixel);
 						buildPixel.turretBehaviour = turretBehaviour;
@@ -146,7 +146,7 @@ public class Combat_Manager : MonoBehaviour
 			if(child.transform.childCount!=0){
 				Combat_TurretBehavior turretBehavior = child.transform.GetChild(0).GetComponent<Combat_TurretBehavior> ();	
 				TurretSquare turretSquare = child.transform.GetChild(0).gameObject.AddComponent<TurretSquare>();
-				turretSquare.init(turretBehavior.turretType);
+				turretSquare.Init(turretBehavior.turretType);
 				// Adding controller to the turret
 				child.transform.GetChild(0).gameObject.AddComponent<TurretController> ();	
 			}

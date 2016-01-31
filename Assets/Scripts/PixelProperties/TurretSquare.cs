@@ -7,18 +7,18 @@ public class TurretSquare : MonoBehaviour {
 	public float comsumption;
 	public int barrelCount;
 	public float bulletSpeed;
-	public float rateOfFire;
+	public float cooldown;
 	public float range;
 	public float damage;
 	public float rotationCoefficient;
 	public float accuracy;
 
-	public void init(Turret.Type type){
+	public void Init(Turret.Type type){
 		mass = DefaultValues.DEFAULT_TURRET_MASS;
 		comsumption = DefaultValues.DEFAULT_TURRET_COMSUMPTION;
 		barrelCount = DefaultValues.DEFAULT_TURRET_BARREL_COUNT;
 		bulletSpeed = DefaultValues.DEFAULT_TURRET_BULLET_SPEED;
-		rateOfFire = DefaultValues.DEFAULT_TURRET_RATE_OF_FIRE;
+		cooldown = DefaultValues.DEFAULT_TURRET_COOLDOWN;
 		damage = DefaultValues.DEFAULT_TURRET_DAMAGE;
 		rotationCoefficient = DefaultValues.DEFAULT_TURRET_ROTATION_COEFFICIENT;
 		accuracy = DefaultValues.DEFAULT_TURRET_ACCURACY;
@@ -62,12 +62,12 @@ public class TurretSquare : MonoBehaviour {
 		return bulletSpeed;
 	}
 
-	public void setRateOfFire(float rateOfFire){
-		this.rateOfFire = rateOfFire;
+	public void setCooldown(float cooldown){
+		this.cooldown = cooldown;
 	}
 	
-	public float getRateOfFire(){
-		return rateOfFire;
+	public float getCooldown(){
+		return cooldown;
 	}
 
 	public void setRange(float range){
