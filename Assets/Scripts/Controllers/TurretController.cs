@@ -1,56 +1,157 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System;
 
 public class TurretController : MonoBehaviour
 {	
-	private GameObject player;
-	private ArrayList enemies = new ArrayList();
-	private bool isFiring;
-		
+	private Combat_TurretBehavior combatTurretBehaviour; 
+	private TurretSquare turretSquare;
+	public float turretAngleLeft;
+	public float turretAngleRight;
+	public Vector3 shipRotation;
+	public float initialFacingAngle;
+	public Vector3 targetAngle;
+	public float cooldown;
+	
 	private float bulletSpeed = DefaultValues.DEFAULT_TURRET_BULLET_SPEED;
 	private float bulletSelfDestructionTime = DefaultValues.DEFAULT_BULLET_SELF_DESTRUCTION_TIME;
-	private float bulletRateOfFire = DefaultValues.DEFAULT_TURRET_RATE_OF_FIRE;
-
-	public Rigidbody2D bullet;
+	private float turretCooldown = DefaultValues.DEFAULT_TURRET_COOLDOWN;
 
 	// Use this for initialization
 	void Start()
 	{
-		player = GameObject.FindGameObjectWithTag("Player");
-		enemies.AddRange (GameObject.FindGameObjectsWithTag("Enemy"));
-		isFiring = false;
+		combatTurretBehaviour = gameObject.GetComponent<Combat_TurretBehavior>();
+		turretSquare = gameObject.GetComponent<TurretSquare> ();
+		initialFacingAngle = combatTurretBehaviour.turretFacingAngle;
+		cooldown = turretSquare.cooldown;
 	}
 	
 	// Update is called once per frame
 	void Update()
 	{
-		// locking the turrent onto the pivot point of the player's ship
-		this.transform.position.Set(player.transform.position.x, player.transform.position.y, this.transform.position.z);
+		if (DefaultValues.turretOn) {	
 
-		if (enemies.Count != 0) {
-			GameObject anEnemy = enemies[0] as GameObject;
-			if(anEnemy==null){
-				enemies.RemoveAt(0);
+			if(manualSelection()){	
+				//TODO
 			} else {
-				Quaternion rotation = Quaternion.LookRotation (anEnemy.transform.position - this.transform.position, this.transform.TransformDirection (Vector3.back));
-				this.transform.rotation = new Quaternion (0f, 0f, rotation.z, rotation.w);
-				if(!isFiring){
-					InvokeRepeating ("fire", 1f, bulletRateOfFire);
-					isFiring = true;
+				// If ship rotates, the turret facing angle changes as well.
+				calculateTurretSpan();
+				// Returns the nearest enemy for the given turret within its span
+				GameObject nearestTargetableEnemy = calculateNearestTargetableEnemy();
+				if(nearestTargetableEnemy != null){
+					// Debug line.
+					Debug.DrawLine (transform.position, nearestTargetableEnemy.transform.position, Color.green);
+
+					// Rotating turret to the acquired target.
+					Quaternion targetRelativeAngle = Quaternion.LookRotation (nearestTargetableEnemy.transform.position - this.transform.position, this.transform.TransformDirection (Vector3.back));
+					targetRelativeAngle.x = 0;
+					targetRelativeAngle.y = 0;
+					targetAngle = targetRelativeAngle.eulerAngles;
+					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRelativeAngle, Time.deltaTime * 200f);
+					
+					// Ray casting as turret turns and fire if ray cast hits an gameobject with the hostile layer.
+					RaycastHit2D hit = Physics2D.Raycast (transform.position, transform.up, turretSquare.range, 1 << 9);
+					if(hit){
+						if(cooldown <= 0){
+							fire ();
+							cooldown = turretSquare.cooldown;
+						} else {
+							cooldown = cooldown - Time.deltaTime;
+						}
+					}
+				}		
+			}
+		}
+	}
+
+	private void calculateTurretSpan(){
+		shipRotation = transform.root.eulerAngles;
+		turretAngleLeft = shipRotation.z + initialFacingAngle + (combatTurretBehaviour.turretMountSpan / 2);
+		if (turretAngleLeft > 360) {
+			turretAngleLeft = turretAngleLeft - 360;
+		}
+		turretAngleRight = shipRotation.z + combatTurretBehaviour.turretFacingAngle - (combatTurretBehaviour.turretMountSpan / 2);
+		if (turretAngleRight < 0) {
+			turretAngleRight = 360 + turretAngleRight;
+		}
+		if (turretAngleRight > 360){
+			turretAngleRight = turretAngleRight - 360;
+		}
+	}
+
+
+	private ArrayList getEnemiesOnMap(){
+		ArrayList enemies = new ArrayList ();
+		enemies.AddRange (GameObject.FindGameObjectsWithTag("Enemy"));
+		enemies.AddRange (GameObject.FindGameObjectsWithTag("Asteroid"));
+		return enemies;
+	}
+
+	private GameObject calculateNearestTargetableEnemy(){
+		ArrayList enemies = getEnemiesOnMap ();
+
+		//Filtering out the list of enemies not within turret span.
+		ArrayList enemiesWithinTurretSpan = new ArrayList();
+		foreach (GameObject enemy in enemies) {
+			Quaternion targetRelativeAngle = Quaternion.LookRotation (enemy.transform.position - this.transform.position, this.transform.TransformDirection (Vector3.back));
+			targetRelativeAngle.x = 0;
+			targetRelativeAngle.y = 0;
+
+			if(turretAngleLeft < turretAngleRight){
+				if(turretAngleLeft == 0){
+					if(turretAngleRight < targetRelativeAngle.eulerAngles.z){
+						enemiesWithinTurretSpan.Add(enemy);
+					}
+				} else {
+					if(turretAngleLeft > targetRelativeAngle.eulerAngles.z || turretAngleRight < targetRelativeAngle.eulerAngles.z){
+						enemiesWithinTurretSpan.Add(enemy);
+					}
+				}
+			} 
+			if(turretAngleLeft > turretAngleRight){
+				if(turretAngleRight < targetRelativeAngle.eulerAngles.z && turretAngleLeft > targetRelativeAngle.eulerAngles.z){
+					enemiesWithinTurretSpan.Add(enemy);		
 				}
 			}
-		} else {
-			CancelInvoke();
-			isFiring = false;
+			if(turretAngleLeft == turretAngleRight){
+				enemiesWithinTurretSpan.Add(enemy);	
+			}
 		}
+
+		GameObject nearest = null;
+		float distance = Mathf.Infinity;
+		Vector3 position = transform.position;
+
+		foreach (GameObject enemyWithinTurretSpan in enemiesWithinTurretSpan) {
+			Vector3 diff = enemyWithinTurretSpan.transform.position - position;
+			float curDistance = diff.sqrMagnitude;
+			// Further filtering out enemies that are not within turret range.
+			if(curDistance < turretSquare.range){
+				if(curDistance < distance){
+					nearest = enemyWithinTurretSpan;
+					distance = curDistance;
+				}
+			}
+		}
+		Debug.Log("Enemy is " + distance + " units away, turret range is " + turretSquare.range);
+		return nearest;
+	}
+
+	private bool manualSelection(){
+		// TODO
+		return false;
 	}
 	
 	private void fire()
 	{
-		Vector3 bulletPosition = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z + 1);
-		Rigidbody2D bulletInstance = Instantiate(bullet, bulletPosition, this.transform.rotation) as Rigidbody2D;
-		bulletInstance.AddForce(transform.up * bulletSpeed);
+		GameObject bulletInstance = Instantiate(Resources.Load ("Prefabs/Bullet"), transform.position, this.transform.rotation) as GameObject;
 
-		Destroy (bulletInstance.gameObject, bulletSelfDestructionTime);
+		BulletPixel bulletPixel = bulletInstance.AddComponent<BulletPixel>();
+		bulletPixel.Init(turretSquare.damage);
+
+		Rigidbody2D bulletRigidbody = bulletInstance.GetComponent<Rigidbody2D>();
+		bulletRigidbody.AddForce(transform.up * bulletSpeed);
+
+		Destroy (bulletInstance, bulletSelfDestructionTime);
 	}
 }

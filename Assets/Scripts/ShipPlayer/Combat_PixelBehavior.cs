@@ -9,7 +9,7 @@ public class Combat_PixelBehavior : MonoBehaviour {
     public Pixel.Type pixelType;
 
     public Turret.Type turretType;
-    public Combat_TurretBehavior turret;
+	public Combat_TurretBehavior turretBehaviour;
 
     SpriteRenderer spriteRenderer;
 

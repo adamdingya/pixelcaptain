@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ShipBuilder_TurretBehavior : MonoBehaviour
@@ -37,8 +37,8 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
     //Reference to the Hardpoint mount pixel.
     public ShipBuilder_PixelBehavior mountPixel;
 
-    //Uder-defined z-rotation which the turret sweeps around.
-    public float facingRotationAngle;
+    //User-defined z-rotation which the turret sweeps around.
+	public float turretFacingAngle;
 
     public bool coreConnection;
 
@@ -124,13 +124,13 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
     public void OnUpdate()
     {
         //Set Turret angle template sprite depending on mount angle
-        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE)
+		if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_MOUNT_RANGE)
             turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[0];
-        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS1)
+		if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_MOUNT_RANGE * 2)
             turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[1];
-        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS2)
+		if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_MOUNT_RANGE * 3)
             turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[2];
-        if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_ANGLE_RANGE_PLUS3)
+		if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_MOUNT_RANGE * 4)
             turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[3];
 
         //Sets turret to sweep in builder
@@ -152,8 +152,8 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
         
 
         //Set rotation
-        transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle + animationAngleShift);
-        turretAngleTemplate.transform.rotation = Quaternion.Euler(0f, 0f, facingRotationAngle);
+		transform.rotation = Quaternion.Euler(0f, 0f, turretFacingAngle + animationAngleShift);
+		turretAngleTemplate.transform.rotation = Quaternion.Euler(0f, 0f, turretFacingAngle);
 
         //Set colour
         spriteRenderer.color = new Color (spriteRGB.x, spriteRGB.y, spriteRGB.z, spriteAlpha);

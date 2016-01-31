@@ -85,7 +85,7 @@ public class ShipBuilder_PixelBehavior : MonoBehaviour
         sprite = _sprite; //Set the sprite to the passed value (Passing maintains consistency between what was previewed and what is placed).
 
         canHaveTurret = false; //Set the default turret holding ability.
-        turretMountRange = DefaultValues.DEFAULT_TURRET_ANGLE_RANGE;
+		turretMountRange = DefaultValues.DEFAULT_TURRET_MOUNT_RANGE;
 
         //Set sprite and increment counters.
         if (_type == Pixel.Type.Armour)
