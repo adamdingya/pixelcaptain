@@ -48,6 +48,9 @@ TagManager:
   - name: GridBackground
     uniqueID: 3471312057
     locked: 0
+  - name: GridHighlight
+    uniqueID: 2603077045
+    locked: 0
   - name: GridPixel
     uniqueID: 3524172071
     locked: 0

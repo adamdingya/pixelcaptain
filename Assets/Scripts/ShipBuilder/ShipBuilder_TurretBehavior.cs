@@ -47,7 +47,8 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
 
     //Sweep Animations
     float animationAngleShift = 0;
-    bool turnRight = true;
+    bool turnLeft = true;
+    float sweepSpeed = DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED;
 
     //Firing angle sprite renderer
     public GameObject turretAngleTemplate;
@@ -92,7 +93,6 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_LARGE_COST;
         else if (_type == Turret.Type.Laser)
             builder.usedWeaponPixelsCount += DefaultValues.DEFAULT_TURRET_LASER_COST;
-
     }
 
     //Destroy this turret, recycle pixels.
@@ -120,9 +120,10 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
             spriteRGB = new Vector3(1f, 1f, 1f); //White
     }
 
-    
     public void OnUpdate()
     {
+        
+
         //Set Turret angle template sprite depending on mount angle
 		if (mountPixel.turretMountRange == DefaultValues.DEFAULT_TURRET_MOUNT_RANGE)
             turretAngle_spriteRenderer.sprite = game.sprTurretAngleTemplate[0];
@@ -137,19 +138,22 @@ public class ShipBuilder_TurretBehavior : MonoBehaviour
         if (editing)
             animationAngleShift = 0;
               
-        if (turnRight == true && animationAngleShift < mountPixel.turretMountRange * 0.5f)
+        if (turnLeft == true)
         {
-            animationAngleShift += DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED;
+            animationAngleShift += sweepSpeed;
         }
-        else
+        else if (turnLeft == false)
         {
-            turnRight = false;
-            animationAngleShift -= DefaultValues.DEFAULT_TURRET_SWEEP_PREVIEW_SPEED;
+            animationAngleShift -= sweepSpeed;
         }
         if (animationAngleShift < -mountPixel.turretMountRange * 0.5f)
-            turnRight = true;
-
-        
+        {
+            turnLeft = true;
+        }
+        else if (animationAngleShift > mountPixel.turretMountRange * 0.5f)
+        {
+            turnLeft = false;
+        }
 
         //Set rotation
 		transform.rotation = Quaternion.Euler(0f, 0f, turretFacingAngle + animationAngleShift);
