@@ -15,8 +15,9 @@ public class Combat_Manager : MonoBehaviour
         camera = game.camera;
         camera.zoom = 100f;
         camera.pan = DefaultValues.DEFAULT_SHIP_SPAWN_POSITION;
+        camera.UserMovementEnabled = true;
         shipPixels = new Combat_PixelBehavior[Game_Manager.instance.shipArraySqrRootLength * Game_Manager.instance.shipArraySqrRootLength];
-		loadPlayer (Game_Manager.instance.savedPixels);
+		loadPlayer (PlaythroughData.savedPixels);
 
 		loadEnemies ();
 
@@ -29,6 +30,12 @@ public class Combat_Manager : MonoBehaviour
     public void OnUpdate()
     {
 
+    }
+
+    public void GoToBuilder()
+    {
+        game.savedShip = true;
+        game.loadScene("Builder");
     }
 
     void loadPlayer(CompressedPixelData[] savedPixels)
@@ -48,30 +55,29 @@ public class Combat_Manager : MonoBehaviour
                 buildPixel.transform.position = savedPixel.coordinates + new Vector2(0.5f, 0.5f);
                 buildPixel.coordinates = savedPixel.coordinates;
                 buildPixel.index = i;
-				buildPixel.init(this, savedPixel.turretType);
+				buildPixel.init(savedPixel.turretType);
                 //Hardpoint & turret.
                 if (buildPixel.pixelType == Pixel.Type.Hardpoint)
                 {
                     if (buildPixel.turretType != Turret.Type.None)
                     {
-                        Combat_TurretBehavior turret;
-                        turret = new GameObject().AddComponent<Combat_TurretBehavior>();
-                        turret.turretType = buildPixel.turretType;
-                        turret.transform.position = buildPixel.transform.position;
-                        turret.transform.parent = buildPixel.transform;
-						turret.init(buildPixel);
-                        buildPixel.turret = turret;
+                        Combat_TurretBehavior turretBehaviour;
+						turretBehaviour = new GameObject().AddComponent<Combat_TurretBehavior>();
+						turretBehaviour.turretType = buildPixel.turretType;
+						turretBehaviour.transform.position = buildPixel.transform.position;
+						turretBehaviour.transform.parent = buildPixel.transform;
+						turretBehaviour.transform.localRotation = Quaternion.Euler(0f, 0f, savedPixel.turretFacingAngle);
+						turretBehaviour.turretFacingAngle = savedPixel.turretFacingAngle;
+						turretBehaviour.turretMountSpan = savedPixel.turretMountRange;
+
+						turretBehaviour.Init(buildPixel);
+						buildPixel.turretBehaviour = turretBehaviour;
                     }
                 }
 
                 shipPixels[i] = buildPixel;
                 averagePositionCount++;
                 averagePosition += buildPixel.transform.position;
-
-                if (pixel.pixelType == Pixel.Type.Hardpoint)
-                    Debug.Log("Imported HardPoint Pixel (Turret: " + pixel.turretType + ") at position " + i + ".");
-                else
-                    Debug.Log("Imported " + pixel.pixelType + "Pixel at position " + i + ".");
             }
         }
 
@@ -79,6 +85,7 @@ public class Combat_Manager : MonoBehaviour
         GameObject shipParent = new GameObject();
         shipParent.transform.position = averagePosition;
         shipParent.transform.name = "ShipParent";
+		shipParent.tag = "Player";
 
         //SetParents & Get surrounding pixels
         for (int i = 0; i < shipPixels.Length - 1; i++)
@@ -87,11 +94,12 @@ public class Combat_Manager : MonoBehaviour
             if (pixel != null)
             {
                 pixel.transform.parent = shipParent.transform;
-                pixel.GetSurroundingPixels();
+                pixel.GetSurroundingPixels(shipPixels);
             }
         }
 
         shipParent.transform.position = DefaultValues.DEFAULT_SHIP_SPAWN_POSITION;
+		shipParent.layer = 8;
 
 		// Adding controller to the ship
 		shipParent.AddComponent<ShipController> ();
@@ -101,9 +109,13 @@ public class Combat_Manager : MonoBehaviour
 			addRigidBodyAndCollider(child);
 			// Adding properties such as mass and health to each gameobject under parent
 			addProperties(child);
+			// Adding layer to each child game object under ship parent
+			if(child.transform.childCount!=0){
+				child.transform.GetChild(0).gameObject.layer = 8;
+			} else {
+				child.gameObject.layer = 8;
+			}
 		}
-
-        Debug.Log("Succesfully Loaded Player!");
     }
 
 	void addRigidBodyAndCollider(Transform child){
@@ -131,29 +143,27 @@ public class Combat_Manager : MonoBehaviour
 		case Pixel.Type.Hardpoint:
 			HardpointSquare hardpointSquare = child.gameObject.AddComponent<HardpointSquare>();
 			hardpointSquare.init ();
+			if(child.transform.childCount!=0){
+				Combat_TurretBehavior turretBehavior = child.transform.GetChild(0).GetComponent<Combat_TurretBehavior> ();	
+				TurretSquare turretSquare = child.transform.GetChild(0).gameObject.AddComponent<TurretSquare>();
+				turretSquare.Init(turretBehavior.turretType);
+				// Adding controller to the turret
+				child.transform.GetChild(0).gameObject.AddComponent<TurretController> ();	
+			}
 			break;
 		case Pixel.Type.Scrap:
 			ScrapSquare scrapSquare = child.gameObject.AddComponent<ScrapSquare>();
 			scrapSquare.init ();
 			break;
 		}
-
-		foreach(Transform childChild in child.transform){
-			Combat_TurretBehavior spt = childChild.GetComponent<Combat_TurretBehavior> ();
-			switch (spt.turretType) {
-			case Turret.Type.Small:
-				TurretSquare smallTurretSquare = childChild.gameObject.AddComponent<TurretSquare>();
-				smallTurretSquare.init();
-				break;
-			}
-		}
 	}
 
 	void loadAsteroids(){
 		Sprite[] asteroidSprites = Resources.LoadAll<Sprite>("Sprites/asteroids");
 		for (int i=0; i<asteroidCount; i++) {
-			Vector3 position = new Vector3(Random.Range (0, camera.sceneBounds_TR.x), Random.Range (0, camera.sceneBounds_TR.y), -Camera.main.transform.position.z);
+			Vector3 position = new Vector3(Random.Range (0, camera.sceneDimensions.x), Random.Range (0, camera.sceneDimensions.y), 0);
 			GameObject asteroid = Instantiate(Resources.Load ("Prefabs/Asteroid"), position, Quaternion.identity) as GameObject;
+			asteroid.layer = 9;
 			int randomAsteroidSprite = Random.Range(0, asteroidSprites.Length);
 			asteroid.GetComponent<SpriteRenderer>().sprite = asteroidSprites[randomAsteroidSprite];
 			PolygonCollider2D polygonCollider2D = asteroid.AddComponent<PolygonCollider2D>();

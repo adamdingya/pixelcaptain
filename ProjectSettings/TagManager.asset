@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - Turret
   - Bullet
+  - Asteroid
   layers:
   - Default
   - TransparentFX
@@ -16,8 +17,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Friendly
+  - Hostile
   - 
   - 
   - 
@@ -47,6 +48,9 @@ TagManager:
   - name: GridBackground
     uniqueID: 3471312057
     locked: 0
+  - name: GridHighlight
+    uniqueID: 2603077045
+    locked: 0
   - name: GridPixel
     uniqueID: 3524172071
     locked: 0
@@ -56,11 +60,17 @@ TagManager:
   - name: CorePixel
     uniqueID: 2505397573
     locked: 0
+  - name: ExhaustRegion
+    uniqueID: 1963934687
+    locked: 0
   - name: Turret
     uniqueID: 3854661513
     locked: 0
   - name: PreviewTurret
     uniqueID: 598832513
+    locked: 0
+  - name: Eraser
+    uniqueID: 2307917551
     locked: 0
   - name: UIBackground
     uniqueID: 1511967431

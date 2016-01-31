@@ -5,8 +5,7 @@ using System;
 public class AsteroidController : MonoBehaviour {
 
 	public Asteroid asteroid;
-
-	// Use this for initialization
+	
 	void Start () {
 		asteroid = this.gameObject.GetComponent<Asteroid> ();
 		asteroid.init ();
@@ -14,10 +13,9 @@ public class AsteroidController : MonoBehaviour {
 		Rigidbody2D rigidbody2D = this.gameObject.GetComponent<Rigidbody2D> ();
 		rigidbody2D.AddForce (asteroid.getForce());
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
-		// Rotating astroids.
+		// Rotating asteroids.
 		transform.Rotate (Vector3.forward * asteroid.getRotationCoefficient() * Time.deltaTime);
 	}
 
@@ -29,5 +27,15 @@ public class AsteroidController : MonoBehaviour {
 			Debug.Log("Asteroids are instantiated on top of each other: " + e);
 		}
 	
+	}
+
+	void OnTriggerEnter2D(Collider2D collider){
+		GameObject collidingGameObject = collider.gameObject;
+		if (collidingGameObject.tag == "Bullet"){
+			asteroid.health = asteroid.health - collidingGameObject.GetComponent<BulletPixel>().damage;
+			if(asteroid.health <= 0){
+				Destroy (this.gameObject);
+			}
+		}
 	}
 }

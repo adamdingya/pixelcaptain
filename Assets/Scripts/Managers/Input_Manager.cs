@@ -18,6 +18,10 @@ public class Input_Manager : MonoBehaviour
     public State state;
     public State statePrev;
 
+    public enum StateChange { NoChange, NoneToOne, NoneToTwo, OneToTwo, OneToNone, TwoToNone, TwoToOne}
+    public StateChange stateChange;
+
+
     public Vector2 inputPosition; //The selected position in world-space (Averaged for two touches).
     public Vector2 inputPositionScreen; //The selected position in screen-space (Averaged for two touches).
 
@@ -48,6 +52,44 @@ public class Input_Manager : MonoBehaviour
 
     //Calculate the input data for this frame.
     public void GetInput()
+    {
+
+        //Generic Updaters (objects present in every scene).
+        if (!Game_Manager.NON_MOBILE_PLATFORM) //Platform specific.
+            GetTouchInput();
+        else
+            GetMouseInput();
+
+        //Monitor stage changes.
+        stateChange = StateChange.NoChange;
+
+        if (statePrev == State.None)
+        {
+            if (state == State.One)
+                stateChange = StateChange.NoneToOne;
+            if (state == State.Two)
+                stateChange = StateChange.NoneToTwo;
+        }
+
+        if (statePrev == State.One)
+        {
+            if (state == State.None)
+                stateChange = StateChange.OneToNone;
+            if (state == State.Two)
+                stateChange = StateChange.OneToTwo;
+        }
+
+        if (statePrev == State.Two)
+        {
+            if (state == State.None)
+                stateChange = StateChange.TwoToNone;
+            if (state == State.One)
+                stateChange = StateChange.TwoToOne;
+        }
+
+    }
+
+    public void GetTouchInput()
     {
         //Store touches to an array and count relevent ones with 'touchCount'.
         Touch[] touches = Input.touches;
@@ -172,16 +214,16 @@ public class Input_Manager : MonoBehaviour
 
             //Calculate the current angle between finger movements.
             if (firstTouchPosDelta.sqrMagnitude > 0f && secondTouchPosDelta.sqrMagnitude > 0f)
-                    touchAngle = Mathf.Abs(Vector2.Angle(firstTouchPosDelta, secondTouchPosDelta));
-                else
-                    touchAngle = 0f;
+                touchAngle = Mathf.Abs(Vector2.Angle(firstTouchPosDelta, secondTouchPosDelta));
+            else
+                touchAngle = 0f;
 
             //Switch between spread/drag based on the finger-spreading angle.
             if (touchAngle > spreadAngleThreshold)
             {
                 float touchSpreadDistancePrevious = ((firstTouchPos - firstTouchPosDelta) - (secondTouchPos - secondTouchPosDelta)).magnitude;
                 float touchSpreadDistance = (firstTouchPos - secondTouchPos).magnitude;
-                inputSpread = (touchSpreadDistancePrevious - touchSpreadDistance) * 0.5f * (1/(float)Screen.height);
+                inputSpread = (touchSpreadDistancePrevious - touchSpreadDistance) * 0.5f * (1 / (float)Screen.height);
                 inputDrag = Vector2.zero;
             }
             else
@@ -193,12 +235,11 @@ public class Input_Manager : MonoBehaviour
         }
     }
 
-
     //Non-mobile OS input (for testing).
     public Vector2 mousePos;
     public Vector2 mousePosPrev;
     public Vector2 mousePosDelta;
-    public void GetInputPC()
+    public void GetMouseInput()
     {
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
@@ -239,14 +280,6 @@ public class Input_Manager : MonoBehaviour
         inputPositionScreen = mousePos;
         inputPosition = game.camera.ScreenToWorldPosition(inputPositionScreen);
 
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(inputPosition, 1f);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(inputPositionScreen, 0.8f);
     }
     
 }

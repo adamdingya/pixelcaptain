@@ -13,5 +13,7 @@ public class CompressedPixelData
     public Turret.Type turretType;
     public Vector2 coordinates;
     public int spriteVariantIndex;
+	public float turretFacingAngle;
+	public float turretMountRange;
 
 }

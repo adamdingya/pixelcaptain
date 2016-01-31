@@ -7,11 +7,17 @@ public class CameraBehavior : MonoBehaviour
 
     /// <summary>
     /// Class describing generalised camera constrained pan & zoom behvaior.
+    /// 
+    /// Camera always assumes that the scene starts with (0, 0) in the bottom-left corner, and a top-right corner at sceneDimensions.
     /// </summary>
 
     //General references.
     public Game_Manager game;
     public Camera camera;
+    public Input_Manager input;
+
+    //Activate or deactivate zoom & pan behavior.
+    public bool UserMovementEnabled = true;
 
     //UI references.
     public Canvas UICanvas;
@@ -38,12 +44,8 @@ public class CameraBehavior : MonoBehaviour
 
     public Rect viewBounds_worldSpace; //Final calculated Rect at end of update. (for accurate window positions).
 
-    //Scene boundaries in world-space.
-    public Vector2 sceneBounds_BL;
-    public Vector2 sceneBounds_TR = new Vector2(100f, 100f);
-
-    //Control zoom and pan from another script (allows for creation of two-touch areas that don't initiate camera movement.
-    public bool canZoomOrPan = true;
+    //Scene dimensions in world-space.
+    public Vector2 sceneDimensions = DefaultValues.DEFAULT_SCENE_DIMENSIONS;
 
     //Zoom parameters (zoom is equivilant to half the world space height of the camera view).
     public float zoom = 5f;
@@ -61,19 +63,25 @@ public class CameraBehavior : MonoBehaviour
     public Vector2 screenDimensions;
     public float aspectRatio;
 
-    //Initialise the camera behvaior, assigning in references.
+    //Initialise the camera behvaior.
     public void Init()
     {
-        canZoomOrPan = false;
-
+        //Get general references.
         game = Game_Manager.instance;
+        input = game.input;
         camera = GetComponent<Camera>();
 
-        UICanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
-        UICanvasScaler = UICanvas.GetComponent<CanvasScaler>();
-        screenDimensions = UICanvasScaler.referenceResolution;
-        aspectRatio = screenDimensions.x / screenDimensions.y;
+        //Default behavior is that user can't control the camera movement.
+        UserMovementEnabled = false;
 
+        //Get the UI Canvas & Scaler.
+        UICanvasScaler = UICanvas.GetComponent<CanvasScaler>();
+        UICanvasScaler.referenceResolution = DefaultValues.DEFAULT_TARGET_RESOLUTION;
+
+        //Calculate the aspect ratio
+        aspectRatio = DefaultValues.DEFAULT_TARGET_RESOLUTION.x / DefaultValues.DEFAULT_TARGET_RESOLUTION.y;
+
+        //Calculate the initial view boundaires (in-case any other initialisers rely on its values).
         CalculateViewBounds();
     }
 
@@ -83,38 +91,38 @@ public class CameraBehavior : MonoBehaviour
 
         //Choose the centre of zooming.
         if (zoomFocusObj == null)
-            zoomFocus = game.input.inputPosition;
+            zoomFocus = input.inputPosition;
         else
             zoomFocus = zoomFocusObj.position;
 
         //Update zoom based on input & conditions.
         float zoomIncr;
-        if (canZoomOrPan)
-            zoomIncr =  game.input.inputSpread * zoom * zoomSensitivity;
+        if (UserMovementEnabled)
+            zoomIncr =  input.inputSpread * zoom * zoomSensitivity;
         else
             zoomIncr = 0f;
 
         zoom += zoomIncr; //Increment zoom.
 
-        //Calculate the constraining edges of the view.
+        //Calculate the constraining edges of the view, to calculate the maximum zoom.
         CalculateViewBounds();
         
         //Calculate zoomMax.
         if (viewWindowDimensions_worldSpace.y < viewWindowDimensions_worldSpace.x)
-            zoomMax = (sceneBounds_TR.x - sceneBounds_BL.x) / (aspectRatio * 2f * viewWindowDimensions_normalised.x);
+            zoomMax = (sceneDimensions.x - 0f) / (aspectRatio * 2f * viewWindowDimensions_normalised.x);
         else
-            zoomMax = (sceneBounds_TR.y - sceneBounds_BL.y) / (2f * viewWindowDimensions_normalised.y);
+            zoomMax = (sceneDimensions.y - 0f) / (2f * viewWindowDimensions_normalised.y);
 
         if (zoom > zoomMax)
             zoom = zoomMax;
 
         //Update pan based on input
-        Vector2 draggedPanIncr = game.input.inputDrag * zoom * panSensitivity;
-        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (game.input.inputSpread * zoomSensitivity);
+        Vector2 draggedPanIncr = input.inputDrag * zoom * panSensitivity;
+        Vector2 zoomFocusPanIncr = (zoomFocus - (Vector2)transform.position) * (input.inputSpread * zoomSensitivity);
 
         Vector2 panIncr;
 
-        if (canZoomOrPan)
+        if (UserMovementEnabled)
         {
             if (zoom != zoomMax)
                 panIncr = draggedPanIncr + zoomFocusPanIncr;
@@ -134,17 +142,17 @@ public class CameraBehavior : MonoBehaviour
         viewBounds_TR_toPan = pan - viewBounds_TR;
 
         //Pan so that the bottom left corners line up.
-        if (viewBounds_BL.x < sceneBounds_BL.x)
+        if (viewBounds_BL.x < 0f)
             pan.x = viewBounds_BL_toPan.x; 
-        if (viewBounds_BL.y < sceneBounds_BL.y)
+        if (viewBounds_BL.y < 0f)
             pan.y = viewBounds_BL_toPan.y;
 
         //Pan so that the top right corners line up.
-        if (pan.x - viewBounds_TR_toPan.x > sceneBounds_TR.x)
-            pan.x = sceneBounds_TR.x + viewBounds_TR_toPan.x;
+        if (pan.x - viewBounds_TR_toPan.x > sceneDimensions.x)
+            pan.x = sceneDimensions.x + viewBounds_TR_toPan.x;
 
-        if (pan.y - viewBounds_TR_toPan.y > sceneBounds_TR.y)
-            pan.y = sceneBounds_TR.y + viewBounds_TR_toPan.y;
+        if (pan.y - viewBounds_TR_toPan.y > sceneDimensions.y)
+            pan.y = sceneDimensions.y + viewBounds_TR_toPan.y;
 
         //Update the transforms accordingly.
         camera.orthographicSize = zoom;
@@ -172,7 +180,9 @@ public class CameraBehavior : MonoBehaviour
 
     }
 
-    //Calculate the view boundaries in world-space.
+    /*Calculate the world-space view boundary positions.
+    (view boundaries are constrained by a defined viewBounds RectTransform.
+    'Null' viewBounds will default these boundaries to those of the camera's edges.*/
     public void CalculateViewBounds()
     {
         //Define the constraining edges of the view.
@@ -185,8 +195,8 @@ public class CameraBehavior : MonoBehaviour
             viewBounds_TR.y = ScreenToWorldPosition((viewBounds.anchoredPosition + new Vector2(viewBounds.rect.width, viewBounds.rect.height)) / screenScale.y).y;
 
             //Calculate the view dimensions in worldspace as a function of zoom (Required for calculating the maximum zoom).
-            viewWindowDimensions_normalised.x = viewBounds.rect.width * ((100 / screenDimensions.x)) * 0.01f;
-            viewWindowDimensions_normalised.y = viewBounds.rect.height * ((100 / screenDimensions.y)) * 0.01f;
+            viewWindowDimensions_normalised.x = viewBounds.rect.width * ((100 / DefaultValues.DEFAULT_TARGET_RESOLUTION.x)) * 0.01f;
+            viewWindowDimensions_normalised.y = viewBounds.rect.height * ((100 / DefaultValues.DEFAULT_TARGET_RESOLUTION.y)) * 0.01f;
 
             viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f * viewWindowDimensions_normalised.x;
             viewWindowDimensions_worldSpace.y = zoom * 2f * viewWindowDimensions_normalised.y;
@@ -196,15 +206,15 @@ public class CameraBehavior : MonoBehaviour
             //If there isn't, just use the camera edges.
             viewBounds_BL.x = ScreenToWorldPosition(Vector2.zero / screenScale.x).x;
             viewBounds_BL.y = ScreenToWorldPosition(Vector2.zero / screenScale.y).y;
-            viewBounds_TR.x = ScreenToWorldPosition(screenDimensions / screenScale.x).x;
-            viewBounds_TR.y = ScreenToWorldPosition(screenDimensions / screenScale.y).y;
+            viewBounds_TR.x = ScreenToWorldPosition(DefaultValues.DEFAULT_TARGET_RESOLUTION / screenScale.x).x;
+            viewBounds_TR.y = ScreenToWorldPosition(DefaultValues.DEFAULT_TARGET_RESOLUTION / screenScale.y).y;
 
             //Set the view dimensions in worldspace as a function of zoom.
             viewWindowDimensions_normalised = new Vector2(1f, 1f);
-
             viewWindowDimensions_worldSpace.x = zoom * aspectRatio * 2f;
             viewWindowDimensions_worldSpace.y = zoom * 2f;
         }
+
     }    
 
 }

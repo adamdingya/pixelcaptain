@@ -16,31 +16,29 @@ public class Game_Manager : MonoBehaviour
     //General references.
     public Input_Manager input;
     public CameraBehavior camera;
-    public CompressedPixelData[] savedPixels; //Current ship for loading/saving.
-
 
     //Current game state
     public enum GameState { MainMenu, CaptainsLog, Settings, Death, NavigationSystem, Reward, ShipBuilder, Combat, TacticalOptions };
     public GameState state;
 
     //Stat managers.
-    public MainMenu_Manager mainMenuManager;
-    public CaptainsLog_Manager captainsLogManager;
-    public Settings_Manager settingsManager;
-    public NavigationSystem_Manager navigationSystemManager;
-    public ShipBuilder_Manager shipBuilderManager;
-    public Combat_Manager combatManager;
-    public TacticalOptions_Manager tacticalOptionsManager;
+    public MainMenu_Manager mainMenu;
+    public CaptainsLog_Manager captainsLog;
+    public Settings_Manager settings;
+    public NavigationSystem_Manager navigationSystem;
+    public ShipBuilder_Manager shipBuilder;
+    public Combat_Manager combat;
+    public TacticalOptions_Manager tacticalOptions;
 
     //Define the one dimensional length of the ship array.
-    public int shipArraySqrRootLength = 30;
+    public int shipArraySqrRootLength = DefaultValues.DEFAULT_SHIP_ARRAY_SQR_ROOT_LENGTH;
 
     //Platform specific behavior, set to 'false' if not on OSX/Windows.
     public static bool NON_MOBILE_PLATFORM = true;
 
     public bool UNITY_REMOTE_MODE = false;
 
-    //Define the game's sprites.
+    //Define the game's sprites. Probably should implement a static resource loader for these...
     public Sprite[] sprTurrets;
     public Sprite[] sprScrap;
     public Sprite[] sprArmour;
@@ -48,40 +46,31 @@ public class Game_Manager : MonoBehaviour
     public Sprite[] sprPower;
     public Sprite[] sprCore;
     public Sprite[] sprHardpoint;
+    public Sprite[] sprHardpointDisabled;
 
-    //Player's ship name & resources.
-    public static string shipName;
-    public static int scrapPixels;
-    public static int armourPixels;
-    public static int hardpointPixels;
-    public static int powerPixels;
-    public static int enginePixels;
-    public static int weaponPixels;
+    public Sprite sprEraser;
+
+    public Sprite sprExhaustRegion;
+
+    public Sprite[] sprTurretAngleTemplate;
+
+    //Is there a saved ship?
+    public bool savedShip = false;
+
+
 
     //Global Awake() method. Calls all others to maintain order.
     public void Awake()
     {
-        shipName = DefaultValues.DEFAULT_SHIP_NAME;
-        scrapPixels = DefaultValues.DEFAULT_SCRAP_PIXEL_COUNT;
-        armourPixels = DefaultValues.DEFAULT_ARMOUR_PIXEL_COUNT;
-        hardpointPixels = DefaultValues.DEFAULT_HARDPOINT_PIXEL_COUNT;
-        powerPixels = DefaultValues.DEFAULT_POWER_PIXEL_COUNT;
-        enginePixels = DefaultValues.DEFAULT_ENGINE_PIXEL_COUNT;
-        weaponPixels = DefaultValues.DEFAULT_WEAPON_PIXEL_COUNT;
-
         //Allocated the ship save space.
-        savedPixels = new CompressedPixelData[shipArraySqrRootLength * shipArraySqrRootLength];
+        PlaythroughData.savedPixels = new CompressedPixelData[shipArraySqrRootLength * shipArraySqrRootLength];
 
         //Singleton pattern.
         if (instance == null)
-        {
             instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
         else
-        {
             Destroy(this.gameObject);
-        }
+        DontDestroyOnLoad(this.gameObject);
 
         //Determine the OS, set boolean accordingly.
         if (Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.OSXPlayer)
@@ -125,11 +114,7 @@ public class Game_Manager : MonoBehaviour
         if (hadToFindNewCamera)
             camera.Init();
 
-        //Generic Updaters (objects present in every scene).
-        if (!NON_MOBILE_PLATFORM) //Platform specific.
-            input.GetInput();
-        else
-            input.GetInputPC();
+        input.GetInput();
 
 
         camera.OnUpdate();
@@ -138,73 +123,73 @@ public class Game_Manager : MonoBehaviour
         //Scene-specific initialisers & updaters.
         if (state == GameState.MainMenu && Application.loadedLevelName == "MainMenu")
         {
-            if (mainMenuManager == null)
+            if (mainMenu == null)
             {
-                mainMenuManager = GameObject.Find("MainMenuManager").GetComponent<MainMenu_Manager>();
-                mainMenuManager.Init();
+                mainMenu = GameObject.Find("MainMenuManager").GetComponent<MainMenu_Manager>();
+                mainMenu.Init();
             }
-            mainMenuManager.OnUpdate();
+            mainMenu.OnUpdate();
         }
 
         if (state == GameState.CaptainsLog && Application.loadedLevelName == "CaptainsLog")
         {
-            if (captainsLogManager == null)
+            if (captainsLog == null)
             {
-                captainsLogManager = GameObject.Find("CaptainsLogManager").GetComponent<CaptainsLog_Manager>();
-                captainsLogManager.Init();
+                captainsLog = GameObject.Find("CaptainsLogManager").GetComponent<CaptainsLog_Manager>();
+                captainsLog.Init();
             }
-            captainsLogManager.OnUpdate();
+            captainsLog.OnUpdate();
         }
 
         if (state == GameState.Settings && Application.loadedLevelName == "Settings")
         {
-            if (settingsManager == null)
+            if (settings == null)
             {
-                settingsManager = GameObject.Find("SettingsManager").GetComponent<Settings_Manager>();
-                settingsManager.Init();
+                settings = GameObject.Find("SettingsManager").GetComponent<Settings_Manager>();
+                settings.Init();
             }
-            settingsManager.OnUpdate();
+            settings.OnUpdate();
         }
 
         if (state == GameState.NavigationSystem && Application.loadedLevelName == "NavigationSystem")
         {
-            if (navigationSystemManager == null)
+            if (navigationSystem == null)
             {
-                navigationSystemManager = GameObject.Find("NavigationSystemManager").GetComponent<NavigationSystem_Manager>();
-                navigationSystemManager.Init();
+                navigationSystem = GameObject.Find("NavigationSystemManager").GetComponent<NavigationSystem_Manager>();
+                navigationSystem.Init();
             }
-            navigationSystemManager.OnUpdate();
+            navigationSystem.OnUpdate();
         }
 
 
         if (state == GameState.ShipBuilder && Application.loadedLevelName == "Builder")
         {
-            if (shipBuilderManager == null)
+            if (shipBuilder == null)
             {
-                shipBuilderManager = GameObject.Find("ShipBuilderManager").GetComponent<ShipBuilder_Manager>();
-                shipBuilderManager.Init();
+                shipBuilder = GameObject.Find("ShipBuilderManager").GetComponent<ShipBuilder_Manager>();
+                shipBuilder.Init();
             }
-            shipBuilderManager.OnUpdate();
+            shipBuilder.OnUpdate();
         }
 
         if (state == GameState.Combat && Application.loadedLevelName == "Combat")
         {
-            if (combatManager == null)
+            if (combat == null)
             {
-                combatManager = GameObject.Find("CombatManager").GetComponent<Combat_Manager>();
-                combatManager.Init();
+                combat = GameObject.Find("CombatManager").GetComponent<Combat_Manager>();
+                combat.Init();
             }
-            combatManager.OnUpdate();
+            combat.OnUpdate();
         }
 
         if (state == GameState.TacticalOptions && Application.loadedLevelName == "TacticalOptions")
         {
-            if (tacticalOptionsManager == null)
+            if (tacticalOptions == null)
             {
-                tacticalOptionsManager = GameObject.Find("TacticalOptionsManager").GetComponent<TacticalOptions_Manager>();
-                tacticalOptionsManager.Init();
+                tacticalOptions = GameObject.Find("TacticalOptionsManager").GetComponent<TacticalOptions_Manager>();
+                tacticalOptions.Init();
             }
-            tacticalOptionsManager.OnUpdate();
+            tacticalOptions.OnUpdate();
         }
     }
 
