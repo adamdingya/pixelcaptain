@@ -32,7 +32,6 @@ public class DefaultValues : MonoBehaviour {
 
     //Ship data.
     public static string DEFAULT_SHIP_NAME = "My Ship";
-
     public static int DEFAULT_SCRAP_PIXEL_COUNT = 999;
     public static int DEFAULT_ARMOUR_PIXEL_COUNT = 999;
     public static int DEFAULT_POWER_PIXEL_COUNT = 999;
@@ -40,36 +39,36 @@ public class DefaultValues : MonoBehaviour {
     public static int DEFAULT_ENGINE_PIXEL_COUNT = 999;
     public static int DEFAULT_WEAPON_PIXEL_COUNT = 999;
 	
-    // Armour square attributes
+    // Armour pixel attributes
     public static float DEFAULT_ARMOUR_MASS = 20f;
 	public static float DEFAULT_ARMOUR_HEALTH = 200f;
 
-	// Scrap square attributes
+	// Scrap pixel attributes
 	public static float DEFAULT_SCRAP_MASS = 5f;
 	public static float DEFAULT_SCRAP_HEALTH = 60f;
 
-	// Engine square attributes
+	// Engine pixel attributes
 	public static float DEFAULT_ENGINE_MASS = 200f;
 	public static float DEFAULT_ENGINE_HEALTH = 90f;
 	public static float DEFAULT_ENGINE_COMSUMPTION = 300f;
 	public static float DEFAULT_ENGINE_THRUST = 100f;
 	
-	// Bridge square attributes
+	// Bridge pixel attributes
 	public static float DEFAULT_BRIDGE_MASS = 40f;
 	public static float DEFAULT_BRIDGE_HEALTH = 30f;
 	public static float DEFAULT_BRIDGE_COMSUMPTION = 70f;
 
-	// Pivot square attributes
+	// Pivot pixel attributes
 	public static float DEFAULT_HARDPOINT_MASS = 10f;
 	public static float DEFAULT_HARDPOINT_HEALTH = 70f;
 	public static float DEFAULT_HARDPOINT_COMSUMPTION = 25f;
 
-	// Power square attributes
+	// Power pixel attributes
 	public static float DEFAULT_POWER_MASS = 120f;
 	public static float DEFAULT_POWER_HEALTH = 50f;
 	public static float DEFAULT_POWER_CAPACITY = 650f;
 
-	// Turret square attributes
+	// Turret pixel attributes
 	public static float DEFAULT_TURRET_MASS = 150f;
 	public static float DEFAULT_TURRET_COMSUMPTION = 150f;
 	public static int DEFAULT_TURRET_BARREL_COUNT = 1;
@@ -82,12 +81,10 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_TURRET_MEDIUM_FIRING_RANGE = 1000f;
 	public static float DEFAULT_TURRET_LARGE_FIRING_RANGE = 1000f;
 	public static float DEFAULT_TURRET_LASER_FIRING_RANGE = 1000f;
-
-    // Hardpoint & turret attributes;
 	public static float DEFAULT_TURRET_MOUNT_RANGE = 90;
 	public static float DEFAULT_TURRET_SWEEP_PREVIEW_SPEED = 0.5f;
 
-    // Shield square attributes
+	// Shield pixel attributes
     public static float DEFAULT_SHIELD_MASS = 170f;
 	public static float DEFAULT_SHIELD_HEALTH = 90f;
 	public static float DEFAULT_SHIELD_COMSUMPTION = 200f;
@@ -96,7 +93,7 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_SHIELD_STRENGTH = 500f;
 	public static float DEFAULT_SHIELD_REGENERATION_RATE = 2f;
 
-	// Asteroid atrributes
+	// Asteroid pixel attributes
 	public static int DEFAULT_ASTEROID_COUNT = 10;
 	public static float DEFAULT_ASTEROID_HEALTH = 100f;
 	public static float DEFAULT_ASTEROID_DAMAGE = 10f;
@@ -106,8 +103,13 @@ public class DefaultValues : MonoBehaviour {
 	public static float DEFAULT_ASTEROID_FORCE_X_MAX = 75f;
 	public static float DEFAULT_ASTEROID_FORCE_Y_MIN = 25f;
 	public static float DEFUALT_ASTEROID_FORCE_Y_MAX = 75f;
-	
+
+	// Bullet pixel attributes	
 	public static float DEFAULT_BULLET_SELF_DESTRUCTION_TIME = 10f;
+
+	// System attributes
+	public static int DEFAULT_FRIENDLY_LAYER = 8;
+	public static int DEFAULT_HOSTILE_LAYER = 9;
 
 	// Development test attributes
 	public static bool turretOn = true;

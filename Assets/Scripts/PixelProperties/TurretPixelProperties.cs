@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class TurretSquare : MonoBehaviour {
+public class TurretPixelProperties : MonoBehaviour, IPixelProperties {
 
 	public float mass;
 	public float comsumption;
@@ -13,7 +13,7 @@ public class TurretSquare : MonoBehaviour {
 	public float rotationCoefficient;
 	public float accuracy;
 
-	public void Init(Turret.Type type){
+	public void Init(){
 		mass = DefaultValues.DEFAULT_TURRET_MASS;
 		comsumption = DefaultValues.DEFAULT_TURRET_COMSUMPTION;
 		barrelCount = DefaultValues.DEFAULT_TURRET_BARREL_COUNT;
@@ -22,6 +22,9 @@ public class TurretSquare : MonoBehaviour {
 		damage = DefaultValues.DEFAULT_TURRET_DAMAGE;
 		rotationCoefficient = DefaultValues.DEFAULT_TURRET_ROTATION_COEFFICIENT;
 		accuracy = DefaultValues.DEFAULT_TURRET_ACCURACY;
+	}
+
+	public void setTurretType(Turret.Type type){
 		switch (type) {
 		case Turret.Type.Small:
 			range = DefaultValues.DEFAULT_TURRET_SMALL_FIRING_RANGE;
@@ -100,5 +103,14 @@ public class TurretSquare : MonoBehaviour {
 	
 	public float getAccuracy(){
 		return accuracy;
+	}
+
+	public void setHealth(float health){
+		// not implemented
+	}
+
+	public float getHealth(){
+		// not implemented
+		return Mathf.Infinity;
 	}
 }

@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EngineSquare : MonoBehaviour {
+public class EnginePixelProperties : MonoBehaviour, IPixelProperties {
 
 	public float mass;
 	public float health;
 	public float comsumption;
 	public float thrust;
 	
-	public void init(){
+	public void Init(){
 		mass = DefaultValues.DEFAULT_ENGINE_MASS;
 		health = DefaultValues.DEFAULT_ENGINE_HEALTH;
 		comsumption = DefaultValues.DEFAULT_ENGINE_COMSUMPTION;

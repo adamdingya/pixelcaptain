@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Combat_Manager : MonoBehaviour
@@ -99,24 +99,36 @@ public class Combat_Manager : MonoBehaviour
         }
 
         shipParent.transform.position = DefaultValues.DEFAULT_SHIP_SPAWN_POSITION;
-		shipParent.layer = 8;
+		shipParent.layer = DefaultValues.DEFAULT_FRIENDLY_LAYER;
 
 		// Adding controller to the ship
 		shipParent.AddComponent<ShipController> ();
 
 		foreach(Transform child in shipParent.transform){
+			// Adding controller to each pixel
+			addController(child);
 			// Adding rigidbody and collider to each pixel under parent
 			addRigidBodyAndCollider(child);
 			// Adding properties such as mass and health to each gameobject under parent
 			addProperties(child);
 			// Adding layer to each child game object under ship parent
-			if(child.transform.childCount!=0){
-				child.transform.GetChild(0).gameObject.layer = 8;
-			} else {
-				child.gameObject.layer = 8;
-			}
+			addLayer(child);
 		}
     }
+
+	void addController(Transform child){
+		child.gameObject.AddComponent<PixelController>();
+		if(child.transform.childCount!=0){
+			child.transform.GetChild(0).gameObject.AddComponent<PixelController>();
+		} 
+	}
+
+	void addLayer(Transform child){
+		child.gameObject.layer = DefaultValues.DEFAULT_FRIENDLY_LAYER;
+		if(child.transform.childCount!=0){
+			child.transform.GetChild(0).gameObject.layer = DefaultValues.DEFAULT_FRIENDLY_LAYER;
+		} 
+	}
 
 	void addRigidBodyAndCollider(Transform child){
 		Rigidbody2D childRigidbody = child.gameObject.AddComponent<Rigidbody2D> ();
@@ -129,31 +141,32 @@ public class Combat_Manager : MonoBehaviour
 		Combat_PixelBehavior sps = child.GetComponent<Combat_PixelBehavior>();
 		switch (sps.pixelType) {
 		case Pixel.Type.Power:
-			PowerSquare powerSquare = child.gameObject.AddComponent<PowerSquare>();
-			powerSquare.init ();
+			IPixelProperties powerPixelProperties = child.gameObject.AddComponent<PowerPixelProperties>();
+			powerPixelProperties.Init ();
 			break;
 		case Pixel.Type.Armour:
-			ArmourSquare armourSquare = child.gameObject.AddComponent<ArmourSquare>();
-			armourSquare.init ();
+			IPixelProperties armourPixelProperties = child.gameObject.AddComponent<ArmourPixelProperties>();
+			armourPixelProperties.Init ();
 			break;
 		case Pixel.Type.Engine:
-			EngineSquare engineSquare = child.gameObject.AddComponent<EngineSquare>();
-			engineSquare.init ();
+			IPixelProperties enginePixelProperties = child.gameObject.AddComponent<EnginePixelProperties>();
+			enginePixelProperties.Init ();
 			break;
 		case Pixel.Type.Hardpoint:
-			HardpointSquare hardpointSquare = child.gameObject.AddComponent<HardpointSquare>();
-			hardpointSquare.init ();
+			IPixelProperties hardpointPixelProperties = child.gameObject.AddComponent<HardpointPixelProperties>();
+			hardpointPixelProperties.Init ();
 			if(child.transform.childCount!=0){
 				Combat_TurretBehavior turretBehavior = child.transform.GetChild(0).GetComponent<Combat_TurretBehavior> ();	
-				TurretSquare turretSquare = child.transform.GetChild(0).gameObject.AddComponent<TurretSquare>();
-				turretSquare.Init(turretBehavior.turretType);
+				TurretPixelProperties turretPixelProperties = child.transform.GetChild(0).gameObject.AddComponent<TurretPixelProperties>();
+				turretPixelProperties.Init();
+				turretPixelProperties.setTurretType(turretBehavior.turretType);
 				// Adding controller to the turret
 				child.transform.GetChild(0).gameObject.AddComponent<TurretController> ();	
 			}
 			break;
 		case Pixel.Type.Scrap:
-			ScrapSquare scrapSquare = child.gameObject.AddComponent<ScrapSquare>();
-			scrapSquare.init ();
+			IPixelProperties scrapPixelProperties = child.gameObject.AddComponent<ScrapPixelProperties>();
+			scrapPixelProperties.Init ();
 			break;
 		}
 	}
@@ -163,11 +176,17 @@ public class Combat_Manager : MonoBehaviour
 		for (int i=0; i<asteroidCount; i++) {
 			Vector3 position = new Vector3(Random.Range (0, camera.sceneDimensions.x), Random.Range (0, camera.sceneDimensions.y), 0);
 			GameObject asteroid = Instantiate(Resources.Load ("Prefabs/Asteroid"), position, Quaternion.identity) as GameObject;
-			asteroid.layer = 9;
+
+			asteroid.layer = DefaultValues.DEFAULT_HOSTILE_LAYER;
+
 			int randomAsteroidSprite = Random.Range(0, asteroidSprites.Length);
 			asteroid.GetComponent<SpriteRenderer>().sprite = asteroidSprites[randomAsteroidSprite];
+
 			PolygonCollider2D polygonCollider2D = asteroid.AddComponent<PolygonCollider2D>();
 			polygonCollider2D.isTrigger = false;
+
+			IPixelProperties asteroidPixelProperties = asteroid.AddComponent<AsteroidPixelProperties>();
+			asteroidPixelProperties.Init ();
 		}
 		Debug.Log("Succesfully Loaded Asteroids!");
 	}

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class ShieldSquare : MonoBehaviour {
+public class ShieldPixelProperties : MonoBehaviour, IPixelProperties {
 
 	// This is future concept, currently not used at this stage
 	public float mass;
@@ -12,7 +12,7 @@ public class ShieldSquare : MonoBehaviour {
 	public float strength;
 	public float regenerationRate;
 	
-	public void init(){
+	public void Init(){
 		mass = DefaultValues.DEFAULT_SHIELD_MASS;
 		health = DefaultValues.DEFAULT_SHIELD_HEALTH;
 		comsumption = DefaultValues.DEFAULT_SHIELD_COMSUMPTION;

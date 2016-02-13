@@ -4,26 +4,26 @@ using System;
 
 public class TurretController : MonoBehaviour
 {	
-	private Combat_TurretBehavior combatTurretBehaviour; 
-	private TurretSquare turretSquare;
+	public Combat_TurretBehavior combatTurretBehaviour; 
+	public TurretPixelProperties turretSquare;
 	public float turretAngleLeft;
 	public float turretAngleRight;
 	public Vector3 shipRotation;
 	public float initialFacingAngle;
 	public Vector3 targetAngle;
-	public float cooldown;
-	
-	private float bulletSpeed = DefaultValues.DEFAULT_TURRET_BULLET_SPEED;
-	private float bulletSelfDestructionTime = DefaultValues.DEFAULT_BULLET_SELF_DESTRUCTION_TIME;
-	private float turretCooldown = DefaultValues.DEFAULT_TURRET_COOLDOWN;
+	public float cooldown;	
+	public float bulletSpeed;
+	public float turretCooldown;
 
 	// Use this for initialization
 	void Start()
 	{
 		combatTurretBehaviour = gameObject.GetComponent<Combat_TurretBehavior>();
-		turretSquare = gameObject.GetComponent<TurretSquare> ();
+		turretSquare = gameObject.GetComponent<TurretPixelProperties> ();
 		initialFacingAngle = combatTurretBehaviour.turretFacingAngle;
 		cooldown = turretSquare.cooldown;
+		bulletSpeed = DefaultValues.DEFAULT_TURRET_BULLET_SPEED;
+		turretCooldown = DefaultValues.DEFAULT_TURRET_COOLDOWN;
 	}
 	
 	// Update is called once per frame
@@ -55,12 +55,13 @@ public class TurretController : MonoBehaviour
 						if(cooldown <= 0){
 							fire ();
 							cooldown = turretSquare.cooldown;
-						} else {
-							cooldown = cooldown - Time.deltaTime;
 						}
 					}
 				}		
 			}
+		}
+		if(cooldown > 0){
+			cooldown = cooldown - Time.deltaTime;
 		}
 	}
 
@@ -146,12 +147,12 @@ public class TurretController : MonoBehaviour
 	{
 		GameObject bulletInstance = Instantiate(Resources.Load ("Prefabs/Bullet"), transform.position, this.transform.rotation) as GameObject;
 
-		BulletPixel bulletPixel = bulletInstance.AddComponent<BulletPixel>();
-		bulletPixel.Init(turretSquare.damage);
+		BulletController bulletController = bulletInstance.GetComponent<BulletController>();
+		bulletController.Init(DefaultValues.DEFAULT_HOSTILE_LAYER, turretSquare.damage);
 
 		Rigidbody2D bulletRigidbody = bulletInstance.GetComponent<Rigidbody2D>();
 		bulletRigidbody.AddForce(transform.up * bulletSpeed);
 
-		Destroy (bulletInstance, bulletSelfDestructionTime);
+		Destroy (bulletInstance, DefaultValues.DEFAULT_BULLET_SELF_DESTRUCTION_TIME);
 	}
 }

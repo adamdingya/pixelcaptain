@@ -1,12 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-public class ScrapSquare : MonoBehaviour {
+public class ScrapPixelProperties : MonoBehaviour, IPixelProperties {
 	
 	public float mass;
 	public float health;
 	
-	public void init(){
+	public void Init(){
 		mass = DefaultValues.DEFAULT_SCRAP_MASS;
 		health = DefaultValues.DEFAULT_SCRAP_HEALTH;
 	}

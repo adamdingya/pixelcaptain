@@ -11,6 +11,7 @@ GameObject:
   - 212: {fileID: 21244646}
   - 60: {fileID: 6021396}
   - 50: {fileID: 5098826}
+  - 114: {fileID: 11472200}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -65,6 +66,19 @@ PolygonCollider2D:
       - {x: .0350000001, y: -.0850000009}
       - {x: .0450000018, y: -.0649999976}
       - {x: .0450000018, y: .0850000009}
+--- !u!114 &11472200
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 121280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08e85c8c2dd7cb1429def769835f4eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletDamage: 0
+  aimedAtLayer: 0
 --- !u!212 &21244646
 SpriteRenderer:
   m_ObjectHideFlags: 1

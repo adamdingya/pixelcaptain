@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections;
 
-public class PowerSquare : MonoBehaviour {
+public class PowerPixelProperties : MonoBehaviour, IPixelProperties {
 
 	public float mass;
 	public float health;
 	public float capacity;
 	
-	public void init(){
+	public void Init(){
 		mass = DefaultValues.DEFAULT_POWER_MASS;
 		health = DefaultValues.DEFAULT_POWER_HEALTH;
 		capacity = DefaultValues.DEFAULT_POWER_CAPACITY;

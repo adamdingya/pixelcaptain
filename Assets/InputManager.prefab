@@ -39,16 +39,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f709f5406f8fcb245a5d9bd36d90f3a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
-  statePrev: 0
-  inputPosition: {x: 0, y: 0}
-  inputPositionScreen: {x: 0, y: 0}
-  inputDrag: {x: 0, y: 0}
-  inputSpread: 0
-  spreadAngleThreshold: 40
-  mousePos: {x: 0, y: 0}
-  mousePosPrev: {x: 0, y: 0}
-  mousePosDelta: {x: 0, y: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

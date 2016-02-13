@@ -540,7 +540,7 @@ public class ShipBuilder_Manager : MonoBehaviour
     }
 
     //Algorithm 
-    void CoreConnectionSearch()
+    public void CoreConnectionSearch()
     {
 
         //    ****    OUTWARDS    ****

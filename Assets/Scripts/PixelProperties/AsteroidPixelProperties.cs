@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Asteroid : MonoBehaviour {
+public class AsteroidPixelProperties : MonoBehaviour, IPixelProperties {
 	
 	public float health;
 	public float damage;
 	public float rotationCoefficient;
 	public Vector2 force;
 
-	public void init(){
+	public void Init(){
 		health = DefaultValues.DEFAULT_ASTEROID_HEALTH;
 		damage = DefaultValues.DEFAULT_ASTEROID_DAMAGE;
 

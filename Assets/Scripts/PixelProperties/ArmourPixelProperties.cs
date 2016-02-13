@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ArmourSquare : MonoBehaviour {
+public class ArmourPixelProperties : MonoBehaviour, IPixelProperties {
 	
 	public float mass;
 	public float health;
 	
-	public void init(){
+	public void Init(){
 		mass = DefaultValues.DEFAULT_ARMOUR_MASS;
 		health = DefaultValues.DEFAULT_ARMOUR_HEALTH;
 	}
